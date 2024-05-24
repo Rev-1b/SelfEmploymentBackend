@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     # local
     'users',
+    'customers',
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
