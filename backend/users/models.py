@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 
 class CustomUser(AbstractUser):
@@ -21,3 +21,12 @@ class AdvertiseInfo(models.Model):
     utm_medium = models.CharField()
     utm_term = models.CharField()
     utm_campaign = models.CharField()
+
+
+class UserRequisites(models.Model):
+    user = models.ForeignKey(to='CustomUser', on_delete=models.CASCADE, related_name='requisites')
+    bank_name = models.CharField(max_length=150, verbose_name='Название банка')
+    bic = models.IntegerField(verbose_name='Название банка')
+    bank_account = models.CharField(max_length=150, verbose_name='Название банка')
+    user_account = models.CharField(max_length=150, verbose_name='Название банка')
+    card_number = models.IntegerField(verbose_name='Название банка')
