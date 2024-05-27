@@ -32,3 +32,32 @@ class IECustomer(models.Model):
     inn = models.IntegerField(verbose_name='Идентификационный номер налогоплательщика')
     ogrnip = models.CharField(
         verbose_name='Основной государственный регистрационный номер индивидуального предпринимателя')
+
+
+class CustomerRequisites(models.Model):
+    customer = models.ForeignKey(to='Customer', on_delete=models.CASCADE, related_name='requisites')
+    bank_name = models.CharField(max_length=150, verbose_name='Название банка')
+    bic = models.IntegerField(verbose_name='Банковский идентификационный код')
+    bank_account = models.CharField(max_length=150, verbose_name='Корреспондентский счет банка')
+    customer_account_number = models.IntegerField(verbose_name='Номер расчетного счета заказчика')
+
+
+class CustomerContacts(models.Model):
+    customer = models.OneToOneField(to='Customer', on_delete=models.CASCADE, related_name='all_contacts',
+                                    verbose_name='Заказчик')
+    contact_name = models.CharField(max_length=150, null=True, blank=True,
+                                    verbose_name='Имя контактного лица (может быть не сам заказчик)')
+
+
+class Contact(models.Model):
+    class ContactTypes(models.TextChoices):
+        PHONE = 'PH', 'Телефон'
+        EMAIL = 'EL', 'Электронная почта'
+        TELEGRAM = 'TG', 'Аккаунт Телеграм'
+        WHATSAPP = 'WA', "Аккаунт What's App"
+        CUSTOMERSITE = 'CS' 'Сайт заказчика'
+
+    customer_contacts = models.OneToOneField(to='CustomerContacts', on_delete=models.CASCADE,
+                                             related_name='contact_obj', verbose_name='Контакты заказчика')
+    contact_type = models.CharField(max_length=2, choices=ContactTypes, verbose_name='Тип контакта')
+    contact_info = models.CharField(max_length=255, verbose_name='Данные контакта')

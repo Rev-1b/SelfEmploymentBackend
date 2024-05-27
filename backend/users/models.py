@@ -26,7 +26,7 @@ class AdvertiseInfo(models.Model):
 class UserRequisites(models.Model):
     user = models.ForeignKey(to='CustomUser', on_delete=models.CASCADE, related_name='requisites')
     bank_name = models.CharField(max_length=150, verbose_name='Название банка')
-    bic = models.IntegerField(verbose_name='Название банка')
-    bank_account = models.CharField(max_length=150, verbose_name='Название банка')
-    user_account = models.CharField(max_length=150, verbose_name='Название банка')
-    card_number = models.IntegerField(verbose_name='Название банка')
+    bic = models.IntegerField(verbose_name='Банковский идентификационный код')
+    bank_account = models.CharField(max_length=150, verbose_name='Корреспондентский счет банка')
+    user_account = models.CharField(max_length=150, verbose_name='Счет пользователя в банке')
+    card_number = models.IntegerField(verbose_name='Номер карты')
