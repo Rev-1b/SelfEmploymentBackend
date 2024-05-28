@@ -45,12 +45,14 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
-CORS_ORIGIN_WHITELIST = [
-    'http://127.0.0.1:5173',
-    'http://127.0.0.1:5174',
-    'http://127.0.0.1:5175',
-    'http://127.0.0.1:5176',
-]
+CORS_ALLOW_ALL_ORIGINS = True
+
+# CORS_ORIGIN_WHITELIST = [
+#     'http://127.0.0.1:5173',
+#     'http://127.0.0.1:5174',
+#     'http://127.0.0.1:5175',
+#     'http://127.0.0.1:5176',
+# ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
