@@ -41,30 +41,6 @@ class Customer(models.Model):
         verbose_name='Основной государственный регистрационный номер индивидуального предпринимателя')
 
 
-# class LLCCustomer(models.Model):
-#     customer = models.OneToOneField(to='Customer', on_delete=models.CASCADE, blank=True, null=True, related_name='LLC',
-#                                     verbose_name='Заказчик')
-#     full_company_name = models.CharField(max_length=150, verbose_name='Полное название компании')
-#     orgn = models.IntegerField(verbose_name='Основной гос. регистрационный номер')
-#     inn = models.IntegerField(verbose_name='Идентификационный номер налогоплательщика')
-#     kpp = models.IntegerField(blank=True, null=True, verbose_name='Код причины постановки на учет')
-#     legal_address = models.CharField(max_length=255, verbose_name='Юридический адрес')
-#     post_address = models.CharField(max_length=255, verbose_name='Почтовый адрес')
-#     okpo = models.CharField(max_length=255, verbose_name='Общероссийский классификатор предприятий и организаций')
-#     okved = models.CharField(max_length=255,
-#                              verbose_name='Общероссийский классификатор видов экономической деятельности')
-#
-#
-# class IECustomer(models.Model):
-#     customer = models.OneToOneField(to='Customer', on_delete=models.CASCADE, blank=True, null=True, related_name='IE',
-#                                     verbose_name='Заказчик')
-#     place_of_residence = models.CharField(max_length=150, verbose_name='Адрес прописки')
-#     post_address = models.CharField(max_length=150, verbose_name='Почтовый адрес')
-#     inn = models.IntegerField(verbose_name='Идентификационный номер налогоплательщика')
-#     ogrnip = models.CharField(
-#         verbose_name='Основной государственный регистрационный номер индивидуального предпринимателя')
-
-
 class CustomerRequisites(models.Model):
     class Meta:
         verbose_name = 'Реквизит пользователя'
@@ -78,13 +54,6 @@ class CustomerRequisites(models.Model):
     bic = models.IntegerField(verbose_name='Банковский идентификационный код')
     bank_account = models.CharField(max_length=150, verbose_name='Корреспондентский счет банка')
     customer_account_number = models.IntegerField(verbose_name='Номер расчетного счета заказчика')
-
-
-# class CustomerContacts(models.Model):
-#     customer = models.OneToOneField(to='Customer', on_delete=models.CASCADE, related_name='all_contacts',
-#                                     verbose_name='Заказчик')
-#     contact_name = models.CharField(max_length=150, null=True, blank=True,
-#                                     verbose_name='Имя контактного лица (может быть не сам заказчик)')
 
 
 class CustomerContacts(models.Model):
@@ -108,3 +77,6 @@ class CustomerContacts(models.Model):
                                     verbose_name='Имя контактного лица (может быть не сам заказчик)')
     contact_type = models.CharField(max_length=2, choices=ContactTypes, verbose_name='Тип контакта')
     contact_info = models.CharField(max_length=255, verbose_name='Данные контакта')
+
+
+
