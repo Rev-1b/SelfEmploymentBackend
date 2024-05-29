@@ -10,9 +10,11 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
 
-    # middle_name = models.CharField(max_length=150, blank=True, null=True, verbose_name='Отчество')
-    # passport = models.OneToOneField(to='Passport', on_delete=models.CASCADE, related_name='user')
-    # advertise_info = models.OneToOneField(to='AdvertiseInfo', on_delete=models.CASCADE, related_name='user')
+    middle_name = models.CharField(max_length=150, blank=True, null=True, verbose_name='Отчество')
+    passport = models.OneToOneField(to='Passport', on_delete=models.CASCADE, related_name='user', blank=True, null=True,
+                                    verbose_name='Паспорт')
+    advertise = models.OneToOneField(to='AdvertiseInfo', on_delete=models.CASCADE, related_name='user', blank=True,
+                                     null=True, verbose_name='Рекламная информация')
 
 
 class Passport(models.Model):
@@ -33,9 +35,6 @@ class AdvertiseInfo(models.Model):
     class Meta:
         verbose_name = 'Пакет рекламной информации'
         verbose_name_plural = 'Пакеты рекламной информации'
-
-    def __str__(self):
-        return self.utm_source
 
     utm_source = models.CharField()
     utm_content = models.CharField()
