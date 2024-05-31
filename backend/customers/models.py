@@ -5,6 +5,7 @@ from users.models import CustomUser
 
 class Customer(models.Model):
     class Meta:
+        ordering = ['additional_id']
         verbose_name = 'Заказчик'
         verbose_name_plural = 'Заказчики'
 
@@ -16,9 +17,9 @@ class Customer(models.Model):
         LLC = 'LC', 'ООО'
         IE = 'IE', 'Индивидуальный предприниматель'
 
-    additional_id = models.IntegerField(unique=True, verbose_name='Персональный идентификатор пользователя')
+    additional_id = models.IntegerField(verbose_name='Персональный идентификатор пользователя')
     user = models.ForeignKey(to=CustomUser, on_delete=models.CASCADE, related_name='customers',
-                             verbose_name='Заказчики')
+                             verbose_name='Пользователь')
     customer_name = models.CharField(max_length=150, verbose_name='ФИО/Сокращенное название')
     customer_type = models.CharField(max_length=2, choices=CustomerTypes)
 
@@ -43,8 +44,8 @@ class Customer(models.Model):
 
 class CustomerRequisites(models.Model):
     class Meta:
-        verbose_name = 'Реквизит пользователя'
-        verbose_name_plural = 'Реквизиты пользователя'
+        verbose_name = 'Реквизит заказчика'
+        verbose_name_plural = 'Реквизиты заказчика'
 
     def __str__(self):
         return f'{self.customer.name} - {self.bank_name}'

@@ -41,6 +41,7 @@ class AdvertiseInfo(models.Model):
     utm_medium = models.CharField()
     utm_term = models.CharField()
     utm_campaign = models.CharField()
+    date_created = models.DateTimeField(auto_now_add=True)
 
 
 class UserRequisites(models.Model):
@@ -49,9 +50,10 @@ class UserRequisites(models.Model):
         verbose_name_plural = 'Реквизиты пользователя'
 
     def __str__(self):
-        return f'{self.user.name} - {self.bank_name}'
+        return f'{self.user.username} - {self.bank_name}'
 
-    user = models.ForeignKey(to='CustomUser', on_delete=models.CASCADE, related_name='requisites')
+    user = models.ForeignKey(to='CustomUser', on_delete=models.CASCADE, related_name='requisites',
+                             verbose_name='Пользователь')
     bank_name = models.CharField(max_length=150, verbose_name='Название банка')
     bic = models.IntegerField(verbose_name='Банковский идентификационный код')
     bank_account = models.CharField(max_length=150, verbose_name='Корреспондентский счет банка')
