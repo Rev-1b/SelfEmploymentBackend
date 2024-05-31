@@ -15,7 +15,6 @@ class Agreement(models.Model):
                                  verbose_name='Договоры')
     agreement_number = models.CharField(max_length=16, verbose_name='Номер договора')
     content = models.TextField(verbose_name='Текст договора')
-    date_created = models.DateTimeField(auto_now_add=True)
 
 
 class Additional(models.Model):
@@ -50,7 +49,6 @@ class Act(BaseAttachment):
 
     title = models.CharField(max_length=150, verbose_name='Название акта')
     content = models.TextField(verbose_name='Текст акта')
-    date_created = models.DateTimeField(auto_now_add=True)
 
 
 class CheckModel(BaseAttachment):
