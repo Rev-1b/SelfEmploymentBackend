@@ -11,10 +11,6 @@ class CustomUser(AbstractUser):
         return self.username
 
     middle_name = models.CharField(max_length=150, blank=True, null=True, verbose_name='Отчество')
-    passport = models.OneToOneField(to='Passport', on_delete=models.CASCADE, related_name='user', blank=True, null=True,
-                                    verbose_name='Паспорт')
-    advertise = models.OneToOneField(to='AdvertiseInfo', on_delete=models.CASCADE, related_name='user', blank=True,
-                                     null=True, verbose_name='Рекламная информация')
 
 
 class Passport(models.Model):
@@ -25,6 +21,8 @@ class Passport(models.Model):
     def __str__(self):
         return f'{self.series}{self.number}'
 
+    user = models.OneToOneField(to=CustomUser, on_delete=models.CASCADE, related_name='passport',
+                                verbose_name='Пользователь')
     series = models.IntegerField(verbose_name='Серия паспорта')
     number = models.IntegerField(verbose_name='Номер паспорта')
     release_date = models.DateField(verbose_name='Дата выдачи')
@@ -35,13 +33,13 @@ class AdvertiseInfo(models.Model):
     class Meta:
         verbose_name = 'Пакет рекламной информации'
         verbose_name_plural = 'Пакеты рекламной информации'
-
+    user = models.OneToOneField(to=CustomUser, on_delete=models.CASCADE, related_name='advertise_info',
+                                verbose_name='Пользователь')
     utm_source = models.CharField()
     utm_content = models.CharField()
     utm_medium = models.CharField()
     utm_term = models.CharField()
     utm_campaign = models.CharField()
-    date_created = models.DateTimeField(auto_now_add=True)
 
 
 class UserRequisites(models.Model):
