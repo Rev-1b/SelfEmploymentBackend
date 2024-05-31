@@ -12,16 +12,11 @@ class AdditionalAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(BaseAttachment)
-class BaseAttachmentAdmin(admin.ModelAdmin):
-    pass
-
-
 @admin.register(Act)
 class ActAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Check)
-class CheckAdmin(admin.ModelAdmin):
+@admin.register(CheckModel)
+class CheckModelAdmin(admin.ModelAdmin):
     pass
