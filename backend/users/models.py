@@ -1,5 +1,7 @@
+from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class CustomUser(AbstractUser):
@@ -11,6 +13,11 @@ class CustomUser(AbstractUser):
         return self.username
 
     middle_name = models.CharField(max_length=150, blank=True, null=True, verbose_name='Отчество')
+    email = models.EmailField(verbose_name='Электронный адрес', max_length=255, unique=True)
+
+    USERNAME_FIELD = 'email'
+    EMAIL_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
 
 
 class Passport(models.Model):
@@ -33,6 +40,7 @@ class AdvertiseInfo(models.Model):
     class Meta:
         verbose_name = 'Пакет рекламной информации'
         verbose_name_plural = 'Пакеты рекламной информации'
+
     user = models.OneToOneField(to=CustomUser, on_delete=models.CASCADE, related_name='advertise_info',
                                 verbose_name='Пользователь')
     utm_source = models.CharField()
