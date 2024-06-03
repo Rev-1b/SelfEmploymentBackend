@@ -10,7 +10,7 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
 
-    middle_name = models.CharField(max_length=150, blank=True, null=True, verbose_name='Отчество')
+    middle_name = models.CharField(max_length=150, blank=True, default='', verbose_name='Отчество')
     email = models.EmailField(verbose_name='Электронный адрес', max_length=255, unique=True)
 
     USERNAME_FIELD = 'email'
