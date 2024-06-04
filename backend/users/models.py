@@ -28,8 +28,8 @@ class Passport(models.Model):
 
     user = models.OneToOneField(to=CustomUser, on_delete=models.CASCADE, related_name='passport',
                                 verbose_name='Пользователь')
-    series = models.IntegerField(verbose_name='Серия паспорта')
-    number = models.IntegerField(verbose_name='Номер паспорта')
+    series = models.CharField(verbose_name='Серия паспорта')
+    number = models.CharField(verbose_name='Номер паспорта')
     release_date = models.DateField(verbose_name='Дата выдачи')
     unit_code = models.CharField(max_length=7, verbose_name='Код подразделения')
 
@@ -62,4 +62,4 @@ class UserRequisites(models.Model):
     bic = models.IntegerField(verbose_name='Банковский идентификационный код')
     bank_account = models.CharField(max_length=150, verbose_name='Корреспондентский счет банка')
     user_account = models.CharField(max_length=150, verbose_name='Счет пользователя в банке')
-    card_number = models.IntegerField(verbose_name='Номер карты')
+    card_number = models.CharField(verbose_name='Номер карты')
