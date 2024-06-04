@@ -25,7 +25,7 @@ class Customer(models.Model):
 
     # Common fields for LLC and IE
     post_address = models.CharField(max_length=150, verbose_name='Почтовый адрес')
-    inn = models.IntegerField(verbose_name='Идентификационный номер налогоплательщика')
+    inn = models.CharField(verbose_name='Идентификационный номер налогоплательщика')
 
     # LLC Fields
     full_company_name = models.CharField(max_length=150, verbose_name='Полное название компании')
