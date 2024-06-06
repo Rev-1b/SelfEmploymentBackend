@@ -46,6 +46,7 @@ class AdvertiseInfo(models.Model):
     utm_medium = models.CharField()
     utm_term = models.CharField()
     utm_campaign = models.CharField()
+    partner_id = models.IntegerField()
 
 
 class UserRequisites(models.Model):
@@ -59,7 +60,7 @@ class UserRequisites(models.Model):
     user = models.ForeignKey(to='CustomUser', on_delete=models.CASCADE, related_name='requisites',
                              verbose_name='Пользователь')
     bank_name = models.CharField(max_length=150, verbose_name='Название банка')
-    bic = models.IntegerField(verbose_name='Банковский идентификационный код')
+    bic = models.CharField(max_length=150, verbose_name='Банковский идентификационный код')
     bank_account = models.CharField(max_length=150, verbose_name='Корреспондентский счет банка')
     user_account = models.CharField(max_length=150, verbose_name='Счет пользователя в банке')
-    card_number = models.CharField(verbose_name='Номер карты')
+    card_number = models.CharField(max_length=150, verbose_name='Номер карты')
