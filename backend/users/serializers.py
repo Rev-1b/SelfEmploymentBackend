@@ -3,22 +3,30 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import CustomUser, Passport, UserRequisites
 
 
+class RegistrationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email', 'password')
+
+
+# auth through email
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     username_field = CustomUser.EMAIL_FIELD
 
 
+# profile serializers
 class PassportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Passport
-        read_only_fields = ['id']
-        fields = ['id', 'series', 'number', 'release_date', 'unit_code']
+        # read_only_fields = ['id']
+        fields = ['series', 'number', 'release_date', 'unit_code']
 
 
 class UserRequisitesSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRequisites
-        read_only_fields = ['id']
-        fields = ['id', 'bank_name', 'bic', 'bank_account', 'user_account', 'card_number']
+        # read_only_fields = ['id']
+        fields = ['bank_name', 'bic', 'bank_account', 'user_account', 'card_number']
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -50,10 +58,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
                 Passport.objects.create(user=instance, **passport_data)
 
         # Requisites fields change
-        # requisites_data = validated_data.get('requisites')
-        # requisites = instance.requisites
-        # if requisites_data is not None:
-        #     b = 0
+        requisites_data = validated_data.get('requisites')
+        if requisites_data is not None:
+            if hasattr(instance, 'requisites'):
+                UserRequisites.objects.filter(user=instance).delete()
+            UserRequisites.objects.bulk_create(
+                [UserRequisites(user=instance, **data) for data in requisites_data]
+            )
 
         instance.save()
         return instance
