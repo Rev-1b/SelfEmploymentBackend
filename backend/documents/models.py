@@ -32,10 +32,8 @@ class Additional(models.Model):
 
 
 class BaseAttachment(models.Model):
-    agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, related_name='base_attachment',
-                                  blank=True, null=True)
-    additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, related_name='base_attachment',
-                                   blank=True, null=True)
+    agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, related_name='base_attachment', null=True)
+    additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, related_name='base_attachment', null=True)
 
 
 class Act(BaseAttachment):
