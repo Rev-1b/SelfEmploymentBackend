@@ -24,17 +24,24 @@ class Customer(models.Model):
     customer_type = models.CharField(max_length=2, choices=CustomerTypes)
 
     # Common fields for LLC and IE
-    post_address = models.CharField(max_length=150, verbose_name='Почтовый адрес')
-    inn = models.CharField(verbose_name='Идентификационный номер налогоплательщика')
+    post_address = models.CharField(max_length=150, verbose_name='Почтовый адрес', null=True, default=None)
+    inn = models.CharField(verbose_name='Идентификационный номер налогоплательщика', null=True,
+                           default=None)
 
     # LLC Fields
-    full_company_name = models.CharField(max_length=150, verbose_name='Полное название компании')
-    orgn = models.IntegerField(verbose_name='Основной гос. регистрационный номер')
-    kpp = models.IntegerField(blank=True, null=True, verbose_name='Код причины постановки на учет')
-    legal_address = models.CharField(max_length=255, verbose_name='Юридический адрес')
-    okpo = models.CharField(max_length=255, verbose_name='Общероссийский классификатор предприятий и организаций')
+    full_company_name = models.CharField(max_length=150, verbose_name='Полное название компании', null=True,
+                                         default=None)
+    orgn = models.CharField(max_length=150, verbose_name='Основной гос. регистрационный номер', null=True,
+                            default=None)
+    kpp = models.CharField(max_length=150, null=True, verbose_name='Код причины постановки на учет',
+                           default=None)
+    legal_address = models.CharField(max_length=255, verbose_name='Юридический адрес', null=True,
+                                     default=None)
+    okpo = models.CharField(max_length=255, verbose_name='Общероссийский классификатор предприятий и организаций',
+                            null=True, default=None)
     okved = models.CharField(max_length=255,
-                             verbose_name='Общероссийский классификатор видов экономической деятельности')
+                             verbose_name='Общероссийский классификатор видов экономической деятельности',
+                             null=True, default=None)
 
     # IE Fields
     place_of_residence = models.CharField(max_length=150, verbose_name='Адрес прописки')
@@ -52,9 +59,9 @@ class CustomerRequisites(models.Model):
 
     customer = models.ForeignKey(to='Customer', on_delete=models.CASCADE, related_name='requisites')
     bank_name = models.CharField(max_length=150, verbose_name='Название банка')
-    bic = models.IntegerField(verbose_name='Банковский идентификационный код')
+    bic = models.CharField(max_length=150, verbose_name='Банковский идентификационный код')
     bank_account = models.CharField(max_length=150, verbose_name='Корреспондентский счет банка')
-    customer_account_number = models.IntegerField(verbose_name='Номер расчетного счета заказчика')
+    customer_account_number = models.CharField(max_length=150, verbose_name='Номер расчетного счета заказчика')
 
 
 class CustomerContacts(models.Model):
@@ -74,10 +81,7 @@ class CustomerContacts(models.Model):
 
     customer = models.ForeignKey(to='Customer', on_delete=models.CASCADE,
                                  related_name='contacts', verbose_name='Контакты заказчика')
-    contact_name = models.CharField(max_length=150, null=True, blank=True,
+    contact_name = models.CharField(max_length=150, null=True,
                                     verbose_name='Имя контактного лица (может быть не сам заказчик)')
     contact_type = models.CharField(max_length=2, choices=ContactTypes, verbose_name='Тип контакта')
     contact_info = models.CharField(max_length=255, verbose_name='Данные контакта')
-
-
-

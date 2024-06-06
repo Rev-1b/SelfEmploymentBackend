@@ -10,8 +10,8 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
 
-    middle_name = models.CharField(max_length=150, blank=True, default='', verbose_name='Отчество')
-    email = models.EmailField(verbose_name='Электронный адрес', max_length=255, unique=True)
+    middle_name = models.CharField(max_length=150, default='', verbose_name='Отчество')
+    email = models.EmailField(max_length=255, unique=True, verbose_name='Электронный адрес')
 
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
@@ -28,9 +28,9 @@ class Passport(models.Model):
 
     user = models.OneToOneField(to=CustomUser, on_delete=models.CASCADE, related_name='passport',
                                 verbose_name='Пользователь')
-    series = models.CharField(verbose_name='Серия паспорта')
-    number = models.CharField(verbose_name='Номер паспорта')
-    release_date = models.DateField(verbose_name='Дата выдачи')
+    series = models.CharField(max_length=150, verbose_name='Серия паспорта')
+    number = models.CharField(max_length=150, verbose_name='Номер паспорта')
+    release_date = models.DateField(max_length=150, verbose_name='Дата выдачи')
     unit_code = models.CharField(max_length=7, verbose_name='Код подразделения')
 
 
