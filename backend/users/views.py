@@ -7,6 +7,10 @@ from users.models import CustomUser
 from users.serializers import CustomTokenObtainPairSerializer, UserProfileSerializer, RegistrationSerializer
 
 
+class EmailTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
+
 class RegistrationView(generics.GenericAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = RegistrationSerializer
@@ -18,13 +22,9 @@ class RegistrationView(generics.GenericAPIView):
         return Response(serializer.data)
 
 
-class EmailTokenObtainPairView(TokenObtainPairView):
-    serializer_class = CustomTokenObtainPairSerializer
-
-
 class ProfileView(generics.GenericAPIView):
     serializer_class = UserProfileSerializer
-    queryset = CustomUser.objects.all().prefetch_related('passport').prefetch_related('requisites')
+    queryset = CustomUser.objects.prefetch_related('requisites').all()
     permission_classes = [IsAuthenticated]
 
     def get(self, request):

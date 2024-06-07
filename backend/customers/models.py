@@ -22,31 +22,28 @@ class Customer(models.Model):
                              verbose_name='Пользователь')
     customer_name = models.CharField(max_length=150, verbose_name='ФИО/Сокращенное название')
     customer_type = models.CharField(max_length=2, choices=CustomerTypes)
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
 
     # Common fields for LLC and IE
-    post_address = models.CharField(max_length=150, verbose_name='Почтовый адрес', null=True, default=None)
-    inn = models.CharField(verbose_name='Идентификационный номер налогоплательщика', null=True,
-                           default=None)
+    post_address = models.CharField(max_length=150, verbose_name='Почтовый адрес', null=True, blank=True)
+    inn = models.CharField(verbose_name='Идентификационный номер налогоплательщика', null=True, blank=True)
 
     # LLC Fields
-    full_company_name = models.CharField(max_length=150, verbose_name='Полное название компании', null=True,
-                                         default=None)
-    orgn = models.CharField(max_length=150, verbose_name='Основной гос. регистрационный номер', null=True,
-                            default=None)
-    kpp = models.CharField(max_length=150, null=True, verbose_name='Код причины постановки на учет',
-                           default=None)
-    legal_address = models.CharField(max_length=255, verbose_name='Юридический адрес', null=True,
-                                     default=None)
+    full_company_name = models.CharField(max_length=150, verbose_name='Полное название компании', null=True, blank=True)
+    orgn = models.CharField(max_length=150, verbose_name='Основной гос. регистрационный номер', null=True, blank=True)
+    kpp = models.CharField(max_length=150, null=True, blank=True, verbose_name='Код причины постановки на учет')
+    legal_address = models.CharField(max_length=255, verbose_name='Юридический адрес', null=True, blank=True)
     okpo = models.CharField(max_length=255, verbose_name='Общероссийский классификатор предприятий и организаций',
-                            null=True, default=None)
+                            null=True, blank=True)
     okved = models.CharField(max_length=255,
                              verbose_name='Общероссийский классификатор видов экономической деятельности',
-                             null=True, default=None)
+                             null=True, blank=True)
 
     # IE Fields
-    place_of_residence = models.CharField(max_length=150, verbose_name='Адрес прописки')
+    place_of_residence = models.CharField(max_length=150, verbose_name='Адрес прописки', null=True, blank=True)
     ogrnip = models.CharField(
-        verbose_name='Основной государственный регистрационный номер индивидуального предпринимателя')
+        verbose_name='Основной государственный регистрационный номер индивидуального предпринимателя', null=True,
+        blank=True)
 
 
 class CustomerRequisites(models.Model):
