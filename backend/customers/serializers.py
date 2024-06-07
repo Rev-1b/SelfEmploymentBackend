@@ -1,9 +1,10 @@
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import Customer, CustomerContacts, CustomerRequisites
+
+from .models import Customer
 
 
 class CustomerPageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
-        fields = ()
+        fields = ('id', 'additional_id', 'customer_name', 'date_created')
+
