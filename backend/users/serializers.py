@@ -28,14 +28,12 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class PassportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Passport
-        # read_only_fields = ['id']
         fields = ['series', 'number', 'release_date', 'unit_code']
 
 
 class UserRequisitesSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRequisites
-        # read_only_fields = ['id']
         fields = ['bank_name', 'bic', 'bank_account', 'user_account', 'card_number']
 
 
@@ -45,8 +43,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        read_only_fields = ['email', 'username']
         fields = ['email', 'username', 'first_name', 'last_name', 'middle_name', 'passport', 'requisites']
+        extra_kwargs = {
+            'email': {'read_only': True},
+            'username': {'read_only': True},
+        }
 
     def update(self, instance, validated_data):
         # User fields change
