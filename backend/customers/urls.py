@@ -1,13 +1,13 @@
-from django.urls import path
+from django.urls import path, include
 from rest_framework import routers
 
-from customers.views import CustomerPageView, CustomerDetailViewSet
+from customers.views import CustomerDetailViewSet
 
 router = routers.DefaultRouter()
-router.register('', )
+router.register('', CustomerDetailViewSet)
 
 
 urlpatterns = [
-    path('', CustomerPageView.as_view()),
+    path('', include(router.urls)),
     # path('<int:customer_id>/', RegistrationView.as_view()),
 ]
