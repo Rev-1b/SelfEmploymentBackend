@@ -52,7 +52,7 @@ class CustomerRequisites(models.Model):
         verbose_name_plural = 'Реквизиты заказчика'
 
     def __str__(self):
-        return f'{self.customer.name} - {self.bank_name}'
+        return f'{self.customer.customer_name} - {self.bank_name}'
 
     customer = models.ForeignKey(to='Customer', on_delete=models.CASCADE, related_name='requisites')
     bank_name = models.CharField(max_length=150, verbose_name='Название банка')
@@ -63,8 +63,8 @@ class CustomerRequisites(models.Model):
 
 class CustomerContacts(models.Model):
     class Meta:
-        verbose_name = 'Контакт пользователя'
-        verbose_name_plural = 'Контакты пользователя'
+        verbose_name = 'Контакт заказчика'
+        verbose_name_plural = 'Контакты заказчика'
 
     def __str__(self):
         return f'{self.contact_name} - {self.contact_type}'

@@ -6,7 +6,17 @@ from .models import CustomUser, Passport, UserRequisites
 class RegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'password')
+        fields = ('id', 'username', 'email', 'password')
+        extra_kwargs = {
+            'password': {'write_only': True},
+        }
+
+    def create(self, validated_data):
+        user = self.Meta.model.objects.create_user(**validated_data)
+        # if settings.SEND_ACTIVATION_EMAIL:
+        #     user.is_active = False
+        #     user.save(update_fields=["is_active"])
+        return user
 
 
 # auth through email

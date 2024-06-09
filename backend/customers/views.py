@@ -1,22 +1,10 @@
 from rest_framework import generics, mixins
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework import permissions
 
 from customers.models import Customer
 from customers.serializers import CustomerPageSerializer, CustomerDetailSerializer
-
-
-# class CustomerPageView(generics.GenericAPIView):
-#     queryset = Customer.objects.all()
-#     serializer_class = CustomerPageSerializer
-#
-#     def get(self, request):
-#         if self.kwargs.get('pk') is None:
-#             queryset = self.get_queryset().filter(user=request.user)
-#             serializer = CustomerPageSerializer(queryset, many=True)
-#             return Response(serializer.data)
-#         else:
-#             return
 
 
 class CustomerDetailViewSet(mixins.CreateModelMixin,
@@ -27,6 +15,7 @@ class CustomerDetailViewSet(mixins.CreateModelMixin,
                             viewsets.GenericViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerDetailSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset().filter(user=request.user)
