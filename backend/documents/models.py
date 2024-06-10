@@ -9,7 +9,7 @@ class Agreement(models.Model):
         verbose_name_plural = 'Договоры'
 
     def __str__(self):
-        return f'Договор №{self.agreement_number} заказчика {self.customer.name}'
+        return f'Договор №{self.agreement_number} заказчика {self.customer.customer_name}'
 
     customer = models.ForeignKey(to=Customer, on_delete=models.CASCADE, related_name='agreements',
                                  verbose_name='Договоры')
@@ -49,6 +49,18 @@ class Act(BaseAttachment):
     content = models.TextField(verbose_name='Текст акта')
 
 
+class Invoice(BaseAttachment):
+    class Meta:
+        verbose_name = 'Счет'
+        verbose_name_plural = 'Счет'
+
+    def __str__(self):
+        return f'Счет на {self.amount} к договору {self.agreement}' if self.agreement else \
+            f'Счет на {self.amount} к дополнению {self.additional}'
+
+    amount = models.IntegerField(verbose_name='Сумма счета')
+
+
 class CheckModel(BaseAttachment):
     class Meta:
         verbose_name = 'Чек'
@@ -58,4 +70,4 @@ class CheckModel(BaseAttachment):
         return f'Чек на {self.amount} к договору {self.agreement}' if self.agreement else \
             f'Чек на {self.amount} к дополнению {self.additional}'
 
-    amount = models.IntegerField(verbose_name='Сумма')
+    amount = models.IntegerField(verbose_name='Сумма чека')
