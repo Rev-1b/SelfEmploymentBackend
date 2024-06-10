@@ -12,6 +12,7 @@ class CustomUser(AbstractUser):
 
     middle_name = models.CharField(max_length=150, default='', verbose_name='Отчество')
     email = models.EmailField(max_length=255, unique=True, verbose_name='Электронный адрес')
+    phone_number = models.CharField(max_length=150, default='', verbose_name='Номер телефона')
 
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
@@ -31,6 +32,7 @@ class Passport(models.Model):
     series = models.CharField(max_length=150, verbose_name='Серия паспорта')
     number = models.CharField(max_length=150, verbose_name='Номер паспорта')
     release_date = models.DateField(max_length=150, verbose_name='Дата выдачи')
+    issued = models.CharField(max_length=150, verbose_name='Выдан')
     unit_code = models.CharField(max_length=7, verbose_name='Код подразделения')
 
 
