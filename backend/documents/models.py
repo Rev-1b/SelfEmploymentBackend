@@ -9,7 +9,7 @@ class Agreement(models.Model):
         verbose_name_plural = 'Договоры'
 
     def __str__(self):
-        return f'Договор №{self.agreement_number} заказчика {self.customer.customer_name}'
+        return f'Договор №{self.agreement_number} с заказчиком {self.customer.customer_name}'
 
     customer = models.ForeignKey(to=Customer, on_delete=models.CASCADE, related_name='agreements',
                                  verbose_name='Договоры')
@@ -32,8 +32,10 @@ class Additional(models.Model):
 
 
 class BaseAttachment(models.Model):
-    agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, related_name='base_attachment', null=True)
-    additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, related_name='base_attachment', null=True)
+    agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, related_name='base_attachment', null=True,
+                                  blank=True)
+    additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, related_name='base_attachment', null=True,
+                                   blank=True)
 
 
 class Act(BaseAttachment):
@@ -52,7 +54,7 @@ class Act(BaseAttachment):
 class Invoice(BaseAttachment):
     class Meta:
         verbose_name = 'Счет'
-        verbose_name_plural = 'Счет'
+        verbose_name_plural = 'Счета'
 
     def __str__(self):
         return f'Счет на {self.amount} к договору {self.agreement}' if self.agreement else \

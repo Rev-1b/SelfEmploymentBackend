@@ -17,6 +17,11 @@ class ActAdmin(admin.ModelAdmin):
     pass
 
 
+@admin.register(Invoice)
+class InvoiceAdmin(admin.ModelAdmin):
+    pass
+
+
 @admin.register(CheckModel)
 class CheckModelAdmin(admin.ModelAdmin):
     pass
