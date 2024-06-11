@@ -6,4 +6,10 @@ from .models import Agreement, Additional, BaseAttachment, Act, CheckModel, Invo
 class AgreementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Agreement
-        fields = ['customer', 'agreement_number', 'content']
+        fields = ['id', 'customer', 'agreement_number', 'content']
+
+
+class AdditionalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Additional
+        fields = ['id', 'agreement', 'title', 'content']

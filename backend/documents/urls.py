@@ -1,13 +1,13 @@
 from django.urls import path, include
 from rest_framework import routers
 
-from .views import AgreementViewSet
+from .views import AgreementViewSet, AdditionalViewSet
 
-agreement_router = routers.DefaultRouter()
-agreement_router.register('agreement', AgreementViewSet)
+router = routers.DefaultRouter()
+router.register('agreements', AgreementViewSet)
+router.register('additional', AdditionalViewSet)
 
 
 urlpatterns = [
-    path('', include(agreement_router.urls)),
-    # path('<int:customer_id>/', RegistrationView.as_view()),
+    path('', include(router.urls)),
 ]
