@@ -32,6 +32,9 @@ class Additional(models.Model):
 
 
 class BaseAttachment(models.Model):
+    # class Meta:
+    #     abstract = True
+
     agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, related_name='base_attachment', null=True,
                                   blank=True)
     additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, related_name='base_attachment', null=True,
