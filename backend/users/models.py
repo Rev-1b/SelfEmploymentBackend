@@ -19,7 +19,17 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS = ['username']
 
 
-class Passport(models.Model):
+class CustomModel(models.Model):
+    class Meta:
+        abstract = True
+        ordering = ['updated_at']
+
+    created_at = models.DateTimeField(auto_now_add=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True)
+    is_deleted = models.BooleanField(default=False, blank=True)
+
+
+class Passport(CustomModel):
     class Meta:
         verbose_name = 'Паспорт'
         verbose_name_plural = 'Паспорта'

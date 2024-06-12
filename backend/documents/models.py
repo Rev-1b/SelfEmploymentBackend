@@ -31,14 +31,7 @@ class Additional(models.Model):
     content = models.TextField(verbose_name='Текст дополнения')
 
 
-class BaseAttachment(models.Model):
-    agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, related_name='base_attachment', null=True,
-                                  blank=True)
-    additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, related_name='base_attachment', null=True,
-                                   blank=True)
-
-
-class Act(BaseAttachment):
+class Act(models.Model):
     class Meta:
         verbose_name = 'Акт'
         verbose_name_plural = 'Акты'
@@ -49,9 +42,11 @@ class Act(BaseAttachment):
 
     title = models.CharField(max_length=150, verbose_name='Название акта')
     content = models.TextField(verbose_name='Текст акта')
+    agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, null=True, blank=True, related_name='acts')
+    additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True, related_name='acts')
 
 
-class Invoice(BaseAttachment):
+class Invoice(models.Model):
     class Meta:
         verbose_name = 'Счет'
         verbose_name_plural = 'Счета'
@@ -61,9 +56,11 @@ class Invoice(BaseAttachment):
             f'Счет на {self.amount} к дополнению {self.additional}'
 
     amount = models.IntegerField(verbose_name='Сумма счета')
+    agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, null=True, blank=True)
+    additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True)
 
 
-class CheckModel(BaseAttachment):
+class CheckModel(models.Model):
     class Meta:
         verbose_name = 'Чек'
         verbose_name_plural = 'Чеки'
@@ -73,3 +70,5 @@ class CheckModel(BaseAttachment):
             f'Чек на {self.amount} к дополнению {self.additional}'
 
     amount = models.IntegerField(verbose_name='Сумма чека')
+    agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, null=True, blank=True)
+    additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True)
