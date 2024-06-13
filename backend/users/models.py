@@ -32,7 +32,7 @@ class Passport(CustomModel):
     class Meta:
         verbose_name = 'Паспорт'
         verbose_name_plural = 'Паспорта'
-        unique_together = ['series', 'number']
+        # unique_together = ['series', 'number']
 
     def __str__(self):
         return f'{self.series}{self.number}'

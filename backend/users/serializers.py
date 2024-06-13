@@ -31,19 +31,12 @@ class PassportSerializer(serializers.ModelSerializer):
         fields = ['series', 'number', 'release_date', 'unit_code']
 
 
-class UserRequisitesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserRequisites
-        fields = ['bank_name', 'bic', 'bank_account', 'user_account', 'card_number']
-
-
 class UserProfileSerializer(serializers.ModelSerializer):
     passport = PassportSerializer()
-    requisites = UserRequisitesSerializer(many=True)
 
     class Meta:
         model = CustomUser
-        fields = ['email', 'username', 'first_name', 'last_name', 'middle_name', 'passport', 'requisites']
+        fields = ['email', 'username', 'first_name', 'last_name', 'middle_name', 'passport']
         extra_kwargs = {
             'email': {'read_only': True},
             'username': {'read_only': True},
@@ -56,26 +49,19 @@ class UserProfileSerializer(serializers.ModelSerializer):
         instance.middle_name = validated_data.get('middle_name', instance.middle_name)
 
         # Passport fields change
-        passport_data = validated_data.get('passport')
+        passport_data = validated_data.pop('passport', None)
         if passport_data is not None:
-            if hasattr(instance, 'passport'):
-                passport = instance.passport
-                passport.series = passport_data.get('series', passport.series)
-                passport.number = passport_data.get('number', passport.number)
-                passport.release_date = passport_data.get('release_date', passport.release_date)
-                passport.unit_code = passport_data.get('unit_code', passport.unit_code)
-                passport.save()
+            passport = Passport.objects.filter(user=instance)
+            if passport.exists():
+                passport.update(**passport_data)
             else:
                 Passport.objects.create(user=instance, **passport_data)
 
-        # Requisites fields change
-        requisites_data = validated_data.get('requisites')
-        if requisites_data is not None:
-            if hasattr(instance, 'requisites'):
-                UserRequisites.objects.filter(user=instance).delete()
-            UserRequisites.objects.bulk_create(
-                [UserRequisites(user=instance, **data) for data in requisites_data]
-            )
-
         instance.save()
         return instance
+
+
+class UserRequisitesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserRequisites
+        fields = ['id', 'bank_name', 'bic', 'bank_account', 'user_account', 'card_number']
