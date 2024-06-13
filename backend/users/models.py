@@ -2,6 +2,15 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
+class CustomModel(models.Model):
+    class Meta:
+        abstract = True
+        ordering = ['updated_at']
+
+    created_at = models.DateTimeField(auto_now_add=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True)
+
+
 class CustomUser(AbstractUser):
     class Meta:
         verbose_name = 'Пользователь'
@@ -19,20 +28,11 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS = ['username']
 
 
-class CustomModel(models.Model):
-    class Meta:
-        abstract = True
-        ordering = ['updated_at']
-
-    created_at = models.DateTimeField(auto_now_add=True, blank=True)
-    updated_at = models.DateTimeField(auto_now=True, blank=True)
-    is_deleted = models.BooleanField(default=False, blank=True)
-
-
 class Passport(CustomModel):
     class Meta:
         verbose_name = 'Паспорт'
         verbose_name_plural = 'Паспорта'
+        unique_together = ['series', 'number']
 
     def __str__(self):
         return f'{self.series}{self.number}'
@@ -46,7 +46,7 @@ class Passport(CustomModel):
     unit_code = models.CharField(max_length=7, verbose_name='Код подразделения')
 
 
-class AdvertiseInfo(models.Model):
+class AdvertiseInfo(CustomModel):
     class Meta:
         verbose_name = 'Пакет рекламной информации'
         verbose_name_plural = 'Пакеты рекламной информации'
@@ -61,7 +61,7 @@ class AdvertiseInfo(models.Model):
     partner_id = models.IntegerField()
 
 
-class UserRequisites(models.Model):
+class UserRequisites(CustomModel):
     class Meta:
         verbose_name = 'Реквизит пользователя'
         verbose_name_plural = 'Реквизиты пользователя'

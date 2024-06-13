@@ -1,9 +1,9 @@
 from django.db import models
 
-from users.models import CustomUser
+from users.models import CustomUser, CustomModel
 
 
-class Customer(models.Model):
+class Customer(CustomModel):
     class Meta:
         ordering = ['additional_id']
         verbose_name = 'Заказчик'
@@ -22,7 +22,6 @@ class Customer(models.Model):
                              verbose_name='Пользователь')
     customer_name = models.CharField(max_length=150, verbose_name='ФИО/Сокращенное название')
     customer_type = models.CharField(max_length=2, choices=CustomerTypes)
-    date_created = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
 
     # Common fields for LLC and IE
     post_address = models.CharField(max_length=150, verbose_name='Почтовый адрес', null=True, blank=True)
@@ -46,7 +45,7 @@ class Customer(models.Model):
         blank=True)
 
 
-class CustomerRequisites(models.Model):
+class CustomerRequisites(CustomModel):
     class Meta:
         verbose_name = 'Реквизит заказчика'
         verbose_name_plural = 'Реквизиты заказчика'
@@ -61,7 +60,7 @@ class CustomerRequisites(models.Model):
     customer_account_number = models.CharField(max_length=150, verbose_name='Номер расчетного счета заказчика')
 
 
-class CustomerContacts(models.Model):
+class CustomerContacts(CustomModel):
     class Meta:
         verbose_name = 'Контакт заказчика'
         verbose_name_plural = 'Контакты заказчика'
