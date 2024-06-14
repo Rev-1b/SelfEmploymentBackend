@@ -1,10 +1,11 @@
-from rest_framework import generics
+from rest_framework import generics, mixins, viewsets, permissions
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.permissions import IsAuthenticated
 
-from users.models import CustomUser
-from users.serializers import CustomTokenObtainPairSerializer, UserProfileSerializer, RegistrationSerializer
+from users.models import CustomUser, UserRequisites
+from users.serializers import CustomTokenObtainPairSerializer, UserProfileSerializer, RegistrationSerializer, \
+    UserRequisitesSerializer
 
 
 class EmailTokenObtainPairView(TokenObtainPairView):
@@ -24,8 +25,8 @@ class RegistrationView(generics.GenericAPIView):
 
 class ProfileView(generics.GenericAPIView):
     serializer_class = UserProfileSerializer
-    queryset = CustomUser.objects.prefetch_related('requisites').all()
-    permission_classes = [IsAuthenticated]
+    queryset = CustomUser.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         serializer = self.get_serializer(request.user)
@@ -36,3 +37,15 @@ class ProfileView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+
+class UserRequisitesViewSet(mixins.CreateModelMixin,
+                            mixins.UpdateModelMixin,
+                            mixins.DestroyModelMixin,
+                            mixins.ListModelMixin,
+                            viewsets.GenericViewSet):
+    serializer_class = UserRequisitesSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return UserRequisites.objects.filter(user=self.request.user)

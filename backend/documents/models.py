@@ -1,9 +1,10 @@
 from django.db import models
 
 from customers.models import Customer
+from users.models import CustomModel
 
 
-class Agreement(models.Model):
+class Agreement(CustomModel):
     class Meta:
         verbose_name = 'Договор'
         verbose_name_plural = 'Договоры'
@@ -17,7 +18,7 @@ class Agreement(models.Model):
     content = models.TextField(verbose_name='Текст договора')
 
 
-class Additional(models.Model):
+class Additional(CustomModel):
     class Meta:
         verbose_name = 'Дополнение к договору'
         verbose_name_plural = 'Дополнения к договору'
@@ -31,7 +32,7 @@ class Additional(models.Model):
     content = models.TextField(verbose_name='Текст дополнения')
 
 
-class Act(models.Model):
+class Act(CustomModel):
     class Meta:
         verbose_name = 'Акт'
         verbose_name_plural = 'Акты'
@@ -46,7 +47,7 @@ class Act(models.Model):
     additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True, related_name='acts')
 
 
-class Invoice(models.Model):
+class Invoice(CustomModel):
     class Meta:
         verbose_name = 'Счет'
         verbose_name_plural = 'Счета'
@@ -60,7 +61,7 @@ class Invoice(models.Model):
     additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True)
 
 
-class CheckModel(models.Model):
+class CheckModel(CustomModel):
     class Meta:
         verbose_name = 'Чек'
         verbose_name_plural = 'Чеки'
