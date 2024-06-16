@@ -1,5 +1,4 @@
 from rest_framework import generics, mixins, viewsets, permissions
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 
