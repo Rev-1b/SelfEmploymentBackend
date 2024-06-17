@@ -8,7 +8,7 @@ from .models import Customer, CustomerRequisites, CustomerContacts
 class CustomerPageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
-        fields = ['id', 'additional_id', 'customer_type', 'customer_name', 'date_created']
+        fields = ['id', 'additional_id', 'customer_type', 'customer_name', 'updated_at']
 
 
 class CustomerRequisitesSerializer(serializers.ModelSerializer):
@@ -36,7 +36,7 @@ class CustomerDetailSerializer(serializers.ModelSerializer):
         model = Customer
         read_only_fields = ['id', 'date_created']
         fields = [
-            'id', 'additional_id', 'customer_type', 'customer_name', 'date_created',
+            'id', 'additional_id', 'customer_type', 'customer_name',
             'post_address', 'inn', 'full_company_name', 'orgn', 'kpp', 'legal_address', 'okpo', 'okved',
             'place_of_residence', 'ogrnip', 'requisites', 'contacts'
         ]
@@ -82,22 +82,22 @@ class CustomerDetailSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs: dict):
         table = {
-            'CM': ['additional_id', 'customer_type', 'customer_name'],
+            'CM': ['additional_id', 'customer_type', 'customer_name', 'requisites', 'contacts'],
             'LC': ['additional_id', 'customer_type', 'customer_name', 'post_address', 'inn', 'full_company_name',
-                   'orgn', 'kpp', 'legal_address', 'okpo', 'okved'],
+                   'orgn', 'kpp', 'legal_address', 'okpo', 'okved', 'requisites', 'contacts'],
             'IE': ['additional_id', 'customer_type', 'customer_name', 'post_address', 'inn', 'place_of_residence',
-                   'ogrnip'],
+                   'ogrnip', 'requisites', 'contacts'],
         }
 
         customer_type = attrs.get("customer_type", None)
         if customer_type is None or customer_type not in ('CM', 'IE', 'LC'):
             raise exceptions.ValidationError("Тип заказчика не указан, либо указан некорректно")
 
-        if self.request.method == 'POST':
+        if self.context.get('request').method == 'POST':
             self.check_required_attrs(attrs, table.get(customer_type))
             self.check_extra_attrs(attrs, table.get(customer_type))
 
-        if self.request.method == 'PATCH':
+        if self.context.get('request').method == 'PATCH':
             self.check_extra_attrs(attrs, table.get(customer_type))
 
         return super().validate(attrs)
@@ -106,7 +106,7 @@ class CustomerDetailSerializer(serializers.ModelSerializer):
     def check_required_attrs(attrs, required_keys):
         for key in required_keys:
             if key not in attrs:
-                raise exceptions.ValidationError(f'Аттрибут "{key}" не указан')
+                raise exceptions.ValidationError(f'Аттрибут "{key}" не указан :)')
             if attrs[key] is None:
                 raise exceptions.ValidationError(f'Для атрибута {key} не указано значение')
 

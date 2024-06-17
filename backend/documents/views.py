@@ -17,10 +17,8 @@ class AgreementViewSet(mixins.CreateModelMixin,
 
 
 class AgreementView(generics.GenericAPIView):
-    def get_queryset(self):
-        return
-
     def get(self, request):
+
         queryset = Agreement.objects.filter(customer__user=request.user)
         serializer = AgreementSerializer(queryset,many=True)
         return Response(serializer.data)

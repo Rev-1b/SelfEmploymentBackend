@@ -33,11 +33,10 @@ class AdditionalSerializer(serializers.ModelSerializer):
 
 class AgreementSerializer(serializers.ModelSerializer):
     additional = AdditionalSerializer(many=True, required=False)
-    acts = ActSerializer(many=True, required=False)
     # checks = CheckSerializer(many=True)
     # invoices = InvoiceSerializer(many=True)
     # acts = serializers.PrimaryKeyRelatedField(queryset=Act.objects.all())
 
     class Meta:
         model = Agreement
-        fields = ['id', 'customer', 'agreement_number', 'content', 'additional', 'acts']
+        fields = ['id', 'customer', 'agreement_number', 'content', 'additional']

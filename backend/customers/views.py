@@ -34,10 +34,3 @@ class CustomerDetailViewSet(mixins.CreateModelMixin,
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
 
-    # def get_serializer(self, *args, fields_type=None, **kwargs):
-    #     serializer_class = self.get_serializer_class()
-    #     kwargs.setdefault('context', self.get_serializer_context())
-    #
-    #     if fields_type is None:
-    #         serializer_class.Meta.fields = serializer_class.COMMON_FIELDS
-    #     return serializer_class(*args, **kwargs)
