@@ -57,8 +57,8 @@ class Invoice(CustomModel):
             f'Счет на {self.amount} к дополнению {self.additional}'
 
     amount = models.IntegerField(verbose_name='Сумма счета')
-    agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, null=True, blank=True)
-    additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True)
+    agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, null=True, blank=True, related_name='invoices')
+    additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True, related_name='invoices')
 
 
 class CheckModel(CustomModel):
@@ -71,5 +71,5 @@ class CheckModel(CustomModel):
             f'Чек на {self.amount} к дополнению {self.additional}'
 
     amount = models.IntegerField(verbose_name='Сумма чека')
-    agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, null=True, blank=True)
-    additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True)
+    agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, null=True, blank=True, related_name='checks')
+    additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True, related_name='checks')

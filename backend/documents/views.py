@@ -1,8 +1,8 @@
-from rest_framework import mixins, viewsets, permissions, generics
-from rest_framework.response import Response
+from django.db import models
+from rest_framework import mixins, viewsets, permissions
 
-from .models import Agreement, Additional
-from .serializers import AgreementSerializer, AdditionalSerializer
+from .models import Agreement
+from .serializers import AgreementListSerializer, AgreementDetailSerializer
 
 
 class AgreementViewSet(mixins.CreateModelMixin,
@@ -11,23 +11,44 @@ class AgreementViewSet(mixins.CreateModelMixin,
                        mixins.DestroyModelMixin,
                        mixins.ListModelMixin,
                        viewsets.GenericViewSet):
-    queryset = Agreement.objects.all()
-    serializer_class = AgreementSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        user_agreements = Agreement.objects.filter(customer__user=self.request.user)
 
-class AgreementView(generics.GenericAPIView):
-    def get(self, request):
+        if self.action == 'retrieve':
+            return user_agreements.annotate(
+                additional_sum=models.Count('additional', distinct=True),
+                act_sum=models.Count('acts', distinct=True),
+                check_sum=models.Count('checks', distinct=True),
+                invoice_sum=models.Count('invoices', distinct=True),
+            )
+        elif self.action == 'list':
+            return user_agreements.select_related('customer')
 
-        queryset = Agreement.objects.filter(customer__user=request.user)
-        serializer = AgreementSerializer(queryset,many=True)
-        return Response(serializer.data)
+    def get_serializer(self, *args, **kwargs):
+        if self.action == 'retrieve':
+            serializer_class = AgreementDetailSerializer
 
+        elif self.action == 'list':
+            serializer_class = AgreementListSerializer
+        else:
+            serializer_class = AgreementListSerializer
 
-class AdditionalView(generics.GenericAPIView):
-    def get(self, request):
-        queryset = Additional.objects.all().filter(agreement__customer__user=request.user)
-        serializer = AdditionalSerializer(queryset, many=True)
-        return Response(serializer.data)
+        kwargs.setdefault('context', self.get_serializer_context())
+        return serializer_class(*args, **kwargs)
 
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
