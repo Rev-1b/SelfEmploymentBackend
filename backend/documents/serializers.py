@@ -4,14 +4,14 @@ from customers.models import Customer
 from .models import Agreement, Additional, Act, CheckModel, Invoice
 
 
-class CustomerSerializer(serializers.ModelSerializer):
+class ShortCustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = ('id', 'customer_type', 'customer_name')
 
 
 class AgreementListSerializer(serializers.ModelSerializer):
-    customer = CustomerSerializer()
+    customer = ShortCustomerSerializer()
 
     class Meta:
         model = Agreement
@@ -19,17 +19,20 @@ class AgreementListSerializer(serializers.ModelSerializer):
 
 
 class AgreementDetailSerializer(serializers.ModelSerializer):
-    agreement_sum = serializers.IntegerField()
-    act_sum = serializers.IntegerField()
-    check_sum = serializers.IntegerField()
-    invoice_sum = serializers.IntegerField()
+    customer = ShortCustomerSerializer()
+    related_entities_data = serializers.SerializerMethodField()
 
     class Meta:
         model = Agreement
-        fields = [
-            'id', 'customer', 'agreement_number', 'content',
-            'agreement_sum', 'act_sum', 'check_sum', 'invoice_sum'
-        ]
+        fields = ['id', 'agreement_number', 'content', 'customer', 'related_entities_data']
+
+    def get_related_entities_data(self, agreement):
+        return {
+            'additional_sum': agreement.additional_sum,
+            'act_sum': agreement.act_sum,
+            'check_sum': agreement.check_sum,
+            'invoice_sum': agreement.invoice_sum,
+        }
 
 
 class AdditionalSerializer(serializers.ModelSerializer):

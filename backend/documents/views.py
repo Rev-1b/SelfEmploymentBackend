@@ -17,14 +17,14 @@ class AgreementViewSet(mixins.CreateModelMixin,
         user_agreements = Agreement.objects.select_related('customer').filter(customer__user=self.request.user)
 
         if self.action == 'retrieve':
-            a =  user_agreements.annotate(
+            return user_agreements.annotate(
                 additional_sum=models.Count('additional', distinct=True),
                 act_sum=models.Count('acts', distinct=True),
                 check_sum=models.Count('checks', distinct=True),
                 invoice_sum=models.Count('invoices', distinct=True),
             )
 
-            return a
+            # return a
         elif self.action == 'list':
             return user_agreements
 
