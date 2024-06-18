@@ -1,20 +1,14 @@
 from django.db import models
-from rest_framework import mixins, viewsets, permissions
+from rest_framework import viewsets, permissions, exceptions
 
-from .models import Agreement
-from .serializers import AgreementListSerializer, AgreementDetailSerializer
+from . import models as document_models, serializers as document_serializers
 
 
-class AgreementViewSet(mixins.CreateModelMixin,
-                       mixins.RetrieveModelMixin,
-                       mixins.UpdateModelMixin,
-                       mixins.DestroyModelMixin,
-                       mixins.ListModelMixin,
-                       viewsets.GenericViewSet):
+class AgreementViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        user_agreements = Agreement.objects.select_related('customer').filter(customer__user=self.request.user)
+        user_agreements = document_models.Agreement.objects.filter(customer__user=self.request.user)
 
         if self.action == 'retrieve':
             return user_agreements.annotate(
@@ -23,34 +17,74 @@ class AgreementViewSet(mixins.CreateModelMixin,
                 check_sum=models.Count('checks', distinct=True),
                 invoice_sum=models.Count('invoices', distinct=True),
             )
-
-            # return a
-        elif self.action == 'list':
-            return user_agreements
+        return user_agreements
 
     def get_serializer(self, *args, **kwargs):
         if self.action == 'retrieve':
-            serializer_class = AgreementDetailSerializer
-
+            serializer_class = document_serializers.AgreementDetailSerializer
         elif self.action == 'list':
-            serializer_class = AgreementListSerializer
+            serializer_class = document_serializers.AgreementListSerializer
         else:
-            serializer_class = AgreementListSerializer
+            serializer_class = document_serializers.AgreementCUDSerializer
 
         kwargs.setdefault('context', self.get_serializer_context())
         return serializer_class(*args, **kwargs)
 
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
 
-    def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
+class AdditionalViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
 
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+    def get_queryset(self):
+        agreement_id = get_agreement_id(self)
+        agreement_additional = document_models.Additional.objects.filter(agreement=agreement_id)
 
-    def partial_update(self, request, *args, **kwargs):
-        return super().partial_update(request, *args, **kwargs)
+        if self.action == 'retrieve':
+            return agreement_additional.annotate(
+                act_sum=models.Count('acts', distinct=True),
+                check_sum=models.Count('checks', distinct=True),
+                invoice_sum=models.Count('invoices', distinct=True),
+            )
+        return agreement_additional
 
-    def destroy(self, request, *args, **kwargs):
-        return super().destroy(request, *args, **kwargs)
+    def get_serializer(self, *args, **kwargs):
+        if self.action == 'retrieve':
+            serializer_class = document_serializers.AgreementListSerializer
+        else:
+            serializer_class = document_serializers.AgreementCUDSerializer
+
+        kwargs.setdefault('context', self.get_serializer_context())
+        return serializer_class(*args, **kwargs)
+
+
+class ActsViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = document_serializers.ActSerializer
+
+    def get_queryset(self):
+        agreement_id = get_agreement_id(self)
+        return document_models.Act.objects.filter(agreement=agreement_id)
+
+
+class ChecksViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = document_serializers.CheckSerializer
+
+    def get_queryset(self):
+        agreement_id = get_agreement_id(self)
+        return document_models.CheckModel.objects.filter(agreement=agreement_id)
+
+
+class InvoicesViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = document_serializers.InvoiceSerializer
+
+    def get_queryset(self):
+        agreement_id = get_agreement_id(self)
+        return document_models.Invoice.objects.filter(agreement=agreement_id)
+
+
+def get_agreement_id(self):
+    agreement_id = self.request.query_params.get('agreement_id', None)
+    if agreement_id is None:
+        raise exceptions.ValidationError('Не указан "agreement_id" в параметрах запроса')
+    return agreement_id
