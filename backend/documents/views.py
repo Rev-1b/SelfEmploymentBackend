@@ -14,7 +14,7 @@ class AgreementViewSet(mixins.CreateModelMixin,
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        user_agreements = Agreement.objects.filter(customer__user=self.request.user)
+        user_agreements = Agreement.objects.select_related('customer').filter(customer__user=self.request.user)
 
         if self.action == 'retrieve':
             return user_agreements.annotate(
@@ -23,8 +23,10 @@ class AgreementViewSet(mixins.CreateModelMixin,
                 check_sum=models.Count('checks', distinct=True),
                 invoice_sum=models.Count('invoices', distinct=True),
             )
+
+            # return a
         elif self.action == 'list':
-            return user_agreements.select_related('customer')
+            return user_agreements
 
     def get_serializer(self, *args, **kwargs):
         if self.action == 'retrieve':
