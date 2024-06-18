@@ -1,12 +1,21 @@
 from rest_framework import serializers
 
+from customers.models import Customer
 from .models import Agreement, Additional, Act, CheckModel, Invoice
 
 
+class CustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ('id', 'customer_type', 'customer_name')
+
+
 class AgreementListSerializer(serializers.ModelSerializer):
+    customer = CustomerSerializer()
+
     class Meta:
         model = Agreement
-        fields = ['id', 'customer', 'customer__customer_name', 'customer__customer_type', 'agreement_number']
+        fields = ['id', 'agreement_number', 'customer']
 
 
 class AgreementDetailSerializer(serializers.ModelSerializer):
