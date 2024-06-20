@@ -73,3 +73,17 @@ class CheckModel(CustomModel):
     amount = models.IntegerField(verbose_name='Сумма чека')
     agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, null=True, blank=True, related_name='checks')
     additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True, related_name='checks')
+
+
+class UserTemplates(CustomModel):
+    class TemplateTypeChoices(models.TextChoices):
+        AGREEMENT = 'AG', 'Договор'
+        ADDITIONAL = 'AD', 'Дополнение к договору'
+        ACT = 'AC', 'Акт'
+        CHECK = 'CH', "Чек"
+        INVOICES = 'IN', 'Счет'
+
+    user = models.ForeignKey(to='CustomUser', on_delete=models.CASCADE, related_name='templates',
+                             verbose_name='Пользователь')
+    template_type = models.CharField(max_length=2, choices=TemplateTypeChoices, verbose_name='Тип шаблона')
+    content = models.TextField(verbose_name='Тело шаблона')

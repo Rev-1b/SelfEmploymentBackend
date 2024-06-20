@@ -10,6 +10,7 @@ class ShortCustomerSerializer(serializers.ModelSerializer):
         fields = ('id', 'customer_type', 'customer_name')
 
 
+# ----------------------------------------- Agreement serializers section ----------------------------------------------
 class AgreementListSerializer(serializers.ModelSerializer):
     customer = ShortCustomerSerializer()
 
@@ -35,12 +36,35 @@ class AgreementDetailSerializer(serializers.ModelSerializer):
         }
 
 
-class AdditionalSerializer(serializers.ModelSerializer):
+class AgreementCUDSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Agreement
+        fields = ['agreement_number', 'content', 'customer']
+
+
+# ------------------------------------ Additional serializers section --------------------------------------------------
+class AdditionalRetrieveSerializer(serializers.ModelSerializer):
+    related_entities_data = serializers.SerializerMethodField()
+
     class Meta:
         model = Additional
-        fields = ['id', 'agreement', 'title', 'content', 'acts']
+        fields = ['id', 'agreement', 'title', 'content', 'related_entities_data']
+
+    def get_related_entities_data(self, additional):
+        return {
+            'act_sum': additional.act_sum,
+            'check_sum': additional.check_sum,
+            'invoice_sum': additional.invoice_sum,
+        }
 
 
+class AdditionalCLUDSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Additional
+        fields = ['id', 'agreement', 'title', 'content']
+
+
+# ---------------------------------- Acts, Checks and Invoices serializers section -------------------------------------
 class ActSerializer(serializers.ModelSerializer):
     class Meta:
         model = Act
