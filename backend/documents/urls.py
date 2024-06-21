@@ -9,6 +9,7 @@ router.register('additional', document_views.AgreementViewSet, basename='additio
 router.register('acts', document_views.AgreementViewSet, basename='acts')
 router.register('checks', document_views.AgreementViewSet, basename='checks')
 router.register('invoices', document_views.AgreementViewSet, basename='invoices')
+router.register('deals', document_views.DealsViewSet, basename='deals')
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -57,8 +57,10 @@ class Invoice(CustomModel):
             f'Счет на {self.amount} к дополнению {self.additional}'
 
     amount = models.IntegerField(verbose_name='Сумма счета')
-    agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, null=True, blank=True, related_name='invoices')
-    additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True, related_name='invoices')
+    agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, null=True, blank=True,
+                                  related_name='invoices')
+    additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True,
+                                   related_name='invoices')
 
 
 class CheckModel(CustomModel):
@@ -72,7 +74,8 @@ class CheckModel(CustomModel):
 
     amount = models.IntegerField(verbose_name='Сумма чека')
     agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, null=True, blank=True, related_name='checks')
-    additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True, related_name='checks')
+    additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True,
+                                   related_name='checks')
 
 
 class UserTemplates(CustomModel):
@@ -87,3 +90,11 @@ class UserTemplates(CustomModel):
                              verbose_name='Пользователь')
     template_type = models.CharField(max_length=2, choices=TemplateTypeChoices, verbose_name='Тип шаблона')
     content = models.TextField(verbose_name='Тело шаблона')
+
+
+class Deals(CustomModel):
+    agreement = models.OneToOneField(to=Agreement, on_delete=models.CASCADE, related_name='deal',
+                                     verbose_name='Договор')
+    service_type = models.CharField(max_length=150, verbose_name='Вид сделки')
+    amount = models.IntegerField(verbose_name='Сумма сделки')
+    service_date = models.DateField(verbose_name='Дата заключения сделки')

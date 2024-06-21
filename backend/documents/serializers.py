@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from customers.models import Customer
-from .models import Agreement, Additional, Act, CheckModel, Invoice
+from .models import Agreement, Additional, Act, CheckModel, Invoice, Deals
 
 
 class ShortCustomerSerializer(serializers.ModelSerializer):
@@ -13,10 +13,19 @@ class ShortCustomerSerializer(serializers.ModelSerializer):
 # ----------------------------------------- Agreement serializers section ----------------------------------------------
 class AgreementListSerializer(serializers.ModelSerializer):
     customer = ShortCustomerSerializer()
+    related_entities_data = serializers.SerializerMethodField()
 
     class Meta:
         model = Agreement
-        fields = ['id', 'agreement_number', 'customer']
+        fields = ['id', 'agreement_number', 'customer', 'related_entities_data']
+
+    def get_related_entities_data(self, agreement):
+        return {
+            'additional_sum': agreement.additional_sum,
+            'act_sum': agreement.act_sum,
+            'check_sum': agreement.check_sum,
+            'invoice_sum': agreement.invoice_sum,
+        }
 
 
 class AgreementDetailSerializer(serializers.ModelSerializer):
@@ -81,3 +90,18 @@ class InvoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Invoice
         fields = ['id', 'agreement', 'additional', 'amount']
+
+
+# --------------------------------------------- Deals serializers section ----------------------------------------------
+class DealGetSerializer(serializers.ModelSerializer):
+    agreement = AgreementListSerializer()
+
+    class Meta:
+        model = Deals
+        fields = ['id', 'service_type', 'amount', 'service_date', 'agreement']
+
+
+class DealCUDSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Deals
+        fields = ['service_type', 'amount', 'service_date']
