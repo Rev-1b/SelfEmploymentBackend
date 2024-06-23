@@ -23,7 +23,7 @@ class AgreementViewSet(viewsets.ModelViewSet):
         if self.action == 'retrieve':
             serializer_class = document_serializers.AgreementDetailSerializer
         elif self.action == 'list':
-            serializer_class = document_serializers.AgreementListSerializer
+            serializer_class = document_serializers.AgreementMainPageSerializer
         else:
             serializer_class = document_serializers.AgreementCUDSerializer
 
@@ -48,9 +48,9 @@ class AdditionalViewSet(viewsets.ModelViewSet):
 
     def get_serializer(self, *args, **kwargs):
         if self.action == 'retrieve':
-            serializer_class = document_serializers.AgreementListSerializer
+            serializer_class = document_serializers.AdditionalRetrieveSerializer
         else:
-            serializer_class = document_serializers.AgreementCUDSerializer
+            serializer_class = document_serializers.AdditionalCLUDSerializer
 
         kwargs.setdefault('context', self.get_serializer_context())
         return serializer_class(*args, **kwargs)
@@ -71,17 +71,17 @@ class CommonDocumentViewSet(viewsets.ModelViewSet):
             else model.objects.filter(additional=additional_id)
 
 
-class ActsViewSet(CommonDocumentViewSet):
+class ActViewSet(CommonDocumentViewSet):
     serializer_class = document_serializers.ActSerializer
     model_class = document_models.Act
 
 
-class ChecksViewSet(CommonDocumentViewSet):
+class CheckViewSet(CommonDocumentViewSet):
     serializer_class = document_serializers.CheckSerializer
     model_class = document_models.CheckModel
 
 
-class InvoicesViewSet(CommonDocumentViewSet):
+class InvoiceViewSet(CommonDocumentViewSet):
     serializer_class = document_serializers.InvoiceSerializer
     model_class = document_models.Invoice
 
@@ -97,7 +97,14 @@ def get_master_id(self):
     return {'agreement_id': agreement_id, 'additional_id': additional_id}
 
 
-class DealsViewSet(viewsets.ModelViewSet):
+class UserTemplateViewSet(viewsets.ModelViewSet):
+    permissions = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return document_models.UserTemplates.objects.filter(user=self.request.user)
+
+
+class DealViewSet(viewsets.ModelViewSet):
     permissions = [permissions.IsAuthenticated]
 
     def get_queryset(self):

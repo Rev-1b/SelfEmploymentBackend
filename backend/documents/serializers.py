@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from customers.models import Customer
-from .models import Agreement, Additional, Act, CheckModel, Invoice, Deals
+from .models import Agreement, Additional, Act, CheckModel, Invoice, Deal, UserTemplate
 
 
 class ShortCustomerSerializer(serializers.ModelSerializer):
@@ -11,7 +11,7 @@ class ShortCustomerSerializer(serializers.ModelSerializer):
 
 
 # ----------------------------------------- Agreement serializers section ----------------------------------------------
-class AgreementListSerializer(serializers.ModelSerializer):
+class AgreementMainPageSerializer(serializers.ModelSerializer):
     customer = ShortCustomerSerializer()
     related_entities_data = serializers.SerializerMethodField()
 
@@ -45,10 +45,10 @@ class AgreementDetailSerializer(serializers.ModelSerializer):
         }
 
 
-class AgreementCUDSerializer(serializers.ModelSerializer):
+class AgreementListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Agreement
-        fields = ['agreement_number', 'content', 'customer']
+        fields = ['id', 'agreement_number', 'customer']
 
 
 # ------------------------------------ Additional serializers section --------------------------------------------------
@@ -92,16 +92,23 @@ class InvoiceSerializer(serializers.ModelSerializer):
         fields = ['id', 'agreement', 'additional', 'amount']
 
 
+# ----------------------------------------- UserTemplates serializers section ------------------------------------------
+class UserTemplateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserTemplate
+        fields = ['id', 'template_type', 'title', 'content']
+
+
 # --------------------------------------------- Deals serializers section ----------------------------------------------
 class DealGetSerializer(serializers.ModelSerializer):
     agreement = AgreementListSerializer()
 
     class Meta:
-        model = Deals
+        model = Deal
         fields = ['id', 'service_type', 'amount', 'service_date', 'agreement']
 
 
 class DealCUDSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Deals
+        model = Deal
         fields = ['service_type', 'amount', 'service_date']
