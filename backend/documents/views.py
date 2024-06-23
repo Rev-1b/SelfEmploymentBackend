@@ -8,7 +8,7 @@ class AgreementViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        user_agreements = document_models.Agreement.objects.filter(customer__user=self.request.user)
+        user_agreements = document_models.Agreement.objects.filter(customer__user=self.request.user).order_by('-updated_at')
 
         if self.action in ['retrieve', 'list']:
             return user_agreements.annotate(
@@ -20,12 +20,12 @@ class AgreementViewSet(viewsets.ModelViewSet):
         return user_agreements
 
     def get_serializer(self, *args, **kwargs):
-        # if self.action == 'retrieve':
-        #     serializer_class = document_serializers.AgreementDetailSerializer
         if self.action == 'list':
             serializer_class = document_serializers.AgreementMainPageSerializer
-        else:
+        elif self.action == 'retrieve':
             serializer_class = document_serializers.AgreementDetailSerializer
+        else:
+            serializer_class = document_serializers.AgreementCUDSerializer
 
         kwargs.setdefault('context', self.get_serializer_context())
         return serializer_class(*args, **kwargs)
@@ -47,10 +47,12 @@ class AdditionalViewSet(viewsets.ModelViewSet):
         return agreement_additional
 
     def get_serializer(self, *args, **kwargs):
-        if self.action == 'retrieve':
+        if self.action == 'list':
+            serializer_class = document_serializers.AdditionalMainPageSerializer
+        elif self.action == 'retrieve':
             serializer_class = document_serializers.AdditionalRetrieveSerializer
         else:
-            serializer_class = document_serializers.AdditionalCLUDSerializer
+            serializer_class = document_serializers.AdditionalCUDSerializer
 
         kwargs.setdefault('context', self.get_serializer_context())
         return serializer_class(*args, **kwargs)
@@ -66,9 +68,9 @@ class CommonDocumentViewSet(viewsets.ModelViewSet):
             raise Exception('Не указан класс модели')
 
         agreement_id, additional_id = get_master_id(self).values()
-
-        return model.objects.filter(agreement=agreement_id) if agreement_id is not None \
-            else model.objects.filter(additional=additional_id)
+        if agreement_id is not None:
+            return model.objects.filter(agreement__customer__user=self.request.user, agreement=agreement_id)
+        return model.objects.filter(additional__agreement__customer__user=self.request.user, additional=additional_id)
 
 
 class ActViewSet(CommonDocumentViewSet):
@@ -103,6 +105,12 @@ class UserTemplateViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return document_models.UserTemplate.objects.filter(user=self.request.user)
 
+    def get_serializer(self, *args, **kwargs):
+        serializer_class = document_serializers.UserTemplateSerializer
+
+        kwargs.setdefault('context', self.get_serializer_context())
+        return serializer_class(*args, **kwargs)
+
 
 class DealViewSet(viewsets.ModelViewSet):
     permissions = [permissions.IsAuthenticated]
@@ -118,3 +126,7 @@ class DealViewSet(viewsets.ModelViewSet):
 
         kwargs.setdefault('context', self.get_serializer_context())
         return serializer_class(*args, **kwargs)
+
+
+class DocumentHistoryViewSet(viewsets.ModelViewSet):
+    permissions = [permissions.IsAuthenticated]

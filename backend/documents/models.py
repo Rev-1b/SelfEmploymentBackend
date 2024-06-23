@@ -5,7 +5,7 @@ from users.models import CustomModel
 
 
 class Agreement(CustomModel):
-    class Meta:
+    class Meta(CustomModel.Meta):
         verbose_name = 'Договор'
         verbose_name_plural = 'Договоры'
 
@@ -28,7 +28,7 @@ class Agreement(CustomModel):
 
 
 class Additional(CustomModel):
-    class Meta:
+    class Meta(CustomModel.Meta):
         verbose_name = 'Дополнение к договору'
         verbose_name_plural = 'Дополнения к договору'
 
@@ -42,7 +42,7 @@ class Additional(CustomModel):
 
 
 class Act(CustomModel):
-    class Meta:
+    class Meta(CustomModel.Meta):
         verbose_name = 'Акт'
         verbose_name_plural = 'Акты'
 
@@ -63,7 +63,7 @@ class Act(CustomModel):
 
 
 class Invoice(CustomModel):
-    class Meta:
+    class Meta(CustomModel.Meta):
         verbose_name = 'Счет'
         verbose_name_plural = 'Счета'
 
@@ -85,7 +85,7 @@ class Invoice(CustomModel):
 
 
 class CheckModel(CustomModel):
-    class Meta:
+    class Meta(CustomModel.Meta):
         verbose_name = 'Чек'
         verbose_name_plural = 'Чеки'
 
@@ -100,6 +100,10 @@ class CheckModel(CustomModel):
 
 
 class UserTemplate(CustomModel):
+    class Meta(CustomModel.Meta):
+        verbose_name = "Шаблон пользователя"
+        verbose_name_plural = "Шаблоны пользователя"
+
     class TemplateTypeChoices(models.TextChoices):
         AGREEMENT = 'AG', 'Договор'
         ADDITIONAL = 'AD', 'Дополнение к договору'
@@ -115,6 +119,10 @@ class UserTemplate(CustomModel):
 
 
 class Deal(CustomModel):
+    class Meta(CustomModel.Meta):
+        verbose_name = "Сделка"
+        verbose_name_plural = "Сделки"
+
     agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, related_name='deals',
                                   verbose_name='Договор')
     service_type = models.CharField(max_length=150, verbose_name='Вид сделки')

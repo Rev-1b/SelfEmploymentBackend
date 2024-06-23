@@ -17,7 +17,7 @@ class AgreementMainPageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Agreement
-        fields = ['id', 'agreement_number', 'status', 'customer', 'related_entities_data']
+        fields = ['id', 'agreement_number', 'status', 'updated_at', 'customer', 'related_entities_data']
 
     def get_related_entities_data(self, agreement):
         return {
@@ -45,6 +45,12 @@ class AgreementDetailSerializer(serializers.ModelSerializer):
         }
 
 
+class AgreementCUDSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Agreement
+        fields = ['agreement_number', 'status', 'content']
+
+
 class AgreementListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Agreement
@@ -52,12 +58,12 @@ class AgreementListSerializer(serializers.ModelSerializer):
 
 
 # ------------------------------------ Additional serializers section --------------------------------------------------
-class AdditionalRetrieveSerializer(serializers.ModelSerializer):
+class AdditionalMainPageSerializer(serializers.ModelSerializer):
     related_entities_data = serializers.SerializerMethodField()
 
     class Meta:
         model = Additional
-        fields = ['id', 'agreement', 'title', 'content', 'related_entities_data']
+        fields = ['id',  'title', 'updated_at', 'related_entities_data']
 
     def get_related_entities_data(self, additional):
         return {
@@ -67,36 +73,60 @@ class AdditionalRetrieveSerializer(serializers.ModelSerializer):
         }
 
 
-class AdditionalCLUDSerializer(serializers.ModelSerializer):
+class AdditionalRetrieveSerializer(serializers.ModelSerializer):
+    related_entities_data = serializers.SerializerMethodField()
+
     class Meta:
         model = Additional
-        fields = ['id', 'agreement', 'title', 'content']
+        fields = ['id', 'title', 'content', 'updated_at', 'related_entities_data']
+
+    def get_related_entities_data(self, additional):
+        return {
+            'act_sum': additional.act_sum,
+            'check_sum': additional.check_sum,
+            'invoice_sum': additional.invoice_sum,
+        }
+
+
+class AdditionalCUDSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Additional
+        fields = ['title', 'content']
 
 
 # ---------------------------------- Acts, Checks and Invoices serializers section -------------------------------------
 class ActSerializer(serializers.ModelSerializer):
     class Meta:
         model = Act
-        fields = ['id', 'agreement', 'title', 'content']
+        fields = ['id', 'agreement', 'title', 'content', 'updated_at']
+        extra_kwargs = {
+            'updated_at': {'read_only': True},
+        }
 
 
 class CheckSerializer(serializers.ModelSerializer):
     class Meta:
         model = CheckModel
-        fields = ['id', 'agreement', 'additional', 'amount']
+        fields = ['id', 'agreement', 'additional', 'amount', 'updated_at']
+        extra_kwargs = {
+            'updated_at': {'read_only': True},
+        }
 
 
 class InvoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Invoice
-        fields = ['id', 'agreement', 'additional', 'amount']
+        fields = ['id', 'agreement', 'additional', 'amount', 'updated_at']
+        extra_kwargs = {
+            'updated_at': {'read_only': True},
+        }
 
 
 # ----------------------------------------- UserTemplates serializers section ------------------------------------------
 class UserTemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserTemplate
-        fields = ['id', 'template_type', 'title', 'content']
+        fields = ['id', 'template_type', 'title', 'content', 'updated_at']
 
 
 # --------------------------------------------- Deals serializers section ----------------------------------------------
@@ -105,7 +135,7 @@ class DealGetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Deal
-        fields = ['id', 'service_type', 'amount', 'service_date', 'agreement']
+        fields = ['id', 'service_type', 'amount', 'service_date', 'updated_at', 'agreement']
 
 
 class DealCUDSerializer(serializers.ModelSerializer):
