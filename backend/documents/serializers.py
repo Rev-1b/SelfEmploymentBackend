@@ -17,7 +17,7 @@ class AgreementMainPageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Agreement
-        fields = ['id', 'agreement_number', 'customer', 'related_entities_data']
+        fields = ['id', 'agreement_number', 'status', 'customer', 'related_entities_data']
 
     def get_related_entities_data(self, agreement):
         return {
@@ -34,7 +34,7 @@ class AgreementDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Agreement
-        fields = ['id', 'agreement_number', 'content', 'customer', 'related_entities_data']
+        fields = ['id', 'agreement_number', 'status', 'content', 'customer', 'related_entities_data']
 
     def get_related_entities_data(self, agreement):
         return {
@@ -48,7 +48,7 @@ class AgreementDetailSerializer(serializers.ModelSerializer):
 class AgreementListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Agreement
-        fields = ['id', 'agreement_number', 'customer']
+        fields = ['id', 'agreement_number', 'status']
 
 
 # ------------------------------------ Additional serializers section --------------------------------------------------

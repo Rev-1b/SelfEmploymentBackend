@@ -20,12 +20,12 @@ class AgreementViewSet(viewsets.ModelViewSet):
         return user_agreements
 
     def get_serializer(self, *args, **kwargs):
-        if self.action == 'retrieve':
-            serializer_class = document_serializers.AgreementDetailSerializer
-        elif self.action == 'list':
+        # if self.action == 'retrieve':
+        #     serializer_class = document_serializers.AgreementDetailSerializer
+        if self.action == 'list':
             serializer_class = document_serializers.AgreementMainPageSerializer
         else:
-            serializer_class = document_serializers.AgreementCUDSerializer
+            serializer_class = document_serializers.AgreementDetailSerializer
 
         kwargs.setdefault('context', self.get_serializer_context())
         return serializer_class(*args, **kwargs)
@@ -101,14 +101,14 @@ class UserTemplateViewSet(viewsets.ModelViewSet):
     permissions = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return document_models.UserTemplates.objects.filter(user=self.request.user)
+        return document_models.UserTemplate.objects.filter(user=self.request.user)
 
 
 class DealViewSet(viewsets.ModelViewSet):
     permissions = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return document_models.Deals.objects.filter(agreement__customer__user=self.request.user)
+        return document_models.Deal.objects.filter(agreement__customer__user=self.request.user)
 
     def get_serializer(self, *args, **kwargs):
         if self.action in ['list', 'retrieve']:
