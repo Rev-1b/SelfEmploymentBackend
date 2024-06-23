@@ -4,7 +4,7 @@ from users.models import CustomUser, CustomModel
 
 
 class Customer(CustomModel):
-    class Meta:
+    class Meta(CustomModel.Meta):
         ordering = ['additional_id']
         verbose_name = 'Заказчик'
         verbose_name_plural = 'Заказчики'
@@ -46,7 +46,7 @@ class Customer(CustomModel):
 
 
 class CustomerRequisites(CustomModel):
-    class Meta:
+    class Meta(CustomModel.Meta):
         verbose_name = 'Реквизит заказчика'
         verbose_name_plural = 'Реквизиты заказчика'
 
@@ -61,7 +61,7 @@ class CustomerRequisites(CustomModel):
 
 
 class CustomerContacts(CustomModel):
-    class Meta:
+    class Meta(CustomModel.Meta):
         verbose_name = 'Контакт заказчика'
         verbose_name_plural = 'Контакты заказчика'
 

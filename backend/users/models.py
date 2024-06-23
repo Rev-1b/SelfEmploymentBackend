@@ -5,7 +5,7 @@ from django.db import models
 class CustomModel(models.Model):
     class Meta:
         abstract = True
-        ordering = ['updated_at']
+        ordering = ['-updated_at']
 
     created_at = models.DateTimeField(auto_now_add=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
@@ -29,7 +29,7 @@ class CustomUser(AbstractUser):
 
 
 class Passport(CustomModel):
-    class Meta:
+    class Meta(CustomModel.Meta):
         verbose_name = 'Паспорт'
         verbose_name_plural = 'Паспорта'
         # unique_together = ['series', 'number']
@@ -47,7 +47,7 @@ class Passport(CustomModel):
 
 
 class AdvertiseInfo(CustomModel):
-    class Meta:
+    class Meta(CustomModel.Meta):
         verbose_name = 'Пакет рекламной информации'
         verbose_name_plural = 'Пакеты рекламной информации'
 
@@ -62,7 +62,7 @@ class AdvertiseInfo(CustomModel):
 
 
 class UserRequisites(CustomModel):
-    class Meta:
+    class Meta(CustomModel.Meta):
         verbose_name = 'Реквизит пользователя'
         verbose_name_plural = 'Реквизиты пользователя'
 
