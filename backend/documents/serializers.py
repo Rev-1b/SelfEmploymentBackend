@@ -52,6 +52,7 @@ class AgreementCUDSerializer(serializers.ModelSerializer):
 
 
 class AgreementListSerializer(serializers.ModelSerializer):
+    customer = a
     class Meta:
         model = Agreement
         fields = ['id', 'agreement_number', 'status']

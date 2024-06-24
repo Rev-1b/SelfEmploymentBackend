@@ -128,3 +128,11 @@ class Deal(CustomModel):
     service_type = models.CharField(max_length=150, verbose_name='Вид сделки')
     amount = models.IntegerField(verbose_name='Сумма сделки')
     service_date = models.DateField(verbose_name='Дата заключения сделки')
+
+
+class Payment(CustomModel):
+    class Meta(CustomModel.Meta):
+        verbose_name = "Платеж"
+        verbose_name_plural = "Платежи"
+
+

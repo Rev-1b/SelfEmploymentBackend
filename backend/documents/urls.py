@@ -13,6 +13,4 @@ router.register('deals', document_views.DealViewSet, basename='deals')
 
 urlpatterns = [
     path('', include(router.urls)),
-    # path('agreements/', AgreementView.as_view()),
-    # path('additional/', AdditionalView.as_view()),
 ]

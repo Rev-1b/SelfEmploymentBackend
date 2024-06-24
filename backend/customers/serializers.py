@@ -14,14 +14,12 @@ class CustomerPageSerializer(serializers.ModelSerializer):
 class CustomerRequisitesSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomerRequisites
-        read_only_fields = ['id']
         fields = ['id', 'bank_name', 'bic', 'bank_account', 'customer_account_number']
 
 
 class CustomerContactsSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomerContacts
-        read_only_fields = ['id']
         fields = ['id', 'contact_name', 'contact_type', 'contact_info']
 
 
@@ -34,7 +32,6 @@ class CustomerDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Customer
-        read_only_fields = ['id', 'date_created']
         fields = [
             'id', 'additional_id', 'customer_type', 'customer_name',
             'post_address', 'inn', 'full_company_name', 'orgn', 'kpp', 'legal_address', 'okpo', 'okved',

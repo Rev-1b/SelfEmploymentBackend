@@ -1,5 +1,5 @@
 from django.db import models
-from rest_framework import viewsets, permissions, exceptions
+from rest_framework import viewsets, permissions, exceptions, mixins
 
 from . import models as document_models, serializers as document_serializers
 
@@ -8,7 +8,8 @@ class AgreementViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        user_agreements = document_models.Agreement.objects.filter(customer__user=self.request.user).order_by('-updated_at')
+        user_agreements = document_models.Agreement.objects.filter(customer__user=self.request.user).order_by(
+            '-updated_at')
 
         if self.action in ['retrieve', 'list']:
             return user_agreements.annotate(
@@ -36,7 +37,7 @@ class AdditionalViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         agreement_id, _ = get_master_id(self).values()
-        agreement_additional = document_models.Additional.objects.filter(agreement=agreement_id)
+        agreement_additional = document_models.Additional.objects.filter(agreement=agreement_id).order_by('-updated_at')
 
         if self.action == 'retrieve':
             return agreement_additional.annotate(
@@ -128,5 +129,6 @@ class DealViewSet(viewsets.ModelViewSet):
         return serializer_class(*args, **kwargs)
 
 
-class DocumentHistoryViewSet(viewsets.ModelViewSet):
+class DocumentHistoryViewSet(mixins.ListModelMixin,
+                             viewsets.GenericViewSet):
     permissions = [permissions.IsAuthenticated]
