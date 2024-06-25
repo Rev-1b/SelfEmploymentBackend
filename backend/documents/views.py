@@ -1,5 +1,6 @@
 from django.db import models
-from rest_framework import viewsets, permissions, exceptions
+from django.http import JsonResponse
+from rest_framework import viewsets, permissions, exceptions, mixins
 
 from . import models as document_models, serializers as document_serializers
 
@@ -8,7 +9,8 @@ class AgreementViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        user_agreements = document_models.Agreement.objects.filter(customer__user=self.request.user).order_by('-updated_at')
+        user_agreements = document_models.Agreement.objects.filter(customer__user=self.request.user).order_by(
+            '-updated_at')
 
         if self.action in ['retrieve', 'list']:
             return user_agreements.annotate(
@@ -36,7 +38,7 @@ class AdditionalViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         agreement_id, _ = get_master_id(self).values()
-        agreement_additional = document_models.Additional.objects.filter(agreement=agreement_id)
+        agreement_additional = document_models.Additional.objects.filter(agreement=agreement_id).order_by('-updated_at')
 
         if self.action == 'retrieve':
             return agreement_additional.annotate(
@@ -128,5 +130,50 @@ class DealViewSet(viewsets.ModelViewSet):
         return serializer_class(*args, **kwargs)
 
 
-class DocumentHistoryViewSet(viewsets.ModelViewSet):
+class DocumentHistoryViewSet(mixins.ListModelMixin,
+                             viewsets.GenericViewSet):
     permissions = [permissions.IsAuthenticated]
+
+    def list(self, request, *args, **kwargs):
+        records = get_records_number(self)
+
+        agreement_records = list(
+            document_models.Agreement.objects.order_by('-updated_at')[:records].values('id', 'number', 'updated_at'))
+        additional_records = list(
+            document_models.Additional.objects.order_by('-updated_at')[:records].values('id', 'number', 'updated_at'))
+        act_records = list(
+            document_models.Act.objects.order_by('-updated_at')[:records].values('id', 'number', 'updated_at'))
+        invoice_records = list(
+            document_models.Invoice.objects.order_by('-updated_at')[:records].values('id', 'number', 'updated_at'))
+        check_records = list(
+            document_models.CheckModel.objects.order_by('-updated_at')[:records].values('id', 'number', 'updated_at'))
+
+        def add_record_type(records_list, typename):
+            for rec in records_list:
+                rec['type'] = typename
+
+        record_registry = {
+            'agreement': agreement_records,
+            'additional': additional_records,
+            'act': act_records,
+            'invoice': invoice_records,
+            'check': check_records,
+        }
+
+        for key, value in record_registry.items():
+            add_record_type(value, key)
+
+        all_records = [rec for records in record_registry.values() for rec in records]
+        sorted_records = sorted(all_records, key=lambda x: x['updated_at'], reverse=True)
+
+        serializer = document_serializers.DocumentHistorySerializer(sorted_records, many=True)
+        return JsonResponse({"latest_records": serializer.data})
+
+
+def get_records_number(self):
+    records_number = self.request.query_params.get('records_number')
+    if records_number is None:
+        raise exceptions.ValidationError(f'Не указан "records_number" в параметрах запроса')
+    if not records_number.isdigit() or not 3 <= int(records_number) <= 10:
+        raise exceptions.ValidationError(f'Неправильно указан "records_number" в параметрах запроса')
+    return int(records_number)

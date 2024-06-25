@@ -52,6 +52,7 @@ class AgreementCUDSerializer(serializers.ModelSerializer):
 
 
 class AgreementListSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Agreement
         fields = ['id', 'agreement_number', 'status']
@@ -142,3 +143,10 @@ class DealCUDSerializer(serializers.ModelSerializer):
     class Meta:
         model = Deal
         fields = ['service_type', 'amount', 'service_date']
+
+
+class DocumentHistorySerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    number = serializers.CharField()
+    type = serializers.CharField()
+    updated_at = serializers.DateTimeField()

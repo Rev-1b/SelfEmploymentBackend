@@ -1,0 +1,979 @@
+[
+  {
+    "model": "documents.agreement",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-06-18T11:53:19.570Z",
+      "updated_at": "2024-06-18T11:53:19.570Z",
+      "customer": 7,
+      "agreement_number": "1",
+      "content": "Переправа, переправа!\r\nБерег левый, берег правый,\r\nСнег шершавый, кромка льда…\r\nКому память, кому слава,\r\nКому темная вода, -\r\nНи приметы, ни следа.",
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.agreement",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-06-18T11:53:34.814Z",
+      "updated_at": "2024-06-23T12:49:17.389Z",
+      "customer": 7,
+      "agreement_number": "2",
+      "content": "Ночью, первым из колонны,\r\nОбломав у края лед,\r\nПогрузился на понтоны\r\nПервый взвод.\r\nПогрузился, оттолкнулся\r\nИ пошел. Второй за ним.\r\nПриготовился, пригнулся\r\nТретий следом за вторым.",
+      "status": "CL"
+    }
+  },
+  {
+    "model": "documents.agreement",
+    "pk": 6,
+    "fields": {
+      "created_at": "2024-06-18T11:53:51.939Z",
+      "updated_at": "2024-06-18T11:53:51.939Z",
+      "customer": 8,
+      "agreement_number": "3",
+      "content": "Как плоты, пошли понтоны,\r\nГромыхнул один, другой\r\nБасовым, железным тоном,\r\nТочно крыша под ногой.\r\nИ плывут бойцы куда-то,\r\nПритаив штыки в тени.\r\nИ совсем свои ребята\r\nСразу — будто не они,",
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.agreement",
+    "pk": 7,
+    "fields": {
+      "created_at": "2024-06-18T11:54:07.074Z",
+      "updated_at": "2024-06-18T11:54:07.074Z",
+      "customer": 10,
+      "agreement_number": "4",
+      "content": "Сразу будто не похожи\r\nНа своих, на тех ребят:\r\nКак-то все дружней и строже,\r\nКак-то все тебе дороже\r\nИ родней, чем час назад.",
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.agreement",
+    "pk": 8,
+    "fields": {
+      "created_at": "2024-06-18T11:54:21.432Z",
+      "updated_at": "2024-06-18T11:54:21.432Z",
+      "customer": 11,
+      "agreement_number": "5",
+      "content": "Поглядеть — и впрямь — ребята!\r\nКак, по правде, желторот,\r\nХолостой ли он, женатый,\r\nЭтот стриженый народ.",
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.agreement",
+    "pk": 9,
+    "fields": {
+      "created_at": "2024-06-18T11:54:32.840Z",
+      "updated_at": "2024-06-18T11:54:32.840Z",
+      "customer": 9,
+      "agreement_number": "6",
+      "content": "Но уже идут ребята,\r\nНа войне живут бойцы,\r\nКак когда-нибудь в двадцатом\r\nИх товарищи — отцы.",
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.agreement",
+    "pk": 10,
+    "fields": {
+      "created_at": "2024-06-18T11:54:45.559Z",
+      "updated_at": "2024-06-18T11:54:45.559Z",
+      "customer": 9,
+      "agreement_number": "7",
+      "content": "Тем путем идут суровым,\r\nЧто и двести лет назад\r\nПроходил с ружьем кремневым\r\nРусский труженик-солдат.",
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.agreement",
+    "pk": 11,
+    "fields": {
+      "created_at": "2024-06-18T11:55:01.107Z",
+      "updated_at": "2024-06-18T11:55:01.107Z",
+      "customer": 12,
+      "agreement_number": "8",
+      "content": "Мимо их висков вихрастых,\r\nВозле их мальчишьих глаз\r\nСмерть в бою свистела часто\r\nИ минет ли в этот раз?",
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.additional",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-06-18T11:56:14.463Z",
+      "updated_at": "2024-06-18T11:56:14.463Z",
+      "agreement": 4,
+      "title": "№1",
+      "content": "Мимо их висков вихрастых,\r\nВозле их мальчишьих глаз\r\nСмерть в бою свистела часто\r\nИ минет ли в этот раз?"
+    }
+  },
+  {
+    "model": "documents.additional",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-06-18T11:56:29.582Z",
+      "updated_at": "2024-06-18T11:56:29.582Z",
+      "agreement": 5,
+      "title": "№1",
+      "content": "Мимо их висков вихрастых,\r\nВозле их мальчишьих глаз\r\nСмерть в бою свистела часто\r\nИ минет ли в этот раз?"
+    }
+  },
+  {
+    "model": "documents.additional",
+    "pk": 6,
+    "fields": {
+      "created_at": "2024-06-18T11:56:39.453Z",
+      "updated_at": "2024-06-18T11:56:39.453Z",
+      "agreement": 6,
+      "title": "№1",
+      "content": "Мимо их висков вихрастых,\r\nВозле их мальчишьих глаз\r\nСмерть в бою свистела часто\r\nИ минет ли в этот раз?"
+    }
+  },
+  {
+    "model": "documents.additional",
+    "pk": 7,
+    "fields": {
+      "created_at": "2024-06-18T11:56:52.002Z",
+      "updated_at": "2024-06-18T11:56:52.002Z",
+      "agreement": 7,
+      "title": "№1",
+      "content": "Мимо их висков вихрастых,\r\nВозле их мальчишьих глаз\r\nСмерть в бою свистела часто\r\nИ минет ли в этот раз?"
+    }
+  },
+  {
+    "model": "documents.additional",
+    "pk": 8,
+    "fields": {
+      "created_at": "2024-06-18T11:57:00.779Z",
+      "updated_at": "2024-06-18T11:57:00.779Z",
+      "agreement": 8,
+      "title": "№1",
+      "content": "Мимо их висков вихрастых,\r\nВозле их мальчишьих глаз\r\nСмерть в бою свистела часто\r\nИ минет ли в этот раз?"
+    }
+  },
+  {
+    "model": "documents.additional",
+    "pk": 9,
+    "fields": {
+      "created_at": "2024-06-18T11:57:10.754Z",
+      "updated_at": "2024-06-18T11:57:10.754Z",
+      "agreement": 9,
+      "title": "№1",
+      "content": "Мимо их висков вихрастых,\r\nВозле их мальчишьих глаз\r\nСмерть в бою свистела часто\r\nИ минет ли в этот раз?"
+    }
+  },
+  {
+    "model": "documents.additional",
+    "pk": 10,
+    "fields": {
+      "created_at": "2024-06-18T11:57:17.792Z",
+      "updated_at": "2024-06-18T11:57:17.792Z",
+      "agreement": 9,
+      "title": "№2",
+      "content": "Мимо их висков вихрастых,\r\nВозле их мальчишьих глаз\r\nСмерть в бою свистела часто\r\nИ минет ли в этот раз?"
+    }
+  },
+  {
+    "model": "documents.additional",
+    "pk": 11,
+    "fields": {
+      "created_at": "2024-06-18T11:57:35.566Z",
+      "updated_at": "2024-06-18T11:57:35.566Z",
+      "agreement": 10,
+      "title": "№1",
+      "content": "Мимо их висков вихрастых,\r\nВозле их мальчишьих глаз\r\nСмерть в бою свистела часто\r\nИ минет ли в этот раз?"
+    }
+  },
+  {
+    "model": "documents.additional",
+    "pk": 12,
+    "fields": {
+      "created_at": "2024-06-18T11:57:50.153Z",
+      "updated_at": "2024-06-18T11:57:50.153Z",
+      "agreement": 11,
+      "title": "№1",
+      "content": "Мимо их висков вихрастых,\r\nВозле их мальчишьих глаз\r\nСмерть в бою свистела часто\r\nИ минет ли в этот раз?"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-06-18T11:58:53.234Z",
+      "updated_at": "2024-06-23T13:38:16.392Z",
+      "title": "№1",
+      "content": "Проверка4fadfadf",
+      "agreement": 4,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-06-18T11:59:14.964Z",
+      "updated_at": "2024-06-23T13:36:37.821Z",
+      "title": "№2",
+      "content": "Проверка.3323",
+      "agreement": 4,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-06-18T11:59:39.034Z",
+      "updated_at": "2024-06-18T11:59:39.034Z",
+      "title": "№3",
+      "content": "Налегли, гребут, потея,\r\nУправляются с шестом.\r\nА вода ревет правее —\r\nПод подорванным мостом.",
+      "agreement": null,
+      "additional": 4,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 6,
+    "fields": {
+      "created_at": "2024-06-18T12:00:16.731Z",
+      "updated_at": "2024-06-18T12:00:16.731Z",
+      "title": "№1",
+      "content": "Налегли, гребут, потея,\r\nУправляются с шестом.\r\nА вода ревет правее —\r\nПод подорванным мостом.",
+      "agreement": 5,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 7,
+    "fields": {
+      "created_at": "2024-06-18T12:00:25.163Z",
+      "updated_at": "2024-06-18T12:00:25.163Z",
+      "title": "№1",
+      "content": "Налегли, гребут, потея,\r\nУправляются с шестом.\r\nА вода ревет правее —\r\nПод подорванным мостом.",
+      "agreement": null,
+      "additional": 5,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 8,
+    "fields": {
+      "created_at": "2024-06-18T12:00:34.748Z",
+      "updated_at": "2024-06-18T12:00:34.748Z",
+      "title": "№1",
+      "content": "Налегли, гребут, потея,\r\nУправляются с шестом.\r\nА вода ревет правее —\r\nПод подорванным мостом.",
+      "agreement": 6,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 9,
+    "fields": {
+      "created_at": "2024-06-18T12:00:44.789Z",
+      "updated_at": "2024-06-18T12:00:44.789Z",
+      "title": "№2",
+      "content": "Налегли, гребут, потея,\r\nУправляются с шестом.\r\nА вода ревет правее —\r\nПод подорванным мостом.",
+      "agreement": 6,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 10,
+    "fields": {
+      "created_at": "2024-06-18T12:00:53.925Z",
+      "updated_at": "2024-06-18T12:00:53.925Z",
+      "title": "№3",
+      "content": "Налегли, гребут, потея,\r\nУправляются с шестом.\r\nА вода ревет правее —\r\nПод подорванным мостом.",
+      "agreement": null,
+      "additional": 6,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 11,
+    "fields": {
+      "created_at": "2024-06-18T12:01:01.327Z",
+      "updated_at": "2024-06-18T12:01:01.327Z",
+      "title": "№4",
+      "content": "Налегли, гребут, потея,\r\nУправляются с шестом.\r\nА вода ревет правее —\r\nПод подорванным мостом.",
+      "agreement": null,
+      "additional": 6,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 12,
+    "fields": {
+      "created_at": "2024-06-18T12:01:18.328Z",
+      "updated_at": "2024-06-18T12:01:18.328Z",
+      "title": "№1",
+      "content": "Налегли, гребут, потея,\r\nУправляются с шестом.\r\nА вода ревет правее —\r\nПод подорванным мостом.",
+      "agreement": 7,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 13,
+    "fields": {
+      "created_at": "2024-06-18T12:01:29.059Z",
+      "updated_at": "2024-06-18T12:01:29.059Z",
+      "title": "№2",
+      "content": "Налегли, гребут, потея,\r\nУправляются с шестом.\r\nА вода ревет правее —\r\nПод подорванным мостом.",
+      "agreement": null,
+      "additional": 7,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 14,
+    "fields": {
+      "created_at": "2024-06-18T12:01:38.069Z",
+      "updated_at": "2024-06-18T12:01:38.069Z",
+      "title": "№1",
+      "content": "Налегли, гребут, потея,\r\nУправляются с шестом.\r\nА вода ревет правее —\r\nПод подорванным мостом.",
+      "agreement": 8,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 15,
+    "fields": {
+      "created_at": "2024-06-18T12:01:48.132Z",
+      "updated_at": "2024-06-18T12:01:48.132Z",
+      "title": "№1",
+      "content": "Налегли, гребут, потея,\r\nУправляются с шестом.\r\nА вода ревет правее —\r\nПод подорванным мостом.",
+      "agreement": 9,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 16,
+    "fields": {
+      "created_at": "2024-06-18T12:01:54.836Z",
+      "updated_at": "2024-06-18T12:01:54.836Z",
+      "title": "№2",
+      "content": "Налегли, гребут, потея,\r\nУправляются с шестом.\r\nА вода ревет правее —\r\nПод подорванным мостом.",
+      "agreement": 9,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 17,
+    "fields": {
+      "created_at": "2024-06-18T12:02:08.481Z",
+      "updated_at": "2024-06-18T12:02:08.481Z",
+      "title": "№3",
+      "content": "Налегли, гребут, потея,\r\nУправляются с шестом.\r\nА вода ревет правее —\r\nПод подорванным мостом.",
+      "agreement": null,
+      "additional": 9,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 18,
+    "fields": {
+      "created_at": "2024-06-18T12:02:20.461Z",
+      "updated_at": "2024-06-18T12:02:20.462Z",
+      "title": "№4",
+      "content": "Налегли, гребут, потея,\r\nУправляются с шестом.\r\nА вода ревет правее —\r\nПод подорванным мостом.",
+      "agreement": null,
+      "additional": 9,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 19,
+    "fields": {
+      "created_at": "2024-06-18T12:02:29.496Z",
+      "updated_at": "2024-06-18T12:02:29.496Z",
+      "title": "№5",
+      "content": "Налегли, гребут, потея,\r\nУправляются с шестом.\r\nА вода ревет правее —\r\nПод подорванным мостом.",
+      "agreement": null,
+      "additional": 10,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 20,
+    "fields": {
+      "created_at": "2024-06-18T12:02:45.310Z",
+      "updated_at": "2024-06-18T12:02:45.310Z",
+      "title": "№1",
+      "content": "Налегли, гребут, потея,\r\nУправляются с шестом.\r\nА вода ревет правее —\r\nПод подорванным мостом.",
+      "agreement": 10,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 21,
+    "fields": {
+      "created_at": "2024-06-18T12:02:56.594Z",
+      "updated_at": "2024-06-18T12:03:13.095Z",
+      "title": "№2",
+      "content": "Налегли, гребут, потея,\r\nУправляются с шестом.\r\nА вода ревет правее —\r\nПод подорванным мостом.",
+      "agreement": null,
+      "additional": 11,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 22,
+    "fields": {
+      "created_at": "2024-06-18T12:03:31.648Z",
+      "updated_at": "2024-06-18T12:03:31.648Z",
+      "title": "№3",
+      "content": "Налегли, гребут, потея,\r\nУправляются с шестом.\r\nА вода ревет правее —\r\nПод подорванным мостом.",
+      "agreement": null,
+      "additional": 11,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 23,
+    "fields": {
+      "created_at": "2024-06-18T12:04:08.436Z",
+      "updated_at": "2024-06-18T12:04:08.436Z",
+      "title": "№1",
+      "content": "Налегли, гребут, потея,\r\nУправляются с шестом.\r\nА вода ревет правее —\r\nПод подорванным мостом.",
+      "agreement": 11,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.act",
+    "pk": 24,
+    "fields": {
+      "created_at": "2024-06-18T12:04:16.658Z",
+      "updated_at": "2024-06-18T12:04:16.658Z",
+      "title": "№2",
+      "content": "Налегли, гребут, потея,\r\nУправляются с шестом.\r\nА вода ревет правее —\r\nПод подорванным мостом.",
+      "agreement": null,
+      "additional": 12,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-06-18T12:04:31.887Z",
+      "updated_at": "2024-06-18T12:04:31.887Z",
+      "amount": 12,
+      "agreement": 4,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-06-18T12:04:37.712Z",
+      "updated_at": "2024-06-18T12:04:37.712Z",
+      "amount": 13,
+      "agreement": 4,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-06-18T12:04:42.117Z",
+      "updated_at": "2024-06-18T12:04:42.117Z",
+      "amount": 14,
+      "agreement": null,
+      "additional": 4,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-06-18T12:04:46.971Z",
+      "updated_at": "2024-06-18T12:04:46.971Z",
+      "amount": 15,
+      "agreement": 5,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-06-18T12:04:52.633Z",
+      "updated_at": "2024-06-18T12:04:52.633Z",
+      "amount": 16,
+      "agreement": 5,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 6,
+    "fields": {
+      "created_at": "2024-06-18T12:04:57.815Z",
+      "updated_at": "2024-06-18T12:04:57.815Z",
+      "amount": 17,
+      "agreement": null,
+      "additional": 5,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 7,
+    "fields": {
+      "created_at": "2024-06-18T12:05:02.082Z",
+      "updated_at": "2024-06-18T12:05:02.082Z",
+      "amount": 18,
+      "agreement": null,
+      "additional": 5,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 8,
+    "fields": {
+      "created_at": "2024-06-18T12:05:06.841Z",
+      "updated_at": "2024-06-18T12:05:06.841Z",
+      "amount": 19,
+      "agreement": 6,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 9,
+    "fields": {
+      "created_at": "2024-06-18T12:05:13.306Z",
+      "updated_at": "2024-06-18T12:05:13.306Z",
+      "amount": 20,
+      "agreement": null,
+      "additional": 6,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 10,
+    "fields": {
+      "created_at": "2024-06-18T12:05:17.617Z",
+      "updated_at": "2024-06-18T12:05:17.617Z",
+      "amount": 21,
+      "agreement": 7,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 11,
+    "fields": {
+      "created_at": "2024-06-18T12:05:21.289Z",
+      "updated_at": "2024-06-18T12:05:21.289Z",
+      "amount": 22,
+      "agreement": 8,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 12,
+    "fields": {
+      "created_at": "2024-06-18T12:05:26.906Z",
+      "updated_at": "2024-06-18T12:05:26.906Z",
+      "amount": 23,
+      "agreement": null,
+      "additional": 8,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 13,
+    "fields": {
+      "created_at": "2024-06-18T12:05:32.552Z",
+      "updated_at": "2024-06-18T12:05:32.552Z",
+      "amount": 24,
+      "agreement": 9,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 14,
+    "fields": {
+      "created_at": "2024-06-18T12:05:36.863Z",
+      "updated_at": "2024-06-18T12:05:36.863Z",
+      "amount": 25,
+      "agreement": 9,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 15,
+    "fields": {
+      "created_at": "2024-06-18T12:05:41.525Z",
+      "updated_at": "2024-06-18T12:05:41.525Z",
+      "amount": 26,
+      "agreement": 9,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 16,
+    "fields": {
+      "created_at": "2024-06-18T12:05:45.762Z",
+      "updated_at": "2024-06-18T12:05:45.762Z",
+      "amount": 27,
+      "agreement": null,
+      "additional": 9,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 17,
+    "fields": {
+      "created_at": "2024-06-18T12:05:50.477Z",
+      "updated_at": "2024-06-18T12:05:50.477Z",
+      "amount": 28,
+      "agreement": null,
+      "additional": 9,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 18,
+    "fields": {
+      "created_at": "2024-06-18T12:05:55.097Z",
+      "updated_at": "2024-06-18T12:05:55.097Z",
+      "amount": 29,
+      "agreement": 10,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 19,
+    "fields": {
+      "created_at": "2024-06-18T12:06:05.121Z",
+      "updated_at": "2024-06-18T12:06:05.121Z",
+      "amount": 30,
+      "agreement": null,
+      "additional": 10,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 20,
+    "fields": {
+      "created_at": "2024-06-18T12:06:08.126Z",
+      "updated_at": "2024-06-18T12:06:17.263Z",
+      "amount": 31,
+      "agreement": 10,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 21,
+    "fields": {
+      "created_at": "2024-06-18T12:06:37.791Z",
+      "updated_at": "2024-06-18T12:06:37.791Z",
+      "amount": 32,
+      "agreement": null,
+      "additional": 11,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 22,
+    "fields": {
+      "created_at": "2024-06-18T12:06:42.506Z",
+      "updated_at": "2024-06-18T12:06:42.506Z",
+      "amount": 33,
+      "agreement": 11,
+      "additional": null,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.invoice",
+    "pk": 23,
+    "fields": {
+      "created_at": "2024-06-18T12:06:47.165Z",
+      "updated_at": "2024-06-18T12:06:47.165Z",
+      "amount": 34,
+      "agreement": null,
+      "additional": 12,
+      "status": "CR"
+    }
+  },
+  {
+    "model": "documents.checkmodel",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-06-18T12:06:54.478Z",
+      "updated_at": "2024-06-18T12:06:54.478Z",
+      "amount": 1,
+      "agreement": 4,
+      "additional": null
+    }
+  },
+  {
+    "model": "documents.checkmodel",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-06-18T12:07:01.207Z",
+      "updated_at": "2024-06-18T12:07:01.207Z",
+      "amount": 2,
+      "agreement": null,
+      "additional": 4
+    }
+  },
+  {
+    "model": "documents.checkmodel",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-06-18T12:07:05.686Z",
+      "updated_at": "2024-06-18T12:07:05.686Z",
+      "amount": 3,
+      "agreement": 5,
+      "additional": null
+    }
+  },
+  {
+    "model": "documents.checkmodel",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-06-18T12:07:09.245Z",
+      "updated_at": "2024-06-18T12:07:09.245Z",
+      "amount": 4,
+      "agreement": 5,
+      "additional": null
+    }
+  },
+  {
+    "model": "documents.checkmodel",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-06-18T12:07:18.086Z",
+      "updated_at": "2024-06-18T12:07:18.086Z",
+      "amount": 5,
+      "agreement": null,
+      "additional": 5
+    }
+  },
+  {
+    "model": "documents.checkmodel",
+    "pk": 6,
+    "fields": {
+      "created_at": "2024-06-18T12:07:27.853Z",
+      "updated_at": "2024-06-18T12:07:27.853Z",
+      "amount": 6,
+      "agreement": 6,
+      "additional": null
+    }
+  },
+  {
+    "model": "documents.checkmodel",
+    "pk": 7,
+    "fields": {
+      "created_at": "2024-06-18T12:07:31.989Z",
+      "updated_at": "2024-06-18T12:07:31.989Z",
+      "amount": 7,
+      "agreement": null,
+      "additional": 6
+    }
+  },
+  {
+    "model": "documents.checkmodel",
+    "pk": 8,
+    "fields": {
+      "created_at": "2024-06-18T12:07:35.772Z",
+      "updated_at": "2024-06-18T12:07:35.772Z",
+      "amount": 8,
+      "agreement": null,
+      "additional": 6
+    }
+  },
+  {
+    "model": "documents.checkmodel",
+    "pk": 9,
+    "fields": {
+      "created_at": "2024-06-18T12:07:39.236Z",
+      "updated_at": "2024-06-18T12:07:39.236Z",
+      "amount": 9,
+      "agreement": 7,
+      "additional": null
+    }
+  },
+  {
+    "model": "documents.checkmodel",
+    "pk": 10,
+    "fields": {
+      "created_at": "2024-06-18T12:07:48.512Z",
+      "updated_at": "2024-06-18T12:07:48.512Z",
+      "amount": 10,
+      "agreement": null,
+      "additional": 7
+    }
+  },
+  {
+    "model": "documents.checkmodel",
+    "pk": 11,
+    "fields": {
+      "created_at": "2024-06-18T12:07:52.001Z",
+      "updated_at": "2024-06-18T12:07:52.001Z",
+      "amount": 11,
+      "agreement": 8,
+      "additional": null
+    }
+  },
+  {
+    "model": "documents.checkmodel",
+    "pk": 12,
+    "fields": {
+      "created_at": "2024-06-18T12:07:56.088Z",
+      "updated_at": "2024-06-18T12:07:56.088Z",
+      "amount": 12,
+      "agreement": null,
+      "additional": 8
+    }
+  },
+  {
+    "model": "documents.checkmodel",
+    "pk": 13,
+    "fields": {
+      "created_at": "2024-06-18T12:07:59.842Z",
+      "updated_at": "2024-06-18T12:07:59.842Z",
+      "amount": 13,
+      "agreement": 9,
+      "additional": null
+    }
+  },
+  {
+    "model": "documents.checkmodel",
+    "pk": 14,
+    "fields": {
+      "created_at": "2024-06-18T12:08:03.083Z",
+      "updated_at": "2024-06-18T12:08:03.083Z",
+      "amount": 14,
+      "agreement": 9,
+      "additional": null
+    }
+  },
+  {
+    "model": "documents.checkmodel",
+    "pk": 15,
+    "fields": {
+      "created_at": "2024-06-18T12:08:06.718Z",
+      "updated_at": "2024-06-18T12:08:06.718Z",
+      "amount": 15,
+      "agreement": null,
+      "additional": 9
+    }
+  },
+  {
+    "model": "documents.checkmodel",
+    "pk": 16,
+    "fields": {
+      "created_at": "2024-06-18T12:08:11.106Z",
+      "updated_at": "2024-06-18T12:08:11.106Z",
+      "amount": 16,
+      "agreement": null,
+      "additional": 10
+    }
+  },
+  {
+    "model": "documents.checkmodel",
+    "pk": 17,
+    "fields": {
+      "created_at": "2024-06-18T12:08:15.175Z",
+      "updated_at": "2024-06-18T12:08:15.175Z",
+      "amount": 17,
+      "agreement": 10,
+      "additional": null
+    }
+  },
+  {
+    "model": "documents.checkmodel",
+    "pk": 18,
+    "fields": {
+      "created_at": "2024-06-18T12:08:20.159Z",
+      "updated_at": "2024-06-18T12:08:20.159Z",
+      "amount": 18,
+      "agreement": 10,
+      "additional": null
+    }
+  },
+  {
+    "model": "documents.checkmodel",
+    "pk": 19,
+    "fields": {
+      "created_at": "2024-06-18T12:08:25.464Z",
+      "updated_at": "2024-06-18T12:08:25.464Z",
+      "amount": 19,
+      "agreement": null,
+      "additional": 11
+    }
+  },
+  {
+    "model": "documents.checkmodel",
+    "pk": 20,
+    "fields": {
+      "created_at": "2024-06-18T12:08:30.350Z",
+      "updated_at": "2024-06-18T12:08:30.350Z",
+      "amount": 20,
+      "agreement": 11,
+      "additional": null
+    }
+  }
+]
