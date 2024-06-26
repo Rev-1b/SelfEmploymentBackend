@@ -136,9 +136,41 @@ class Deal(CustomModel):
     service_date = models.DateField(verbose_name='Дата заключения сделки')
 
 
+class PaymentManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().annotate(
+            amount=models.Case(
+                models.When(invoice__isnull=True, check__isnull=True, then=models.Value(None)),
+                models.When(invoice__isnull=False, check__isnull=True, then=models.F('invoice__amount')),
+                models.When(invoice__isnull=True, check__isnull=False, then=models.F('check__amount')),
+                models.When(invoice__isnull=False, check__isnull=False, then=models.F('check__amount')),
+                output_field=models.DecimalField(max_digits=10, decimal_places=2)
+            )
+        )
+
+    def with_check(self):
+        return self.get_queryset().filter(check__isnull=False)
+
+    def without_check(self):
+        return self.get_queryset().filter(check__isnull=True)
+
+
 class Payment(CustomModel):
     class Meta(CustomModel.Meta):
         verbose_name = "Платеж"
         verbose_name_plural = "Платежи"
+
+    agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, related_name='payments',
+                                  null=True, blank=True, verbose_name='Договор')
+    additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, related_name='payments',
+                                   null=True, blank=True, verbose_name='Дополнение')
+    act = models.ForeignKey(to=Act, on_delete=models.CASCADE, related_name='payment',
+                            null=True, blank=True, verbose_name='Акт')
+    invoice = models.ForeignKey(to=Invoice, on_delete=models.CASCADE, related_name='payment',
+                                null=True, blank=True, verbose_name='Счет')
+    check = models.ForeignKey(to=CheckModel, on_delete=models.CASCADE, related_name='payment',
+                              null=True, blank=True, verbose_name='Чек')
+
+    objects = PaymentManager()
 
 
