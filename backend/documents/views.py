@@ -1,6 +1,7 @@
 from django.db import models
 from django.http import JsonResponse
 from rest_framework import viewsets, permissions, exceptions, mixins
+from rest_framework.decorators import action
 
 from . import models as document_models, serializers as document_serializers
 
@@ -177,3 +178,27 @@ def get_records_number(self):
     if not records_number.isdigit() or not 3 <= int(records_number) <= 10:
         raise exceptions.ValidationError(f'Неправильно указан "records_number" в параметрах запроса')
     return int(records_number)
+
+
+class PaymentViewSet(viewsets.ModelViewSet):
+    permissions = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return document_models.Payment.objects.all()
+
+    def get_serializer(self, *args, **kwargs):
+        serializer_class = document_serializers.PaymentSerializer
+        kwargs.setdefault('context', self.get_serializer_context())
+        return serializer_class(*args, **kwargs)
+
+    # @action(detail=False)
+    # def statistic(self, request):
+    #     recent_users = User.objects.all().order_by('-last_login')
+    #
+    #     page = self.paginate_queryset(recent_users)
+    #     if page is not None:
+    #         serializer = self.get_serializer(page, many=True)
+    #         return self.get_paginated_response(serializer.data)
+    #
+    #     serializer = self.get_serializer(recent_users, many=True)
+    #     return Response(serializer.data)

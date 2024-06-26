@@ -11,6 +11,7 @@ router.register('checks', document_views.CheckViewSet, basename='checks')
 router.register('invoices', document_views.InvoiceViewSet, basename='invoices')
 router.register('deals', document_views.DealViewSet, basename='deals')
 router.register('history', document_views.DocumentHistoryViewSet, basename='history')
+router.register('payments', document_views.PaymentViewSet, basename='payment')
 
 urlpatterns = [
     path('', include(router.urls)),

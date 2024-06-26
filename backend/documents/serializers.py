@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from customers.models import Customer
-from .models import Agreement, Additional, Act, CheckModel, Invoice, Deal, UserTemplate
+from .models import Agreement, Additional, Act, CheckModel, Invoice, Deal, UserTemplate, Payment
 
 
 class ShortCustomerSerializer(serializers.ModelSerializer):
@@ -150,3 +150,9 @@ class DocumentHistorySerializer(serializers.Serializer):
     number = serializers.CharField()
     type = serializers.CharField()
     updated_at = serializers.DateTimeField()
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = ['agreement', 'additional', 'act', 'invoice', 'check']
