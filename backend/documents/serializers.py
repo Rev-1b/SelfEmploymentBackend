@@ -155,4 +155,10 @@ class DocumentHistorySerializer(serializers.Serializer):
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
-        fields = ['agreement', 'additional', 'act', 'invoice', 'check']
+        fields = ['agreement', 'additional', 'act', 'invoice', 'check_link']
+
+
+class StatisticSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    created_at = serializers.DateTimeField()
+    amount = serializers.IntegerField()
