@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from users.models import CustomUser, UserRequisites
+from project.pagination import StandardResultsSetPagination
 from users.serializers import CustomTokenObtainPairSerializer, UserProfileSerializer, RegistrationSerializer, \
     UserRequisitesSerializer
 
@@ -45,6 +46,7 @@ class UserRequisitesViewSet(mixins.CreateModelMixin,
                             viewsets.GenericViewSet):
     serializer_class = UserRequisitesSerializer
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         return UserRequisites.objects.filter(user=self.request.user)

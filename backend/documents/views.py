@@ -6,11 +6,13 @@ from rest_framework import viewsets, permissions, exceptions, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from project.pagination import StandardResultsSetPagination
 from . import models as document_models, serializers as document_serializers
 
 
 class AgreementViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         user_agreements = document_models.Agreement.objects.filter(customer__user=self.request.user).order_by(
@@ -39,6 +41,7 @@ class AgreementViewSet(viewsets.ModelViewSet):
 
 class AdditionalViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         agreement_id, _ = get_master_id(self).values()
@@ -66,6 +69,7 @@ class AdditionalViewSet(viewsets.ModelViewSet):
 
 class CommonDocumentViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = StandardResultsSetPagination
     model_class = None
 
     def get_queryset(self):
@@ -107,6 +111,7 @@ def get_master_id(self):
 
 class UserTemplateViewSet(viewsets.ModelViewSet):
     permissions = [permissions.IsAuthenticated]
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         return document_models.UserTemplate.objects.filter(user=self.request.user)
@@ -120,6 +125,7 @@ class UserTemplateViewSet(viewsets.ModelViewSet):
 
 class DealViewSet(viewsets.ModelViewSet):
     permissions = [permissions.IsAuthenticated]
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         return document_models.Deal.objects.filter(agreement__customer__user=self.request.user)
@@ -185,6 +191,7 @@ def get_records_number(self):
 
 class PaymentViewSet(viewsets.ModelViewSet):
     permissions = [permissions.IsAuthenticated]
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         return document_models.Payment.objects.all()
