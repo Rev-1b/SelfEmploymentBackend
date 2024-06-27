@@ -1,7 +1,10 @@
+from datetime import datetime, timedelta
+
 from django.db import models
 from django.http import JsonResponse
 from rest_framework import viewsets, permissions, exceptions, mixins
 from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from . import models as document_models, serializers as document_serializers
 
@@ -191,14 +194,11 @@ class PaymentViewSet(viewsets.ModelViewSet):
         kwargs.setdefault('context', self.get_serializer_context())
         return serializer_class(*args, **kwargs)
 
-    # @action(detail=False)
-    # def statistic(self, request):
-    #     recent_users = User.objects.all().order_by('-last_login')
-    #
-    #     page = self.paginate_queryset(recent_users)
-    #     if page is not None:
-    #         serializer = self.get_serializer(page, many=True)
-    #         return self.get_paginated_response(serializer.data)
-    #
-    #     serializer = self.get_serializer(recent_users, many=True)
-    #     return Response(serializer.data)
+    @action(detail=False)
+    def month_statistic(self, request):
+        start_date = datetime.now() - timedelta(days=30)
+        payment_records = document_models.Payment.objects.with_check().filter(
+            created_at__gte=start_date).values('id', 'created_at', 'amount')
+
+        serializer = document_serializers.StatisticSerializer(payment_records, many=True)
+        return Response(serializer.data)
