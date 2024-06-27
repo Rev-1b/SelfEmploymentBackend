@@ -3,7 +3,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import CustomUser, Passport, UserRequisites
 
 
-class RegistrationSerializer(serializers.ModelSerializer):
+class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ('id', 'username', 'email', 'password')
@@ -31,7 +31,7 @@ class PassportSerializer(serializers.ModelSerializer):
         fields = ['series', 'number', 'release_date', 'unit_code']
 
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class UserDetailSerializer(serializers.ModelSerializer):
     passport = PassportSerializer()
 
     class Meta:
