@@ -8,6 +8,7 @@ from project.pagination import StandardResultsSetPagination
 from users.models import CustomUser, UserRequisites
 from users.serializers import CustomTokenObtainPairSerializer, UserDetailSerializer, UserCreateSerializer, \
     UserRequisitesSerializer
+from users.tasks import send_activation_email
 
 
 class EmailTokenObtainPairView(TokenObtainPairView):
@@ -64,7 +65,11 @@ class UserViewSet(viewsets.GenericViewSet):
     def register(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        user = serializer.save()
+
+        base_url = f"{request.scheme}://{request.get_host()}api/v1/users/activation/"
+        send_activation_email(base_url, user)
+
         return Response(serializer.data)
 
     @action(detail=False, methods=['get', 'patch'])
@@ -89,8 +94,7 @@ class UserViewSet(viewsets.GenericViewSet):
         if user is None:
             return Response('Пользователь не найден', status=status.HTTP_400_BAD_REQUEST)
         if not default_token_generator.check_token(user, confirmation_token):
-            return Response('Токен недействителен или истек.',
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response('Токен недействителен или истек.', status=status.HTTP_400_BAD_REQUEST)
         user.is_active = True
         user.save()
         return Response('Email Успешно Подтвержден!')

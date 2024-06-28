@@ -13,9 +13,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = self.Meta.model.objects.create_user(**validated_data)
-        # if settings.SEND_ACTIVATION_EMAIL:
-        #     user.is_active = False
-        #     user.save(update_fields=["is_active"])
         return user
 
 
