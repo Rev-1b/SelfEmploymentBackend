@@ -6,3 +6,4 @@ def send_activation_email(base_url, user):
     activation_link = f'{base_url}?user_id={user.id}&confirmation_token={confirmation_token}'
 
     "Здесь посылаем запрос на почтовый сервер"
+
