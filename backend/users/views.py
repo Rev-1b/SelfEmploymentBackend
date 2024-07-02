@@ -1,5 +1,5 @@
 from django.contrib.auth.tokens import default_token_generator
-from rest_framework import generics, mixins, viewsets, permissions, status
+from rest_framework import generics, mixins, viewsets, permissions, status, exceptions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -86,6 +86,29 @@ class UserViewSet(viewsets.GenericViewSet):
     @action(detail=False, methods=['get'])
     def activation(self, request):
         user_id = request.query_params.get('user_id', '')
+        confirmation_token = request.query_params.get('confirmation_token', '')
+        try:
+            user = self.get_queryset().get(pk=user_id)
+        except(TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+            user = None
+        if user is None:
+            return Response('Пользователь не найден', status=status.HTTP_400_BAD_REQUEST)
+        if not default_token_generator.check_token(user, confirmation_token):
+            return Response('Токен недействителен или истек.', status=status.HTTP_400_BAD_REQUEST)
+        user.is_active = True
+        user.save()
+        return Response('Email Успешно Подтвержден!')
+
+    @action(detail=False, methods=['post'])
+    def recover_password(self, request):
+        email = request.data.get('email', '')
+        user = CustomUser.objects.filter(email=email)
+
+        if not user.exists():
+            raise exceptions.ValidationError(f'Указана несуществующая почта')
+
+
+
         confirmation_token = request.query_params.get('confirmation_token', '')
         try:
             user = self.get_queryset().get(pk=user_id)
