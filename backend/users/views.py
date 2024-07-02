@@ -1,5 +1,6 @@
 from django.contrib.auth.tokens import default_token_generator
-from rest_framework import generics, mixins, viewsets, permissions, status
+from django.urls import reverse
+from rest_framework import generics, viewsets, permissions, status, exceptions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -7,8 +8,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from project.pagination import StandardResultsSetPagination
 from users.models import CustomUser, UserRequisites
 from users.serializers import CustomTokenObtainPairSerializer, UserDetailSerializer, UserCreateSerializer, \
-    UserRequisitesSerializer
-from users.tasks import send_activation_email
+    UserRequisitesSerializer, PasswordSerializer
+from users.tasks import send_activation_email, send_password_reset_email
+from .cryptography import decrypt_data
 
 
 class EmailTokenObtainPairView(TokenObtainPairView):
@@ -56,6 +58,8 @@ class UserViewSet(viewsets.GenericViewSet):
     def get_serializer(self, *args, **kwargs):
         if self.action == 'register':
             serializer_class = UserCreateSerializer
+        elif self.action == 'reset_password':
+            serializer_class = PasswordSerializer
         else:
             serializer_class = UserDetailSerializer
         kwargs.setdefault('context', self.get_serializer_context())
@@ -67,8 +71,10 @@ class UserViewSet(viewsets.GenericViewSet):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
-        base_url = f"{request.scheme}://{request.get_host()}api/v1/users/activation/"
-        send_activation_email(base_url, user)
+        url_path = reverse('user-activation')
+        absolute_url = request.build_absolute_uri(url_path)
+
+        send_activation_email(absolute_url, user)
 
         return Response(serializer.data)
 
@@ -85,19 +91,44 @@ class UserViewSet(viewsets.GenericViewSet):
 
     @action(detail=False, methods=['get'])
     def activation(self, request):
-        user_id = request.query_params.get('user_id', '')
-        confirmation_token = request.query_params.get('confirmation_token', '')
-        try:
-            user = self.get_queryset().get(pk=user_id)
-        except(TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
-            user = None
-        if user is None:
+        token = request.query_params.get('confirmation_token')
+        if token is None:
+            raise exceptions.ValidationError(f'Не указан токен подтверждения в параметрах запроса')
+
+        user_id = decrypt_data(token)
+        if user_id is None:
+            raise exceptions.ValidationError(f'Токен был поврежден, попробуйте получить ссылку активации еще раз')
+
+        user = self.get_queryset().filter(pk=user_id)
+        if not user.exists():
             return Response('Пользователь не найден', status=status.HTTP_400_BAD_REQUEST)
-        if not default_token_generator.check_token(user, confirmation_token):
-            return Response('Токен недействителен или истек.', status=status.HTTP_400_BAD_REQUEST)
-        user.is_active = True
-        user.save()
+
+        user.update(is_active=True)
         return Response('Email Успешно Подтвержден!')
+
+    @action(detail=False, methods=['post'])
+    def reset_password_confirm(self, request):
+        serializer = self.get_serializer(request.data)
+        serializer.is_valid(raise_exception=True)
+
+
+
+
+    @action(detail=False, methods=['post'])
+    def recover_password(self, request):
+        email = request.data.get('email', None)
+        if email is None:
+            raise exceptions.ValidationError(f'Не указан email в теле запроса')
+        user = CustomUser.objects.filter(email=email)
+
+        if not user.exists():
+            raise exceptions.ValidationError(f'Указана несуществующая почта')
+
+        url_path = reverse('user-reset_password')
+        absolute_url = request.build_absolute_uri(url_path)
+
+        send_password_reset_email(absolute_url, user)
+        return Response('Письмо отправлено')
 
 
 class UserRequisitesViewSet(viewsets.ModelViewSet):
