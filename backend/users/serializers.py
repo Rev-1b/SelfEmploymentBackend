@@ -1,3 +1,5 @@
+from django.contrib.auth.password_validation import validate_password
+from django.core import exceptions
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import CustomUser, Passport, UserRequisites
@@ -62,3 +64,19 @@ class UserRequisitesSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRequisites
         fields = ['id', 'bank_name', 'bic', 'bank_account', 'user_account', 'card_number']
+
+
+class PasswordSerializer(serializers.Serializer):
+    new_password = serializers.CharField(style={"input_type": "password"})
+
+    def validate(self, attrs):
+        user = getattr(self, "user", None) or self.context["request"].user
+        # why assert? There are ValidationError / fail everywhere
+        assert user is not None
+
+        try:
+            validate_password(attrs["new_password"], user)
+        except exceptions.ValidationError as e:
+            raise serializers.ValidationError({"new_password": list(e.messages)})
+        return super().validate(attrs)
+
