@@ -2,6 +2,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.urls import reverse
 from rest_framework import generics, viewsets, permissions, status, exceptions
 from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -111,8 +112,11 @@ class UserViewSet(viewsets.GenericViewSet):
         serializer = self.get_serializer(request.data)
         serializer.is_valid(raise_exception=True)
 
+        user_id = serializer.data.get('user_id')
+        user = get_object_or_404(self.get_queryset(), id=user_id)
+        user.set_password(serializer.data.get('new_password'))
 
-
+        return Response('Пароль успешно сменен')
 
     @action(detail=False, methods=['post'])
     def recover_password(self, request):

@@ -67,6 +67,7 @@ class UserRequisitesSerializer(serializers.ModelSerializer):
 
 
 class PasswordSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField()
     new_password = serializers.CharField(style={"input_type": "password"})
 
     def validate(self, attrs):
