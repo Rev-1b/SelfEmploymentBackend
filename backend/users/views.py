@@ -1,4 +1,3 @@
-from django.contrib.auth.tokens import default_token_generator
 from django.urls import reverse
 from rest_framework import generics, viewsets, permissions, status, exceptions
 from rest_framework.decorators import action
@@ -18,36 +17,9 @@ class EmailTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
 
-class RegistrationView(generics.GenericAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = UserCreateSerializer
-
-    def post(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
-
-
-class ProfileView(generics.GenericAPIView):
-    serializer_class = UserDetailSerializer
-    queryset = CustomUser.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request):
-        serializer = self.get_serializer(request.user)
-        return Response(serializer.data)
-
-    def patch(self, request):
-        serializer = self.get_serializer(instance=request.user, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
-
-
 class UserViewSet(viewsets.GenericViewSet):
     def get_permissions(self):
-        if self.action == 'register':
+        if self.action in ['register', 'activation', 'reset_password_confirm', 'recover_password']:
             permission_classes = [permissions.AllowAny]
         else:
             permission_classes = [permissions.IsAuthenticated]
@@ -66,19 +38,6 @@ class UserViewSet(viewsets.GenericViewSet):
         kwargs.setdefault('context', self.get_serializer_context())
         return serializer_class(*args, **kwargs)
 
-    @action(detail=False, methods=['post'])
-    def register(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-
-        url_path = reverse('user-activation')
-        absolute_url = request.build_absolute_uri(url_path)
-
-        send_activation_email(absolute_url, user)
-
-        return Response(serializer.data)
-
     @action(detail=False, methods=['get', 'patch'])
     def profile(self, request):
         if request.method == 'GET':
@@ -90,8 +49,95 @@ class UserViewSet(viewsets.GenericViewSet):
             serializer.save()
             return Response(serializer.data)
 
+    # ------------------------------------------------------------------------------------------------------------------
+    @action(detail=False, methods=['post'])
+    def register(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        # sending activation email
+        url_path = reverse('user-activation')
+        absolute_url = request.build_absolute_uri(url_path)
+        send_activation_email(absolute_url, user)
+
+        return Response(serializer.data)
+
     @action(detail=False, methods=['get'])
     def activation(self, request):
+        user = self.get_user_from_token(request)
+        if not user.exists():
+            return Response('Пользователь не найден', status=status.HTTP_400_BAD_REQUEST)
+
+        user.update(is_active=True)
+        return Response('Email Успешно Подтвержден!')
+
+    @action(detail=False, methods=['post'])
+    def change_email(self, request):
+        user = request.user
+
+        serializer = self.get_serializer(request.data)
+        serializer.is_valid(raise_exception=True)
+        new_email = serializer.data.get('email')
+
+        if user.email != new_email:
+            user.email = new_email
+            user.save()
+
+        # sending activation email
+        url_path = reverse('user-activation')
+        absolute_url = request.build_absolute_uri(url_path)
+        send_activation_email(absolute_url, user)
+
+        return Response({'success': 'Email успешно изменен. Письмо для активации отправлено'},
+                        status=status.HTTP_200_OK)
+
+    # ------------------------------------------------------------------------------------------------------------------
+    @action(detail=False, methods=['post'])
+    def change_password(self, request):
+        user = request.user  # get authorizer user
+
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+
+        # check old password
+        if not user.check_password(old_password):
+            return Response({'error': 'Старый пароль введен неверно'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Изменяем пароль
+        user.set_password(new_password)
+        user.save()
+
+        return Response({'success': 'Пароль успешно изменен'}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'])
+    def recover_password(self, request):
+        serializer = self.get_serializer(request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.data.get('email')
+        user = CustomUser.objects.filter(email=email)
+
+        if not user.exists():
+            raise exceptions.ValidationError({'email': 'Указана несуществующая почта'})
+
+        url_path = reverse('user-reset_password')
+        absolute_url = request.build_absolute_uri(url_path)
+        send_password_reset_email(absolute_url, user)
+
+        return Response('Письмо отправлено')
+
+    @action(detail=False, methods=['post'])
+    def recover_password_confirm(self, request):
+        user = self.get_user_from_token(request)
+
+        serializer = self.get_serializer(request.data)
+        serializer.is_valid(raise_exception=True)
+        user.set_password(serializer.data.get('new_password'))
+
+        return Response({"new_password": 'Пароль успешно сменен'})
+
+    def get_user_from_token(self, request):
         token = request.query_params.get('confirmation_token')
         if token is None:
             raise exceptions.ValidationError(f'Не указан токен подтверждения в параметрах запроса')
@@ -100,39 +146,7 @@ class UserViewSet(viewsets.GenericViewSet):
         if user_id is None:
             raise exceptions.ValidationError(f'Токен был поврежден, попробуйте получить ссылку активации еще раз')
 
-        user = self.get_queryset().filter(pk=user_id)
-        if not user.exists():
-            return Response('Пользователь не найден', status=status.HTTP_400_BAD_REQUEST)
-
-        user.update(is_active=True)
-        return Response('Email Успешно Подтвержден!')
-
-    @action(detail=False, methods=['post'])
-    def reset_password_confirm(self, request):
-        serializer = self.get_serializer(request.data)
-        serializer.is_valid(raise_exception=True)
-
-        user_id = serializer.data.get('user_id')
-        user = get_object_or_404(self.get_queryset(), id=user_id)
-        user.set_password(serializer.data.get('new_password'))
-
-        return Response('Пароль успешно сменен')
-
-    @action(detail=False, methods=['post'])
-    def recover_password(self, request):
-        email = request.data.get('email', None)
-        if email is None:
-            raise exceptions.ValidationError(f'Не указан email в теле запроса')
-        user = CustomUser.objects.filter(email=email)
-
-        if not user.exists():
-            raise exceptions.ValidationError(f'Указана несуществующая почта')
-
-        url_path = reverse('user-reset_password')
-        absolute_url = request.build_absolute_uri(url_path)
-
-        send_password_reset_email(absolute_url, user)
-        return Response('Письмо отправлено')
+        return get_object_or_404(self.get_queryset(), id=user_id)
 
 
 class UserRequisitesViewSet(viewsets.ModelViewSet):
@@ -142,3 +156,5 @@ class UserRequisitesViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return UserRequisites.objects.filter(user=self.request.user)
+
+

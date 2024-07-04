@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from customers.models import Customer
-from .models import Agreement, Additional, Act, CheckModel, Invoice, Deal, UserTemplate, Payment
+from .models import Agreement, Additional, Act, CheckModel, Invoice, UserTemplate, Payment
 
 
 class ShortCustomerSerializer(serializers.ModelSerializer):
@@ -128,21 +128,6 @@ class UserTemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserTemplate
         fields = ['id', 'template_type', 'title', 'content', 'updated_at']
-
-
-# --------------------------------------------- Deals serializers section ----------------------------------------------
-class DealGetSerializer(serializers.ModelSerializer):
-    agreement = AgreementListSerializer()
-
-    class Meta:
-        model = Deal
-        fields = ['id', 'service_type', 'amount', 'service_date', 'updated_at', 'agreement']
-
-
-class DealCUDSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Deal
-        fields = ['service_type', 'amount', 'service_date']
 
 
 class DocumentHistorySerializer(serializers.Serializer):

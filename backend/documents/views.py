@@ -123,23 +123,6 @@ class UserTemplateViewSet(viewsets.ModelViewSet):
         return serializer_class(*args, **kwargs)
 
 
-class DealViewSet(viewsets.ModelViewSet):
-    permissions = [permissions.IsAuthenticated]
-    pagination_class = StandardResultsSetPagination
-
-    def get_queryset(self):
-        return document_models.Deal.objects.filter(agreement__customer__user=self.request.user)
-
-    def get_serializer(self, *args, **kwargs):
-        if self.action in ['list', 'retrieve']:
-            serializer_class = document_serializers.DealGetSerializer
-        else:
-            serializer_class = document_serializers.DealCUDSerializer
-
-        kwargs.setdefault('context', self.get_serializer_context())
-        return serializer_class(*args, **kwargs)
-
-
 class DocumentHistoryViewSet(mixins.ListModelMixin,
                              viewsets.GenericViewSet):
     permissions = [permissions.IsAuthenticated]

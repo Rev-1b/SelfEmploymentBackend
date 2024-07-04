@@ -25,6 +25,7 @@ class Agreement(CustomModel):
     content = models.TextField(verbose_name='Текст договора')
     status = models.CharField(max_length=2, choices=StatusChoices.choices, default=StatusChoices.CREATED,
                               verbose_name='Статус договора')
+    deal_amount = models.IntegerField(default=0, verbose_name='Сумма сделки')
     start_date = models.DateField(verbose_name='Дата заключения договора', null=True, blank=True)
     end_date = models.DateField(verbose_name='Дата окончания договора', null=True, blank=True)
 
@@ -42,6 +43,7 @@ class Additional(CustomModel):
     number = models.CharField(max_length=160, verbose_name='Номер Дополнения')
     title = models.CharField(max_length=150, verbose_name='Название дополнения')
     content = models.TextField(verbose_name='Текст дополнения')
+    deal_amount = models.IntegerField(default=0, verbose_name='Сумма сделки')
 
 
 class Act(CustomModel):
@@ -122,18 +124,6 @@ class UserTemplate(CustomModel):
     title = models.CharField(max_length=150, verbose_name='Название шаблона')
     template_type = models.CharField(max_length=2, choices=TemplateTypeChoices, verbose_name='Тип шаблона')
     content = models.TextField(verbose_name='Тело шаблона')
-
-
-class Deal(CustomModel):
-    class Meta(CustomModel.Meta):
-        verbose_name = "Сделка"
-        verbose_name_plural = "Сделки"
-
-    agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, related_name='deals',
-                                  verbose_name='Договор')
-    service_type = models.CharField(max_length=150, verbose_name='Вид сделки')
-    amount = models.IntegerField(verbose_name='Сумма сделки')
-    service_date = models.DateField(verbose_name='Дата заключения сделки')
 
 
 class PaymentManager(models.Manager):
