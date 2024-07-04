@@ -25,3 +25,13 @@ class InvoiceAdmin(admin.ModelAdmin):
 @admin.register(CheckModel)
 class CheckModelAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(UserTemplate)
+class UserTemplateAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    pass

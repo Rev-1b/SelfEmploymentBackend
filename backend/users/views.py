@@ -1,4 +1,3 @@
-from django.contrib.auth.tokens import default_token_generator
 from django.urls import reverse
 from rest_framework import generics, viewsets, permissions, status, exceptions
 from rest_framework.decorators import action
@@ -18,36 +17,9 @@ class EmailTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
 
-class RegistrationView(generics.GenericAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = UserCreateSerializer
-
-    def post(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
-
-
-class ProfileView(generics.GenericAPIView):
-    serializer_class = UserDetailSerializer
-    queryset = CustomUser.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request):
-        serializer = self.get_serializer(request.user)
-        return Response(serializer.data)
-
-    def patch(self, request):
-        serializer = self.get_serializer(instance=request.user, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
-
-
 class UserViewSet(viewsets.GenericViewSet):
     def get_permissions(self):
-        if self.action == 'register':
+        if self.action in ['register', 'activation', 'reset_password_confirm', 'recover_password']:
             permission_classes = [permissions.AllowAny]
         else:
             permission_classes = [permissions.IsAuthenticated]
@@ -90,6 +62,15 @@ class UserViewSet(viewsets.GenericViewSet):
             serializer.save()
             return Response(serializer.data)
 
+    # @action(detail=False, methods=['post'])
+    # def resend_activation(self, request):
+    #
+    #
+    #     url_path = reverse('user-activation')
+    #     absolute_url = request.build_absolute_uri(url_path)
+    #
+    #     send_activation_email(absolute_url, user)
+
     @action(detail=False, methods=['get'])
     def activation(self, request):
         token = request.query_params.get('confirmation_token')
@@ -130,8 +111,8 @@ class UserViewSet(viewsets.GenericViewSet):
 
         url_path = reverse('user-reset_password')
         absolute_url = request.build_absolute_uri(url_path)
-
         send_password_reset_email(absolute_url, user)
+
         return Response('Письмо отправлено')
 
 
