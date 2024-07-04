@@ -1,8 +1,13 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
+from django.core.validators import validate_email
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import CustomUser, Passport, UserRequisites
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    username_field = CustomUser.EMAIL_FIELD
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -16,11 +21,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = self.Meta.model.objects.create_user(**validated_data)
         return user
-
-
 # auth through email
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    username_field = CustomUser.EMAIL_FIELD
 
 
 # profile serializers
@@ -67,17 +68,29 @@ class UserRequisitesSerializer(serializers.ModelSerializer):
 
 
 class PasswordSerializer(serializers.Serializer):
-    user_id = serializers.IntegerField()
+    old_password = serializers.CharField(style={"input_type": "password"})
     new_password = serializers.CharField(style={"input_type": "password"})
 
-    def validate(self, attrs):
-        user = getattr(self, "user", None) or self.context["request"].user
-        # why assert? There are ValidationError / fail everywhere
+    def validate_new_passport(self, value):
+        user = self.context["request"].user
         assert user is not None
 
         try:
-            validate_password(attrs["new_password"], user)
+            validate_password(value, user)
         except exceptions.ValidationError as e:
             raise serializers.ValidationError({"new_password": list(e.messages)})
-        return super().validate(attrs)
 
+        return value
+
+
+class EmailSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    @staticmethod
+    def validate_email(value):
+        try:
+            validate_email(value)
+        except exceptions.ValidationError as e:
+            raise serializers.ValidationError({'email': list(e.messages)})
+
+        return value
