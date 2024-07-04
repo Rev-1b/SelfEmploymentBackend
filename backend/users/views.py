@@ -112,13 +112,14 @@ class UserViewSet(viewsets.GenericViewSet):
 
     @action(detail=False, methods=['post'])
     def recover_password(self, request):
-        email = request.data.get('email', None)
-        if email is None:
-            raise exceptions.ValidationError(f'Не указан email в теле запроса')
+        serializer = self.get_serializer(request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.data.get('email')
         user = CustomUser.objects.filter(email=email)
 
         if not user.exists():
-            raise exceptions.ValidationError(f'Указана несуществующая почта')
+            raise exceptions.ValidationError({'email': 'Указана несуществующая почта'})
 
         url_path = reverse('user-reset_password')
         absolute_url = request.build_absolute_uri(url_path)
@@ -128,14 +129,13 @@ class UserViewSet(viewsets.GenericViewSet):
 
     @action(detail=False, methods=['post'])
     def recover_password_confirm(self, request):
+        user = self.get_user_from_token(request)
+
         serializer = self.get_serializer(request.data)
         serializer.is_valid(raise_exception=True)
-
-        user_id = serializer.data.get('user_id')
-        user = get_object_or_404(self.get_queryset(), id=user_id)
         user.set_password(serializer.data.get('new_password'))
 
-        return Response('Пароль успешно сменен')
+        return Response({"new_password": 'Пароль успешно сменен'})
 
     def get_user_from_token(self, request):
         token = request.query_params.get('confirmation_token')
@@ -146,7 +146,7 @@ class UserViewSet(viewsets.GenericViewSet):
         if user_id is None:
             raise exceptions.ValidationError(f'Токен был поврежден, попробуйте получить ссылку активации еще раз')
 
-        return self.get_queryset().filter(pk=user_id)
+        return get_object_or_404(self.get_queryset(), id=user_id)
 
 
 class UserRequisitesViewSet(viewsets.ModelViewSet):

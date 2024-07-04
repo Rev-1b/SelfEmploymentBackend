@@ -67,8 +67,7 @@ class UserRequisitesSerializer(serializers.ModelSerializer):
         fields = ['id', 'bank_name', 'bic', 'bank_account', 'user_account', 'card_number']
 
 
-class PasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField(style={"input_type": "password"})
+class NewPasswordSerializer(serializers.Serializer):
     new_password = serializers.CharField(style={"input_type": "password"})
 
     def validate_new_passport(self, value):
@@ -81,6 +80,10 @@ class PasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError({"new_password": list(e.messages)})
 
         return value
+
+
+class OldToNewPasswordSerializer(NewPasswordSerializer):
+    old_password = serializers.CharField(style={"input_type": "password"})
 
 
 class EmailSerializer(serializers.Serializer):
