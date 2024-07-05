@@ -8,7 +8,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from project.pagination import StandardResultsSetPagination
 from users.models import CustomUser, UserRequisites
 from users.serializers import CustomTokenObtainPairSerializer, UserDetailSerializer, UserCreateSerializer, \
-    UserRequisitesSerializer, PasswordSerializer
+    UserRequisitesSerializer
 from users.tasks import send_activation_email, send_password_reset_email
 from .cryptography import decrypt_data
 
