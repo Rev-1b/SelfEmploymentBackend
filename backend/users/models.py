@@ -31,8 +31,8 @@ class CustomUser(AbstractUser):
 
 class Passport(CustomModel):
     class Meta(CustomModel.Meta):
-        verbose_name = 'Паспорт'
-        verbose_name_plural = 'Паспорта'
+        verbose_name = 'Паспорт пользователя'
+        verbose_name_plural = 'Паспорта пользователей'
         # unique_together = ['series', 'number']
 
     def __str__(self):

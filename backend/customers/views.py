@@ -1,14 +1,13 @@
-
 from rest_framework import permissions
 from rest_framework import viewsets
 
-from customers.models import Customer
-from customers.serializers import CustomerListSerializer, CustomerDetailSerializer
+from customers.models import Customer, CustomerRequisites, CustomerContacts
+from customers.serializers import CustomerListSerializer, CustomerDetailSerializer, CustomerRequisitesSerializer, \
+    CustomerContactsSerializer
 from project.pagination import StandardResultsSetPagination
 
 
 class CustomerViewSet(viewsets.ModelViewSet):
-    queryset = Customer.objects.all()
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardResultsSetPagination
 
@@ -21,3 +20,19 @@ class CustomerViewSet(viewsets.ModelViewSet):
         return serializer_class(*args, **kwargs)
 
 
+class CustomerRequisitesViewSet(viewsets.ModelViewSet):
+    serializer_class = CustomerRequisitesSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        return CustomerRequisites.objects.filter(customer__user=self.request.user)
+
+
+class CustomerContactsViewSet(viewsets.ModelViewSet):
+    serializer_class = CustomerContactsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        return CustomerContacts.objects.filter(customer__user=self.request.user)

@@ -2,7 +2,13 @@ from copy import copy
 
 from rest_framework import serializers, exceptions
 
-from .models import Customer, CustomerRequisites, CustomerContacts
+from .models import Customer, CustomerRequisites, CustomerContacts, CustomerPassport
+
+
+class CustomerPassportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomerPassport
+        fields = ['series', 'number', 'release_date', 'unit_code']
 
 
 class CustomerListSerializer(serializers.ModelSerializer):
@@ -24,8 +30,7 @@ class CustomerContactsSerializer(serializers.ModelSerializer):
 
 
 class CustomerDetailSerializer(serializers.ModelSerializer):
-    requisites = CustomerRequisitesSerializer(many=True, required=False)
-    contacts = CustomerContactsSerializer(many=True, required=False)
+    passport = CustomerPassportSerializer(required=False)
 
     FIELDS_TO_UPDATE = ['additional_id', 'customer_name', 'post_address', 'inn', 'full_company_name', 'orgn', 'kpp',
                         'legal_address', 'okpo', 'okved', 'place_of_residence', 'ogrnip']
@@ -33,62 +38,45 @@ class CustomerDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = [
-            'id', 'additional_id', 'customer_type', 'customer_name',
+            'id', 'additional_id', 'customer_type', 'customer_name', 'passport',
             'post_address', 'inn', 'full_company_name', 'orgn', 'kpp', 'legal_address', 'okpo', 'okved',
-            'place_of_residence', 'ogrnip', 'requisites', 'contacts'
+            'place_of_residence', 'ogrnip'
         ]
 
     def create(self, validated_data):
-        requisites_data = validated_data.pop('requisites', None)
-        contacts_data = validated_data.pop('contacts', None)
+        passport_data = validated_data.pop('passport', None)
         user = self.context.get('request').user
 
         customer = Customer.objects.create(user=user, **validated_data)
-        CustomerRequisites.objects.bulk_create(
-            [CustomerRequisites(customer=customer, **data) for data in requisites_data]
-        )
-        CustomerContacts.objects.bulk_create(
-            [CustomerContacts(customer=customer, **data) for data in contacts_data]
-        )
+        CustomerPassport.objects.create(customer=customer, **passport_data)
 
         return customer
 
     def update(self, instance, validated_data):
-        requisites_data = validated_data.pop('requisites', None)
-        contacts_data = validated_data.pop('contacts', None)
+        passport_data = validated_data.pop('passport', None)
 
         for field in self.FIELDS_TO_UPDATE:
             setattr(instance, field, validated_data.get(field, getattr(instance, field)))
 
-        if requisites_data is not None:
-            if hasattr(instance, 'requisites'):
-                CustomerRequisites.objects.filter(customer=instance).delete()
-            CustomerRequisites.objects.bulk_create(
-                [CustomerRequisites(customer=instance, **data) for data in requisites_data]
-            )
-
-        if contacts_data is not None:
-            if hasattr(instance, 'contacts'):
-                CustomerContacts.objects.filter(customer=instance).delete()
-            CustomerContacts.objects.bulk_create(
-                [CustomerContacts(customer=instance, **data) for data in contacts_data]
-            )
+        if passport_data is not None:
+            passport = CustomerPassport.objects.filter(customer=instance)
+            passport.update(**passport_data)
 
         instance.save()
         return instance
 
     def validate(self, attrs: dict):
         table = {
-            'CM': ['additional_id', 'customer_type', 'customer_name', 'requisites', 'contacts'],
+            'CM': ['additional_id', 'customer_type', 'customer_name', 'passport'],
             'LC': ['additional_id', 'customer_type', 'customer_name', 'post_address', 'inn', 'full_company_name',
-                   'orgn', 'kpp', 'legal_address', 'okpo', 'okved', 'requisites', 'contacts'],
+                   'orgn', 'kpp', 'legal_address', 'okpo', 'okved'],
             'IE': ['additional_id', 'customer_type', 'customer_name', 'post_address', 'inn', 'place_of_residence',
-                   'ogrnip', 'requisites', 'contacts'],
+                   'ogrnip'],
         }
 
         customer_type = attrs.get("customer_type", None)
         if customer_type is None or customer_type not in ('CM', 'IE', 'LC'):
-            raise exceptions.ValidationError("Тип заказчика не указан, либо указан некорректно")
+            raise exceptions.ValidationError({'customer_type': "Тип заказчика не указан, либо указан некорректно"})
 
         if self.context.get('request').method == 'POST':
             self.check_required_attrs(attrs, table.get(customer_type))
