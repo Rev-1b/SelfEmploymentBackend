@@ -8,7 +8,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from project.pagination import StandardResultsSetPagination
 from users.models import CustomUser, UserRequisites
 from users.serializers import CustomTokenObtainPairSerializer, UserDetailSerializer, UserCreateSerializer, \
-    UserRequisitesSerializer
+    UserRequisitesSerializer, OldToNewPasswordSerializer
 from users.tasks import send_activation_email, send_password_reset_email
 from .cryptography import decrypt_data
 
@@ -32,7 +32,7 @@ class UserViewSet(viewsets.GenericViewSet):
         if self.action == 'register':
             serializer_class = UserCreateSerializer
         elif self.action == 'reset_password':
-            serializer_class = PasswordSerializer
+            serializer_class = OldToNewPasswordSerializer
         else:
             serializer_class = UserDetailSerializer
         kwargs.setdefault('context', self.get_serializer_context())
