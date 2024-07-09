@@ -9,7 +9,7 @@ class UserRegistrationTestCase(APITestCase):
         url = reverse('user-register')
 
         data = {
-            'username': 'testuser',
+            'username': 'TestUser',
             'email': 'test@example.com',
             'password': 'qwerty2F'
         }
@@ -34,4 +34,3 @@ class UserRegistrationTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('access', response.data)
         self.assertIn('refresh', response.data)
-
