@@ -1,5 +1,5 @@
 from django.urls import reverse
-from rest_framework import generics, viewsets, permissions, status, exceptions
+from rest_framework import viewsets, permissions, status, exceptions
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
@@ -8,7 +8,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from project.pagination import StandardResultsSetPagination
 from users.models import CustomUser, UserRequisites
 from users.serializers import CustomTokenObtainPairSerializer, UserDetailSerializer, UserCreateSerializer, \
-    UserRequisitesSerializer
+    UserRequisitesSerializer, OldToNewPasswordSerializer
 from users.tasks import send_activation_email, send_password_reset_email
 from .cryptography import decrypt_data
 
@@ -32,7 +32,7 @@ class UserViewSet(viewsets.GenericViewSet):
         if self.action == 'register':
             serializer_class = UserCreateSerializer
         elif self.action == 'reset_password':
-            serializer_class = PasswordSerializer
+            serializer_class = OldToNewPasswordSerializer
         else:
             serializer_class = UserDetailSerializer
         kwargs.setdefault('context', self.get_serializer_context())
@@ -61,7 +61,7 @@ class UserViewSet(viewsets.GenericViewSet):
         absolute_url = request.build_absolute_uri(url_path)
         send_activation_email(absolute_url, user)
 
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=['get'])
     def activation(self, request):
@@ -156,5 +156,3 @@ class UserRequisitesViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return UserRequisites.objects.filter(user=self.request.user)
-
-
