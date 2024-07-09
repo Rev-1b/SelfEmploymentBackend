@@ -50,9 +50,6 @@ INSTALLED_APPS = [
     'users',
     'customers',
     'documents',
-
-    # only for local
-    "debug_toolbar",
 ]
 
 INTERNAL_IPS = [
@@ -73,8 +70,6 @@ CORS_ALLOW_ALL_ORIGINS = True
 # ]
 
 MIDDLEWARE = [
-    "debug_toolbar.middleware.DebugToolbarMiddleware",  # comment when in docker
-
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     "corsheaders.middleware.CorsMiddleware",
