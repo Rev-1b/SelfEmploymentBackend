@@ -7,10 +7,11 @@ from users.views import EmailTokenObtainPairView, UserRequisitesViewSet, UserVie
 router = routers.DefaultRouter()
 router.register('', UserViewSet, basename='user')
 router.register('requisites', UserRequisitesViewSet, basename='requisites')
+print(router.urls)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('auth/jwt/create/', EmailTokenObtainPairView.as_view(), name='create_token'),
-    path('auth/jwt/refresh/', TokenRefreshView.as_view(), name='refresh_token'),
+    path('auth/jwt/create/', EmailTokenObtainPairView.as_view(), name='create-token'),
+    path('auth/jwt/refresh/', TokenRefreshView.as_view(), name='refresh-token'),
 ]
 

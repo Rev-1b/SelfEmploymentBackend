@@ -31,7 +31,7 @@ class UserViewSet(viewsets.GenericViewSet):
     def get_serializer(self, *args, **kwargs):
         if self.action == 'register':
             serializer_class = UserCreateSerializer
-        elif self.action == 'reset_password':
+        elif self.action == 'recover_password':
             serializer_class = OldToNewPasswordSerializer
         else:
             serializer_class = UserDetailSerializer
@@ -69,7 +69,7 @@ class UserViewSet(viewsets.GenericViewSet):
         if not user.exists():
             return Response('Пользователь не найден', status=status.HTTP_400_BAD_REQUEST)
 
-        user.update(is_active=True)
+        user.update(is_email_verified=True)
         return Response('Email Успешно Подтвержден!')
 
     @action(detail=False, methods=['post'])
@@ -112,7 +112,9 @@ class UserViewSet(viewsets.GenericViewSet):
 
     @action(detail=False, methods=['post'])
     def recover_password(self, request):
-        serializer = self.get_serializer(request.data)
+        print(request.data)
+
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         email = serializer.data.get('email')
@@ -125,7 +127,7 @@ class UserViewSet(viewsets.GenericViewSet):
         absolute_url = request.build_absolute_uri(url_path)
         send_password_reset_email(absolute_url, user)
 
-        return Response('Письмо отправлено')
+        return Response({'email': 'Письмо отправлено'})
 
     @action(detail=False, methods=['post'])
     def recover_password_confirm(self, request):
