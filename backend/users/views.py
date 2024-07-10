@@ -8,7 +8,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from project.pagination import StandardResultsSetPagination
 from users.models import CustomUser, UserRequisites
 from users.serializers import CustomTokenObtainPairSerializer, UserDetailSerializer, UserCreateSerializer, \
-    UserRequisitesSerializer, OldToNewPasswordSerializer
+    UserRequisitesSerializer, OldToNewPasswordSerializer, EmailSerializer, NewPasswordSerializer
 from users.tasks import send_activation_email, send_password_reset_email
 from .cryptography import decrypt_data
 
@@ -19,7 +19,7 @@ class EmailTokenObtainPairView(TokenObtainPairView):
 
 class UserViewSet(viewsets.GenericViewSet):
     def get_permissions(self):
-        if self.action in ['register', 'activation', 'reset_password_confirm', 'recover_password']:
+        if self.action in ['register', 'activation', 'recover_password_confirm', 'recover_password']:
             permission_classes = [permissions.AllowAny]
         else:
             permission_classes = [permissions.IsAuthenticated]
@@ -32,7 +32,9 @@ class UserViewSet(viewsets.GenericViewSet):
         if self.action == 'register':
             serializer_class = UserCreateSerializer
         elif self.action == 'recover_password':
-            serializer_class = OldToNewPasswordSerializer
+            serializer_class = EmailSerializer
+        elif self.action == 'recover_password_confirm':
+            serializer_class = NewPasswordSerializer
         else:
             serializer_class = UserDetailSerializer
         kwargs.setdefault('context', self.get_serializer_context())
@@ -44,7 +46,7 @@ class UserViewSet(viewsets.GenericViewSet):
             serializer = self.get_serializer(request.user)
             return Response(serializer.data)
         elif request.method == 'PATCH':
-            serializer = self.serializer_class(request.user, data=request.data, partial=True)
+            serializer = self.get_serializer(instance=request.user, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
@@ -112,8 +114,6 @@ class UserViewSet(viewsets.GenericViewSet):
 
     @action(detail=False, methods=['post'])
     def recover_password(self, request):
-        print(request.data)
-
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -123,9 +123,9 @@ class UserViewSet(viewsets.GenericViewSet):
         if not user.exists():
             raise exceptions.ValidationError({'email': 'Указана несуществующая почта'})
 
-        url_path = reverse('user-reset_password')
+        url_path = reverse('user-recover-password-confirm')
         absolute_url = request.build_absolute_uri(url_path)
-        send_password_reset_email(absolute_url, user)
+        send_password_reset_email(absolute_url, user.first())
 
         return Response({'email': 'Письмо отправлено'})
 
@@ -133,7 +133,8 @@ class UserViewSet(viewsets.GenericViewSet):
     def recover_password_confirm(self, request):
         user = self.get_user_from_token(request)
 
-        serializer = self.get_serializer(request.data)
+        print(request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user.set_password(serializer.data.get('new_password'))
 

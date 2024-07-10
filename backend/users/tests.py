@@ -47,7 +47,7 @@ class UserRegistrationTestCase(APITestCase):
         data = {
             'email': 'test@example.com'
         }
-        response = self.client.post(url, data=data, format='json')
+        response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('email'), 'Письмо отправлено')
 
@@ -56,7 +56,7 @@ class UserRegistrationTestCase(APITestCase):
         data = {
             'new_password': 'Rev-1bUS^'
         }
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {"new_password": 'Пароль успешно сменен'})
 
