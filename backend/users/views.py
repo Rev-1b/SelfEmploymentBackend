@@ -31,10 +31,12 @@ class UserViewSet(viewsets.GenericViewSet):
     def get_serializer(self, *args, **kwargs):
         if self.action == 'register':
             serializer_class = UserCreateSerializer
-        elif self.action == 'recover_password':
+        elif self.action in ['recover_password', 'change_email']:
             serializer_class = EmailSerializer
         elif self.action == 'recover_password_confirm':
             serializer_class = NewPasswordSerializer
+        elif self.action == 'change_password':
+            serializer_class = OldToNewPasswordSerializer
         else:
             serializer_class = UserDetailSerializer
         kwargs.setdefault('context', self.get_serializer_context())
@@ -69,20 +71,22 @@ class UserViewSet(viewsets.GenericViewSet):
     def activation(self, request):
         user = self.get_user_from_token(request)
         if not user.exists():
-            return Response('Пользователь не найден', status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Пользователь не найден'}, status=status.HTTP_400_BAD_REQUEST)
 
         user.update(is_email_verified=True)
-        return Response('Email Успешно Подтвержден!')
+        return Response({'email': 'Email Успешно Подтвержден!'})
 
     @action(detail=False, methods=['post'])
     def change_email(self, request):
         user = request.user
 
-        serializer = self.get_serializer(request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_email = serializer.data.get('email')
 
         if user.email != new_email:
+            if self.get_queryset().filter(email=new_email).exists():
+                raise exceptions.ValidationError({'email': 'Пользователь с такой электронной почтой уже существует'})
             user.email = new_email
             user.save()
 
@@ -91,16 +95,18 @@ class UserViewSet(viewsets.GenericViewSet):
         absolute_url = request.build_absolute_uri(url_path)
         send_activation_email(absolute_url, user)
 
-        return Response({'success': 'Email успешно изменен. Письмо для активации отправлено'},
+        return Response({'user': user.email},
                         status=status.HTTP_200_OK)
 
     # ------------------------------------------------------------------------------------------------------------------
     @action(detail=False, methods=['post'])
     def change_password(self, request):
-        user = request.user  # get authorizer user
+        user = request.user
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        old_password = request.data.get('old_password')
-        new_password = request.data.get('new_password')
+        old_password = serializer.data.get('old_password')
+        new_password = serializer.data.get('new_password')
 
         # check old password
         if not user.check_password(old_password):
@@ -132,24 +138,26 @@ class UserViewSet(viewsets.GenericViewSet):
     @action(detail=False, methods=['post'])
     def recover_password_confirm(self, request):
         user = self.get_user_from_token(request)
+        if not user.exists():
+            return Response('Пользователь не найден', status=status.HTTP_400_BAD_REQUEST)
 
-        print(request.data)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user.set_password(serializer.data.get('new_password'))
+        user.first().set_password(serializer.data.get('new_password'))
 
         return Response({"new_password": 'Пароль успешно сменен'})
 
     def get_user_from_token(self, request):
         token = request.query_params.get('confirmation_token')
         if token is None:
-            raise exceptions.ValidationError(f'Не указан токен подтверждения в параметрах запроса')
+            raise exceptions.ValidationError({'token': f'Не указан токен подтверждения в параметрах запроса'})
 
         user_id = decrypt_data(token)
         if user_id is None:
-            raise exceptions.ValidationError(f'Токен был поврежден, попробуйте получить ссылку активации еще раз')
+            raise exceptions.ValidationError(
+                {'token': f'Токен был поврежден, попробуйте получить ссылку активации еще раз'})
 
-        return get_object_or_404(self.get_queryset(), id=user_id)
+        return self.get_queryset().filter(id=user_id)
 
 
 class UserRequisitesViewSet(viewsets.ModelViewSet):
@@ -159,3 +167,10 @@ class UserRequisitesViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return UserRequisites.objects.filter(user=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        self.get_queryset().create(user=request.user, **serializer.validated_data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
