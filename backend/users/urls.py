@@ -7,6 +7,7 @@ from users.views import EmailTokenObtainPairView, UserRequisitesViewSet, UserVie
 router = routers.DefaultRouter()
 router.register('', UserViewSet, basename='user')
 router.register('requisites', UserRequisitesViewSet, basename='requisites')
+# print(router.urls)
 
 urlpatterns = [
     path('', include(router.urls)),

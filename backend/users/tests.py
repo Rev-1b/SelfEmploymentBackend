@@ -2,13 +2,20 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from .models import CustomUser, Passport
 from .cryptography import encrypt_data
+from .models import CustomUser, Passport, UserRequisites
 
 main_user = {
     'username': 'TestUser',
     'email': 'test@example.com',
     'password': 'qwerty2F'
+}
+
+main_passport = {
+    'series': '1234',
+    'number': '56789',
+    'release_date': '2022-01-01',
+    'unit_code': 'ABC123'
 }
 
 main_user_auth = {
@@ -27,6 +34,7 @@ class UserRegistrationTestCase(APITestCase):
     def setUp(self):
         super(UserRegistrationTestCase, self).setUp()
         self.user = CustomUser.objects.create_user(**main_user)
+        self.passport = Passport.objects.create(user=self.user, **main_passport)
         self.token = encrypt_data(self.user.pk)
 
     def test_create_user(self):
@@ -74,7 +82,8 @@ class UserRegistrationTestCase(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Temporally commented. Cant figure out, why user email does not change in tests, but in Postman
-        # self.assertEqual(self.user.email, new_email)
+        user = CustomUser.objects.get(email=new_email)
+        self.assertEqual(user.email, new_email)
 
     def test_change_password(self):
         url = reverse('user-change-password')
@@ -116,49 +125,74 @@ class UserRegistrationTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {"new_password": 'Пароль успешно сменен'})
 
-    def test_update_user_details(self):
+    def test_user_details(self):
         url = reverse('user-profile')
         data = {
             'first_name': 'John',
             'last_name': 'Doe',
             'middle_name': 'Smith',
-            'passport': {
-                'series': '1234',
-                'number': '56789',
-                'release_date': '2022-01-01',
-                'unit_code': 'ABC123'
-            }
+            'passport': main_passport
         }
         self.client.login(**main_user_auth)
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        user = CustomUser.objects.get(email='test@example.com')
-        passport = Passport.objects.get(user=user)
-        self.assertEqual(user.first_name, 'John')
-        self.assertEqual(user.last_name, 'Doe')
-        self.assertEqual(user.middle_name, 'Smith')
-        self.assertEqual(passport.series, '1234')
-        self.assertEqual(passport.number, '56789')
-        self.assertEqual(passport.release_date.strftime('%Y-%m-%d'), '2022-01-01')
-        self.assertEqual(passport.unit_code, 'ABC123')
 
-    # def test_update_user_requisites(self):
-    #     url = reverse('user-requisites')
-    #     data = {
-    #         'bank_name': 'Bank',
-    #         'bic': '12345678',
-    #         'bank_account': '987654321',
-    #         'user_account': '1234567890',
-    #         'card_number': '1234567890123456'
-    #     }
-    #     self.client.login(username='testuser', password='testpassword')
-    #     response = self.client.patch(url, data, format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     user = CustomUser.objects.get(username='testuser')
-    #     requisites = user.requisites
-    #     self.assertEqual(requisites.bank_name, 'Bank')
-    #     self.assertEqual(requisites.bic, '12345678')
-    #     self.assertEqual(requisites.bank_account, '987654321')
-    #     self.assertEqual(requisites.user_account, '1234567890')
-    #     self.assertEqual(requisites.card_number, '1234567890123456')
+        new_url = reverse('user-profile')
+        new_response = self.client.get(new_url, format='json')
+        passport_data = new_response.data.pop('passport')
 
+        self.assertEqual(new_response.data.get('first_name'), 'John')
+        self.assertEqual(new_response.data.get('last_name'), 'Doe')
+        self.assertEqual(new_response.data.get('middle_name'), 'Smith')
+
+        self.assertEqual(passport_data.get('series'), '1234')
+        self.assertEqual(passport_data.get('number'), '56789')
+        self.assertEqual(passport_data.get('release_date'), '2022-01-01')
+        self.assertEqual(passport_data.get('unit_code'), 'ABC123')
+
+
+class UserRequisitesTests(APITestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(**main_user)
+        self.client.force_authenticate(user=self.user)
+        self.requisites_data = {
+            'bank_name': 'Test Bank',
+            'bic': 'TESTBIC',
+            'bank_account': '1234567890',
+            'user_account': 'testuser',
+            'card_number': '1234-5678-9012-3456'
+        }
+
+    def test_create_user_requisites(self):
+        url = reverse('requisites-list')
+        response = self.client.post(url, data=self.requisites_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(UserRequisites.objects.filter(user=self.user).exists())
+
+    def test_list_user_requisites(self):
+        UserRequisites.objects.create(user=self.user, **self.requisites_data)
+        url = reverse('requisites-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data.get('results')), 1)
+        self.assertEqual(response.data.get('results')[0]['bank_name'], 'Test Bank')
+
+    def test_update_user_requisites(self):
+        requisites = UserRequisites.objects.create(user=self.user, **self.requisites_data)
+        updated_data = {
+            'bank_name': 'Updated Bank',
+            'bic': 'UPDATEDBIC'
+        }
+        url = reverse('requisites-detail', kwargs={'pk': requisites.pk})
+        response = self.client.patch(url, updated_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        requisites.refresh_from_db()
+        self.assertEqual(requisites.bank_name, 'Updated Bank')
+        self.assertEqual(requisites.bic, 'UPDATEDBIC')
+
+    def test_delete_user_requisites(self):
+        requisites = UserRequisites.objects.create(user=self.user, **self.requisites_data)
+        url = reverse('requisites-detail', kwargs={'pk': requisites.pk})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(UserRequisites.objects.filter(id=requisites.id).exists())
