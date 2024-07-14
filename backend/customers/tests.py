@@ -90,16 +90,16 @@ class YourClassTests(TestCase):
         data = {'name': 'John', 'age': 30, 'gender': 'male'}
         self.assertEqu
 
-class YourClassAPIViewTests(APITestCase):
-
-    def test_get_method(self):
-        # Similar to previous example
-
-    def test_post_method(self):
-        # Similar to previous example
-
-    def test_patch_method(self):
-        # Similar to previous example
-
-    def test_delete_method(self):
-        # Similar to previous example
+# class YourClassAPIViewTests(APITestCase):
+#
+#     def test_get_method(self):
+#         # Similar to previous example
+#
+#     def test_post_method(self):
+#         # Similar to previous example
+#
+#     def test_patch_method(self):
+#         # Similar to previous example
+#
+#     def test_delete_method(self):
+#         # Similar to previous example
