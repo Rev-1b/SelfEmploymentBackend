@@ -69,27 +69,6 @@ class YourClassTests(TestCase):
         with self.assertRaises(exceptions.ValidationError):
             YourClass.check_extra_attrs(attrs, required_keys)
 
-class YourClassAPIViewTests(APITestCase):
-
-    def test_get_method(self):
-        # Similar to previous example
-
-    def test_post_method(self):
-        # Similar to previous example
-
-    def test_patch_method(self):
-        # Similar to previous example
-
-    def test_delete_method(self):
-        # Similar to previous example
-
-class YourClassTests(TestCase):
-
-    def test_to_representation(self):
-        instance = YourModel.objects.create(name='John', age=30, gender='male')
-        data = {'name': 'John', 'age': 30, 'gender': 'male'}
-        self.assertEqu
-
 # class YourClassAPIViewTests(APITestCase):
 #
 #     def test_get_method(self):
@@ -103,3 +82,24 @@ class YourClassTests(TestCase):
 #
 #     def test_delete_method(self):
 #         # Similar to previous example
+#
+# class YourClassTests(TestCase):
+#
+#     def test_to_representation(self):
+#         instance = YourModel.objects.create(name='John', age=30, gender='male')
+#         data = {'name': 'John', 'age': 30, 'gender': 'male'}
+#         self.assertEqu
+#
+# # class YourClassAPIViewTests(APITestCase):
+# #
+# #     def test_get_method(self):
+# #         # Similar to previous example
+# #
+# #     def test_post_method(self):
+# #         # Similar to previous example
+# #
+# #     def test_patch_method(self):
+# #         # Similar to previous example
+# #
+# #     def test_delete_method(self):
+# #         # Similar to previous example
