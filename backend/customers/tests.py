@@ -1,105 +1,109 @@
-from django.test import TestCase
-from rest_framework import exceptions
-from rest_framework.test import APITestCase
-from yourapp.utils import YourClass  # Замените на ваш импорт класса и методов
+from rest_framework.test import APITestCase, APIClient
+from rest_framework import status
+from django.urls import reverse
+from .models import Customer, CustomerPassport, CustomUser
+from .serializers import CustomerListSerializer, CustomerDetailSerializer
+import json
 
-class YourClassTests(TestCase):
 
-    def test_check_required_attrs_valid(self):
-        attrs = {'name': 'John', 'age': 30}
-        required_keys = ['name', 'age']
-        try:
-            YourClass.check_required_attrs(attrs, required_keys)
-        except exceptions.ValidationError as e:
-            self.fail(f'check_required_attrs raised ValidationError unexpectedly: {e}')
+class CustomerViewSetTest(APITestCase):
+    def setUp(self):
+        # Создаем пользователя и логинимся
+        self.user = CustomUser.objects.create_user(username='testuser', password='password')
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
 
-    def test_check_required_attrs_missing_key(self):
-        attrs = {'name': 'John'}
-        required_keys = ['name', 'age']
-        with self.assertRaises(exceptions.ValidationError):
-            YourClass.check_required_attrs(attrs, required_keys)
+        # Создаем тестовые данные для Customer и CustomerPassport
+        self.customer = Customer.objects.create(
+            additional_id=123,
+            user=self.user,
+            customer_name="Test Customer",
+            customer_type="CM"
+        )
+        self.passport = CustomerPassport.objects.create(
+            customer=self.customer,
+            series="1234",
+            number="567890",
+            release_date="2020-01-01",
+            issued="Test Issued",
+            unit_code="123-456"
+        )
 
-    def test_check_required_attrs_null_value(self):
-        attrs = {'name': 'John', 'age': None}
-        required_keys = ['name', 'age']
-        with self.assertRaises(exceptions.ValidationError):
-            YourClass.check_required_attrs(attrs, required_keys)
+        # URL для тестов
+        self.customer_list_url = reverse('customers-list')
+        self.customer_detail_url = reverse('customers-detail', args=[self.customer.id])
 
-class YourClassAPIViewTests(APITestCase):
+    def test_get_customer_list(self):
+        # Тест получения списка клиентов
+        response = self.client.get(self.customer_list_url)
+        customers = Customer.objects.filter(user=self.user)
+        serializer = CustomerListSerializer(customers, many=True)
 
-    def test_get_method(self):
-        # Mock or create necessary objects
-        # Example: instance = YourModel.objects.create(...)
-        url = '/api/your-endpoint/'
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)  # Assuming successful GET request testing
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('results'), serializer.data)
 
-    def test_post_method(self):
-        attrs = {'name': 'John', 'age': 30}
-        url = '/api/your-endpoint/'
-        response = self.client.post(url, attrs, format='json')
-        self.assertEqual(response.status_code, 201)  # Assuming successful POST request testing
+    def test_get_customer_detail(self):
+        # Тест получения деталей клиента
+        response = self.client.get(self.customer_detail_url)
+        serializer = CustomerDetailSerializer(self.customer)
 
-    def test_patch_method(self):
-        instance = YourModel.objects.create(...)
-        updated_attrs = {'name': 'Updated Name'}
-        url = f'/api/your-endpoint/{instance.id}/'
-        response = self.client.patch(url, updated_attrs, format='json')
-        self.assertEqual(response.status_code, 200)  # Assuming successful PATCH request testing
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, serializer.data)
 
-    def test_delete_method(self):
-        instance = YourModel.objects.create(...)
-        url = f'/api/your-endpoint/{instance.id}/'
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, 204)  # Assuming successful DELETE request testing
+    def test_create_customer(self):
+        # Тест создания клиента
+        data = {
+            "additional_id": 124,
+            "customer_name": "New Customer",
+            "customer_type": "CM",
+            "passport": {
+                "series": "5678",
+                "number": "123456",
+                "release_date": "2021-01-01",
+                "issued": "New Issued",
+                "unit_code": "654-321"
+            }
+        }
+        response = self.client.post(self.customer_list_url, data, format='json')
 
-class YourClassTests(TestCase):
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Customer.objects.count(), 2)
+        self.assertEqual(Customer.objects.get(id=response.data['id']).customer_name, "New Customer")
 
-    def test_check_extra_attrs_valid(self):
-        attrs = {'name': 'John', 'age': 30, 'gender': 'male'}
-        required_keys = ['name', 'age']
-        try:
-            YourClass.check_extra_attrs(attrs, required_keys)
-        except exceptions.ValidationError as e:
-            self.fail(f'check_extra_attrs raised ValidationError unexpectedly: {e}')
+    def test_update_customer(self):
+        # Тест обновления клиента
+        data = {
+            "customer_name": "Updated Customer",
+            "customer_type": "CM"
+        }
+        response = self.client.patch(self.customer_detail_url, data, format='json')
+        self.customer.refresh_from_db()
 
-    def test_check_extra_attrs_extra_key(self):
-        attrs = {'name': 'John', 'age': 30, 'gender': 'male'}
-        required_keys = ['name', 'age']
-        with self.assertRaises(exceptions.ValidationError):
-            YourClass.check_extra_attrs(attrs, required_keys)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(self.customer.customer_name, "Updated Customer")
 
-# class YourClassAPIViewTests(APITestCase):
-#
-#     def test_get_method(self):
-#         # Similar to previous example
-#
-#     def test_post_method(self):
-#         # Similar to previous example
-#
-#     def test_patch_method(self):
-#         # Similar to previous example
-#
-#     def test_delete_method(self):
-#         # Similar to previous example
-#
-# class YourClassTests(TestCase):
-#
-#     def test_to_representation(self):
-#         instance = YourModel.objects.create(name='John', age=30, gender='male')
-#         data = {'name': 'John', 'age': 30, 'gender': 'male'}
-#         self.assertEqu
-#
-# # class YourClassAPIViewTests(APITestCase):
-# #
-# #     def test_get_method(self):
-# #         # Similar to previous example
-# #
-# #     def test_post_method(self):
-# #         # Similar to previous example
-# #
-# #     def test_patch_method(self):
-# #         # Similar to previous example
-# #
-# #     def test_delete_method(self):
-# #         # Similar to previous example
+    def test_delete_customer(self):
+        # Тест удаления клиента
+        response = self.client.delete(self.customer_detail_url)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Customer.objects.filter(id=self.customer.id).exists())
+
+    def test_invalid_customer_creation(self):
+        # Тест создания клиента с неверными данными
+        data = {
+            "additional_id": 125,
+            "customer_name": "Invalid Customer",
+            "customer_type": "INVALID"  # Некорректный тип клиента
+        }
+        response = self.client.post(self.customer_list_url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("customer_type", response.data)
+
+    def test_unauthorized_access(self):
+        # Тест попытки доступа без авторизации
+        self.client.logout()
+        response = self.client.get(self.customer_list_url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
