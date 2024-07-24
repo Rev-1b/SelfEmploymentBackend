@@ -20,13 +20,13 @@ class CustomerListSerializer(serializers.ModelSerializer):
 class CustomerRequisitesSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomerRequisites
-        fields = ['id', 'bank_name', 'bic', 'bank_account', 'customer_account_number', 'updated_at']
+        fields = ['id', 'customer', 'bank_name', 'bic', 'bank_account', 'customer_account_number', 'updated_at']
 
 
 class CustomerContactsSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomerContacts
-        fields = ['id', 'contact_name', 'contact_type', 'contact_info', 'updated_at']
+        fields = ['id', 'customer', 'contact_name', 'contact_type', 'contact_info', 'updated_at']
 
 
 class CustomerDetailSerializer(serializers.ModelSerializer):
@@ -76,7 +76,8 @@ class CustomerDetailSerializer(serializers.ModelSerializer):
 
         customer_type = attrs.get("customer_type", None)
         if customer_type is None or customer_type not in ('CM', 'IE', 'LC'):
-            raise exceptions.ValidationError({'customer_type': "Тип заказчика не указан, либо указан некорректно"})
+            raise exceptions.ValidationError(
+                {'customer_type': "Customer type is not specified or is specified incorrectly"})
 
         if self.context.get('request').method == 'POST':
             self.check_required_attrs(attrs, table.get(customer_type))
@@ -91,9 +92,9 @@ class CustomerDetailSerializer(serializers.ModelSerializer):
     def check_required_attrs(attrs, required_keys):
         for key in required_keys:
             if key not in attrs:
-                raise exceptions.ValidationError(f'Аттрибут "{key}" не указан :)')
+                raise exceptions.ValidationError(f'The attribute "{key}" is not specified')
             if attrs[key] is None:
-                raise exceptions.ValidationError(f'Для атрибута {key} не указано значение')
+                raise exceptions.ValidationError(f'{key} attribute has no value specified')
 
     @staticmethod
     def check_extra_attrs(attrs, required_keys):
@@ -103,11 +104,8 @@ class CustomerDetailSerializer(serializers.ModelSerializer):
             copy_keys.pop(key, None)
 
         if copy_keys:
-            raise exceptions.ValidationError(f'Переданы лишние аттрибуты: ["{", ".join(copy_keys)}]"')
+            raise exceptions.ValidationError(f'Extra attributes passed: ["{", ".join(copy_keys)}]"')
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
         return {key: value for key, value in data.items() if value is not None}
-
-
-
