@@ -20,13 +20,13 @@ class CustomerListSerializer(serializers.ModelSerializer):
 class CustomerRequisitesSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomerRequisites
-        fields = ['id', 'bank_name', 'bic', 'bank_account', 'customer_account_number', 'updated_at']
+        fields = ['id', 'customer', 'bank_name', 'bic', 'bank_account', 'customer_account_number', 'updated_at']
 
 
 class CustomerContactsSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomerContacts
-        fields = ['id', 'contact_name', 'contact_type', 'contact_info', 'updated_at']
+        fields = ['id', 'customer', 'contact_name', 'contact_type', 'contact_info', 'updated_at']
 
 
 class CustomerDetailSerializer(serializers.ModelSerializer):
