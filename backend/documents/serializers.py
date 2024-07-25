@@ -127,7 +127,7 @@ class InvoiceSerializer(serializers.ModelSerializer):
 class UserTemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserTemplate
-        fields = ['id', 'template_type', 'title', 'content', 'updated_at']
+        fields = ['id', 'user', 'template_type', 'title', 'content', 'updated_at']
 
 
 class DocumentHistorySerializer(serializers.Serializer):

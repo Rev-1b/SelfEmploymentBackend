@@ -177,7 +177,7 @@ class PaymentViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        return document_models.Payment.objects.all()
+        return document_models.Payment.objects.filter(agreement__customer__user=self.request.user)
 
     def get_serializer(self, *args, **kwargs):
         serializer_class = document_serializers.PaymentSerializer

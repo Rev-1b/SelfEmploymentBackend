@@ -9,8 +9,9 @@ router.register('additional', document_views.AdditionalViewSet, basename='additi
 router.register('acts', document_views.ActViewSet, basename='acts')
 router.register('checks', document_views.CheckViewSet, basename='checks')
 router.register('invoices', document_views.InvoiceViewSet, basename='invoices')
+router.register('templates', document_views.UserTemplateViewSet, basename='templates')
 router.register('history', document_views.DocumentHistoryViewSet, basename='history')
-router.register('payments', document_views.PaymentViewSet, basename='payment')
+router.register('payments', document_views.PaymentViewSet, basename='payments')
 
 urlpatterns = [
     path('', include(router.urls)),
