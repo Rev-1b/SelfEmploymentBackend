@@ -9,7 +9,38 @@ from documents.models import Agreement, Additional, Act, CheckModel, Invoice, Us
 from users.models import CustomUser
 
 
-class DocumentSetUP(APITestCase):
+class CRUDLTestMixin:
+    list_url = None
+    detail_url = None
+
+    @staticmethod
+    def check_list(test_case, url_name, expected_number):
+        response = test_case.client.get(url_name)
+        test_case.assertEqual(response.status_code, status.HTTP_200_OK)
+        test_case.assertEqual(len(response.data.get('results')), expected_number)
+
+    @staticmethod
+    def check_create(test_case, url_name, body, model, expected_number):
+        response = test_case.client.post(url_name, body)
+        test_case.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        test_case.assertEqual(model.objects.count(), expected_number)
+
+    @staticmethod
+    def check_update(test_case, url_name, body, instance):
+        response = test_case.client.patch(url_name, body)
+        test_case.assertEqual(response.status_code, status.HTTP_200_OK)
+        instance.refresh_from_db()
+        for attr, value in body.items():
+            test_case.assertEqual(getattr(instance, attr), value)
+
+    @staticmethod
+    def check_delete(test_case, url_name, model, expected_number):
+        response = test_case.client.delete(url_name)
+        test_case.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        test_case.assertEqual(model.objects.count(), expected_number)
+
+
+class DocumentSetUP(APITestCase, CRUDLTestMixin):
     def setUp(self):
         self.client = APIClient()
         self.user = CustomUser.objects.create_user(username="testuser", password="password")
@@ -30,13 +61,13 @@ class DocumentSetUP(APITestCase):
             end_date=date.today()
         )
 
+
+class AgreementViewSetTests(DocumentSetUP):
+    def setUp(self):
+        super().setUp()
         self.agreement_list_url = reverse('agreements-list')
         self.agreement_detail_url = reverse('agreements-detail', args=[self.agreement.id])
 
-        return self.agreement
-
-
-class AgreementViewSetTests(DocumentSetUP):
     def test_get_agreement_list(self):
         response = self.client.get(self.agreement_list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -71,26 +102,9 @@ class AgreementViewSetTests(DocumentSetUP):
         self.assertEqual(Agreement.objects.count(), 0)
 
 
-class AdditionalViewSetTests(APITestCase):
+class AdditionalViewSetTests(DocumentSetUP):
     def setUp(self):
-        self.client = APIClient()
-        self.user = CustomUser.objects.create_user(username="testuser", password="password")
-        self.client.force_authenticate(user=self.user)
-        self.customer = Customer.objects.create(
-            additional_id=123,
-            user=self.user,
-            customer_name="Test Customer",
-            customer_type="CM"
-        )
-        self.agreement = Agreement.objects.create(
-            customer=self.customer,
-            number="AG123456",
-            content="Agreement content",
-            status=Agreement.StatusChoices.CREATED,
-            deal_amount=1000,
-            start_date=date.today(),
-            end_date=date.today()
-        )
+        super().setUp()
         self.additional = Additional.objects.create(
             agreement=self.agreement,
             number="AD654321",
@@ -134,26 +148,9 @@ class AdditionalViewSetTests(APITestCase):
         self.assertEqual(Additional.objects.count(), 0)
 
 
-class ActViewSetTests(APITestCase):
+class ActViewSetTests(DocumentSetUP):
     def setUp(self):
-        self.client = APIClient()
-        self.user = CustomUser.objects.create_user(username="testuser", password="password")
-        self.client.force_authenticate(user=self.user)
-        self.customer = Customer.objects.create(
-            additional_id=123,
-            user=self.user,
-            customer_name="Test Customer",
-            customer_type="CM"
-        )
-        self.agreement = Agreement.objects.create(
-            customer=self.customer,
-            number="AG123456",
-            content="Agreement content",
-            status=Agreement.StatusChoices.CREATED,
-            deal_amount=1000,
-            start_date=date.today(),
-            end_date=date.today()
-        )
+        super().setUp()
         self.act = Act.objects.create(
             agreement=self.agreement,
             number="ACT789012",
@@ -197,32 +194,22 @@ class ActViewSetTests(APITestCase):
         self.assertEqual(Act.objects.count(), 0)
 
 
-# class CheckViewSetTests(APITestCase):
-#
+# class CheckViewSetTests(DocumentSetUP):
 #     def setUp(self):
-#         self.client = APIClient()
-#         self.user = CustomUser.objects.create_user(username="testuser", password="password")
-#         self.client.force_authenticate(user=self.user)
-#         self.customer = Customer.objects.create(user=self.user, customer_name="Test Customer")
-#         self.agreement = Agreement.objects.create(
-#             customer=self.customer,
-#             number="AG123456",
-#             content="Agreement content",
-#             status=Agreement.StatusChoices.CREATED,
-#             deal_amount=1000,
-#             start_date=date.today(),
-#             end_date=date.today()
-#         )
+#         super().setUp()
 #         self.check = CheckModel.objects.create(
 #             agreement=self.agreement,
 #             number="CHK345678",
 #             amount=300
 #         )
 #
+#         self.check_list_url = reverse('checks-list')
+#         self.check_detail_url = reverse('checks-detail', args=[self.check.id])
+#
 #     def test_get_check_list(self):
-#         response = self.client.get(f'/api/checks/?agreement_id={self.agreement.id}')
+#         response = self.client.get(f'{self.check_list_url}?agreement_id={self.agreement.id}')
 #         self.assertEqual(response.status_code, status.HTTP_200_OK)
-#         self.assertEqual(len(response.data), 1)
+#         self.assertEqual(len(response.data.get('result')), 1)
 #
 #     def test_create_check(self):
 #         data = {
@@ -230,7 +217,7 @@ class ActViewSetTests(APITestCase):
 #             "number": "CHK987654",
 #             "amount": 500
 #         }
-#         response = self.client.post('/api/checks/', data)
+#         response = self.client.post(f'{self.check_list_url}?agreement_id={self.agreement.id}', data)
 #         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 #         self.assertEqual(CheckModel.objects.count(), 2)
 #
@@ -247,7 +234,7 @@ class ActViewSetTests(APITestCase):
 #         response = self.client.delete(f'/api/checks/{self.check.id}/')
 #         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 #         self.assertEqual(CheckModel.objects.count(), 0)
-#
+
 #
 # class InvoiceViewSetTests(APITestCase):
 #
