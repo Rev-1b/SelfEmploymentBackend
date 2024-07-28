@@ -160,7 +160,7 @@ class DocumentHistoryViewSet(mixins.ListModelMixin,
         sorted_records = sorted(all_records, key=lambda x: x['updated_at'], reverse=True)
 
         serializer = document_serializers.DocumentHistorySerializer(sorted_records, many=True)
-        return JsonResponse({"latest_records": serializer.data})
+        return Response({"latest_records": serializer.data})
 
 
 def get_records_number(self):
