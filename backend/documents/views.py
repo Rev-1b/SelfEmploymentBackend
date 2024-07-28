@@ -46,13 +46,13 @@ class AdditionalViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         agreement_id, _ = get_master_id(self).values()
         agreement_additional = document_models.Additional.objects.filter(agreement=agreement_id).order_by('-updated_at')
-
-        if self.action == 'retrieve':
+        if self.action in ['retrieve', 'list']:
             return agreement_additional.annotate(
                 act_sum=models.Count('acts', distinct=True),
                 check_sum=models.Count('checks', distinct=True),
                 invoice_sum=models.Count('invoices', distinct=True),
             )
+
         return agreement_additional
 
     def get_serializer(self, *args, **kwargs):
@@ -103,9 +103,9 @@ def get_master_id(self):
     additional_id = self.request.query_params.get('additional_id', None)
 
     if agreement_id is None and additional_id is None:
-        raise exceptions.ValidationError(f'Не указан "agreement_id" или "additional_id" в параметрах запроса')
+        raise exceptions.ValidationError(f'No "agreement_id" or "additional_id" specified in request parameters')
     if agreement_id and additional_id:
-        raise exceptions.ValidationError(f'В параметрах запроса указаны id обоих родителей')
+        raise exceptions.ValidationError(f'The request parameters contain the ids of both parents')
     return {'agreement_id': agreement_id, 'additional_id': additional_id}
 
 
@@ -160,7 +160,7 @@ class DocumentHistoryViewSet(mixins.ListModelMixin,
         sorted_records = sorted(all_records, key=lambda x: x['updated_at'], reverse=True)
 
         serializer = document_serializers.DocumentHistorySerializer(sorted_records, many=True)
-        return JsonResponse({"latest_records": serializer.data})
+        return Response({"latest_records": serializer.data})
 
 
 def get_records_number(self):
@@ -177,7 +177,7 @@ class PaymentViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        return document_models.Payment.objects.all()
+        return document_models.Payment.objects.filter(agreement__customer__user=self.request.user)
 
     def get_serializer(self, *args, **kwargs):
         serializer_class = document_serializers.PaymentSerializer
