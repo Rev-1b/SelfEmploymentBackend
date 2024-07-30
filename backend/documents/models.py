@@ -4,6 +4,24 @@ from customers.models import Customer, CustomUser
 from users.models import CustomModel
 
 
+class AgreementQuerySet(models.QuerySet):
+    def with_sums(self):
+        return self.annotate(
+            additional_sum=models.Count('additional', distinct=True),
+            act_sum=models.Count('acts', distinct=True),
+            check_sum=models.Count('checks', distinct=True),
+            invoice_sum=models.Count('invoices', distinct=True),
+        )
+
+
+class AgreementManager(models.Manager):
+    def get_queryset(self):
+        return AgreementQuerySet(self.model, using=self._db)
+
+    def with_sums(self):
+        return self.get_queryset().with_sums()
+
+
 class Agreement(CustomModel):
     class Meta(CustomModel.Meta):
         verbose_name = 'Договор'
@@ -29,6 +47,26 @@ class Agreement(CustomModel):
     start_date = models.DateField(verbose_name='Дата заключения договора', null=True, blank=True)
     end_date = models.DateField(verbose_name='Дата окончания договора', null=True, blank=True)
 
+    objects = AgreementManager()
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+class AdditionalQuerySet(models.QuerySet):
+    def with_sums(self):
+        return self.annotate(
+            act_sum=models.Count('acts', distinct=True),
+            check_sum=models.Count('checks', distinct=True),
+            invoice_sum=models.Count('invoices', distinct=True),
+        )
+
+
+class AdditionalManager(models.Manager):
+    def get_queryset(self):
+        return AdditionalQuerySet(self.model, using=self._db)
+
+    def with_sums(self):
+        return self.get_queryset().with_sums()
+
 
 class Additional(CustomModel):
     class Meta(CustomModel.Meta):
@@ -44,6 +82,8 @@ class Additional(CustomModel):
     title = models.CharField(max_length=150, verbose_name='Название дополнения')
     content = models.TextField(verbose_name='Текст дополнения')
     deal_amount = models.IntegerField(default=0, verbose_name='Сумма сделки')
+
+    objects = AdditionalManager()
 
 
 class Act(CustomModel):
@@ -159,8 +199,6 @@ class Payment(CustomModel):
     invoice = models.ForeignKey(to=Invoice, on_delete=models.CASCADE, related_name='payment',
                                 null=True, blank=True, verbose_name='Счет')
     check_link = models.ForeignKey(to=CheckModel, on_delete=models.CASCADE, related_name='payment',
-                              null=True, blank=True, verbose_name='Чек')
+                                   null=True, blank=True, verbose_name='Чек')
 
     objects = PaymentManager()
-
-

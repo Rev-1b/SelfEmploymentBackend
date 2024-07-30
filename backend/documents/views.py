@@ -1,7 +1,5 @@
 from datetime import datetime, timedelta
 
-from django.db import models
-from django.http import JsonResponse
 from rest_framework import viewsets, permissions, exceptions, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -18,14 +16,7 @@ class AgreementViewSet(viewsets.ModelViewSet):
         user_agreements = document_models.Agreement.objects.filter(customer__user=self.request.user).order_by(
             '-updated_at')
 
-        if self.action in ['retrieve', 'list']:
-            return user_agreements.annotate(
-                additional_sum=models.Count('additional', distinct=True),
-                act_sum=models.Count('acts', distinct=True),
-                check_sum=models.Count('checks', distinct=True),
-                invoice_sum=models.Count('invoices', distinct=True),
-            )
-        return user_agreements
+        return user_agreements.with_sums() if self.action in ['retrieve', 'list'] else user_agreements
 
     def get_serializer(self, *args, **kwargs):
         if self.action == 'list':
@@ -46,14 +37,7 @@ class AdditionalViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         agreement_id, _ = get_master_id(self).values()
         agreement_additional = document_models.Additional.objects.filter(agreement=agreement_id).order_by('-updated_at')
-        if self.action in ['retrieve', 'list']:
-            return agreement_additional.annotate(
-                act_sum=models.Count('acts', distinct=True),
-                check_sum=models.Count('checks', distinct=True),
-                invoice_sum=models.Count('invoices', distinct=True),
-            )
-
-        return agreement_additional
+        return agreement_additional.with_sums() if self.action in ['retrieve', 'list'] else agreement_additional
 
     def get_serializer(self, *args, **kwargs):
         if self.action == 'list':
