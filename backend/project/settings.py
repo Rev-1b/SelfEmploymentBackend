@@ -26,7 +26,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # only for dev
 SECRET_KEY = 'django-insecure-&7f_u76e*=d@1+1j8*rm-e7l04$7#4%ogae7kczfm003257_6i'
 
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -45,6 +44,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework_simplejwt',
     'djoser',
+    'django_filters',
 
     # local
     'users',
