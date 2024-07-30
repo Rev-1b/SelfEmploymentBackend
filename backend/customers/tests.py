@@ -1,6 +1,7 @@
-from rest_framework.test import APITestCase, APIClient
-from rest_framework import status
 from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase, APIClient
+
 from .models import Customer, CustomerRequisites, CustomerContacts, CustomUser, CustomerPassport
 from .serializers import CustomerRequisitesSerializer, CustomerContactsSerializer, CustomerListSerializer, \
     CustomerDetailSerializer
@@ -37,6 +38,14 @@ class CustomerViewSetTest(APITestCase):
         # Тест получения списка клиентов
         response = self.client.get(self.customer_list_url)
         customers = Customer.objects.filter(user=self.user)
+        serializer = CustomerListSerializer(customers, many=True)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('results'), serializer.data)
+
+    def test_get_customer_filtered_list(self):
+        response = self.client.get(self.customer_list_url, data={'customer_type': 'CM'})
+        customers = Customer.objects.filter(user=self.user, customer_type='CM')
         serializer = CustomerListSerializer(customers, many=True)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -130,10 +139,18 @@ class CustomerRequisitesViewSetTest(APITestCase):
             bank_account="000000000000",
             customer_account_number="1234567890123456"
         )
+        CustomerRequisites.objects.create(
+            customer=self.customer,
+            bank_name="Sberbank",
+            bic="123456789",
+            bank_account="000000000000",
+            customer_account_number="1234567890123456"
+        )
 
         # URL для тестов
-        self.requisite_list_url = reverse('customer-requisites-list')
-        self.requisite_detail_url = reverse('customer-requisites-detail', args=[self.requisite.id])
+        self.requisite_list_url = reverse('customer-requisites-list') + f'?customer_id={self.customer.id}'
+        self.requisite_detail_url = reverse('customer-requisites-detail',
+                                            args=[self.requisite.id]) + f'?customer_id={self.customer.id}'
 
     def test_get_requisites_list(self):
         # Тест получения списка реквизитов
@@ -143,6 +160,23 @@ class CustomerRequisitesViewSetTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('results'), serializer.data)
+
+    def test_get_requisites_filtered_list(self):
+        # Не пользуюсь self.url потому что нужно дополнительно использовать data в client.get()
+        response = self.client.get(reverse('customer-requisites-list'),
+                                   data={'bank_name': 'Sberbank', 'customer_id': self.customer.id})
+        requisites = CustomerRequisites.objects.filter(customer__user=self.user, bank_name='Sberbank')
+        serializer = CustomerRequisitesSerializer(requisites, many=True)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('results'), serializer.data)
+
+    def test_bad_filter(self):
+        # Не пользуюсь self.url потому что нужно дополнительно использовать data в client.get()
+        response = self.client.get(reverse('customer-requisites-list'),
+                                   data={'bank_name': 'Sberbankswdfsd', 'customer_id': self.customer.id})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('results'), [])
 
     def test_get_requisite_detail(self):
         # Тест получения деталей реквизита
@@ -164,7 +198,7 @@ class CustomerRequisitesViewSetTest(APITestCase):
         response = self.client.post(self.requisite_list_url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(CustomerRequisites.objects.count(), 2)
+        self.assertEqual(CustomerRequisites.objects.count(), 3)
         self.assertEqual(CustomerRequisites.objects.get(id=response.data['id']).bank_name, "New Bank")
 
     def test_update_requisite(self):
@@ -227,10 +261,17 @@ class CustomerContactsViewSetTest(APITestCase):
             contact_type="PH",
             contact_info="+123456789"
         )
+        CustomerContacts.objects.create(
+            customer=self.customer,
+            contact_name="John Doe",
+            contact_type="EL",
+            contact_info="test@gmail.com"
+        )
 
         # URL для тестов
-        self.contact_list_url = reverse('customer-contacts-list')
-        self.contact_detail_url = reverse('customer-contacts-detail', args=[self.contact.id])
+        self.contact_list_url = reverse('customer-contacts-list') + f'?customer_id={self.customer.id}'
+        self.contact_detail_url = reverse('customer-contacts-detail',
+                                          args=[self.contact.id]) + f'?customer_id={self.customer.id}'
 
     def test_get_contacts_list(self):
         # Тест получения списка контактов
@@ -240,6 +281,23 @@ class CustomerContactsViewSetTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('results'), serializer.data)
+
+    def test_get_contacts_filtered_list(self):
+        # Не пользуюсь self.url потому что нужно дополнительно использовать data в client.get()
+        response = self.client.get(reverse('customer-contacts-list'),
+                                   data={'contact_type': 'PH', 'customer_id': self.customer.id})
+
+        contacts = CustomerContacts.objects.filter(customer__user=self.user, contact_type='PH')
+        serializer = CustomerContactsSerializer(contacts, many=True)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('results'), serializer.data)
+
+    def test_bad_filter(self):
+        response = self.client.get(reverse('customer-contacts-list'),
+                                   data={'contact_type': 'PHdsadsf', 'customer_id': self.customer.id})
+        # ожидаем 400, так как content_type указан через TextChoices
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_get_contact_detail(self):
         # Тест получения деталей контакта
@@ -260,7 +318,7 @@ class CustomerContactsViewSetTest(APITestCase):
         response = self.client.post(self.contact_list_url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(CustomerContacts.objects.count(), 2)
+        self.assertEqual(CustomerContacts.objects.count(), 3)
         self.assertEqual(CustomerContacts.objects.get(id=response.data['id']).contact_name, "Jane Doe")
 
     def test_update_contact(self):
