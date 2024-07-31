@@ -21,6 +21,12 @@ class CRUDLTestMixin:
         return response
 
     @staticmethod
+    def check_bad_filtered_list(test_case, url_name):
+        response = test_case.client.get(url_name)
+        test_case.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        return response
+
+    @staticmethod
     def check_create(test_case, url_name, body, model, expected_number):
         response = test_case.client.post(url_name, body)
         test_case.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -75,6 +81,21 @@ class AgreementViewSetTests(DocumentSetUP):
     def test_get_agreement_list(self):
         self.check_list(self, self.agreement_list_url, 1)
 
+    def test_customer_type_filtered_list(self):
+        self.check_list(self, self.agreement_list_url + '?customer__customer_type=CM', 1)
+
+    def test_non_existing_customer_type_filtered_list(self):
+        self.check_list(self, self.agreement_list_url + '?customer__customer_type=IE', 0)
+
+    def test_invalid_customer_type_filtered_list(self):
+        self.check_bad_filtered_list(self, self.agreement_list_url + '?customer__customer_type=IdaE')
+
+    def test_status_filtered_list(self):
+        self.check_list(self, self.agreement_list_url + f'?status={Agreement.StatusChoices.CREATED}', 1)
+
+    def test_invalid_status_filtered_list(self):
+        self.check_bad_filtered_list(self, self.agreement_list_url + '?status=IdaE')
+
     def test_create_agreement(self):
         data = {
             "customer": self.customer.id,
@@ -106,7 +127,8 @@ class AdditionalViewSetTests(DocumentSetUP):
             number="AD654321",
             title="Additional title",
             content="Additional content",
-            deal_amount=500
+            deal_amount=500,
+            status='CR'
         )
 
         self.additional_list_url = reverse('additional-list') + f'?agreement_id={self.agreement.id}'
@@ -115,6 +137,12 @@ class AdditionalViewSetTests(DocumentSetUP):
 
     def test_get_additional_list(self):
         self.check_list(self, self.additional_list_url, 1)
+
+    def test_status_filtered_list(self):
+        self.check_list(self, self.additional_list_url + f'&status={Additional.StatusChoices.CREATED}', 1)
+
+    def test_invalid_status_filtered_list(self):
+        self.check_bad_filtered_list(self, self.additional_list_url + '&status=IdaE')
 
     def test_create_additional(self):
         data = {

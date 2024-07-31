@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, permissions, exceptions, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -11,6 +12,8 @@ from . import models as document_models, serializers as document_serializers
 class AgreementViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardResultsSetPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['customer__customer_type', 'status']
 
     def get_queryset(self):
         user_agreements = document_models.Agreement.objects.filter(customer__user=self.request.user).order_by(
@@ -33,6 +36,8 @@ class AgreementViewSet(viewsets.ModelViewSet):
 class AdditionalViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardResultsSetPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['status']
 
     def get_queryset(self):
         agreement_id, _ = get_master_id(self).values()
