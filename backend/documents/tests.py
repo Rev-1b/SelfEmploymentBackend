@@ -182,6 +182,12 @@ class ActViewSetTests(DocumentSetUP):
     def test_get_act_list(self):
         self.check_list(self, self.act_list_url, 1)
 
+    def test_status_filtered_list(self):
+        self.check_list(self, self.act_list_url + f'&status={Act.StatusChoices.CREATED}', 1)
+
+    def test_invalid_status_filtered_list(self):
+        self.check_bad_filtered_list(self, self.act_list_url + '&status=IdaE')
+
     def test_create_act(self):
         data = {
             "agreement": self.agreement.id,
@@ -252,6 +258,12 @@ class InvoiceViewSetTests(DocumentSetUP):
     def test_get_invoice_list(self):
         self.check_list(self, self.invoice_list_url, 1)
 
+    def test_status_filtered_list(self):
+        self.check_list(self, self.invoice_list_url + f'&status={Invoice.StatusChoices.CREATED}', 1)
+
+    def test_invalid_status_filtered_list(self):
+        self.check_bad_filtered_list(self, self.invoice_list_url + '&status=IdaE')
+
     def test_create_invoice(self):
         data = {
             "agreement": self.agreement.id,
@@ -289,6 +301,12 @@ class UserTemplateViewSetTests(APITestCase, CRUDLTestMixin):
     def test_get_user_template_list(self):
         self.check_list(self, self.template_list_url, 1)
 
+    def test_template_type_filtered_list(self):
+        self.check_list(self, self.template_list_url + f'?template_type={UserTemplate.TemplateTypeChoices.AGREEMENT}', 1)
+
+    def test_invalid_template_type_filtered_list(self):
+        self.check_bad_filtered_list(self, self.template_list_url + '?template_type=IdaE')
+
     def test_create_user_template(self):
         data = {
             "user": self.user.id,
@@ -312,7 +330,8 @@ class PaymentViewSetTests(DocumentSetUP):
     def setUp(self):
         super().setUp()
         self.payment = Payment.objects.create(
-            agreement=self.agreement
+            agreement=self.agreement,
+            status=Payment.StatusChoices.INITIATED
         )
 
         self.payment_list_url = reverse('payments-list')
@@ -320,6 +339,12 @@ class PaymentViewSetTests(DocumentSetUP):
 
     def test_get_payment_list(self):
         self.check_list(self, self.payment_list_url, 1)
+
+    def test_status_filtered_list(self):
+        self.check_list(self, self.payment_list_url + f'?status={Payment.StatusChoices.INITIATED}', 1)
+
+    def test_invalid_status_filtered_list(self):
+        self.check_bad_filtered_list(self, self.payment_list_url + '?status=IdaE')
 
     def test_create_payment(self):
         data = {

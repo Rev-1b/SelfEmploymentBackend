@@ -75,6 +75,8 @@ class CommonDocumentViewSet(viewsets.ModelViewSet):
 class ActViewSet(CommonDocumentViewSet):
     serializer_class = document_serializers.ActSerializer
     model_class = document_models.Act
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['status']
 
 
 class CheckViewSet(CommonDocumentViewSet):
@@ -85,6 +87,8 @@ class CheckViewSet(CommonDocumentViewSet):
 class InvoiceViewSet(CommonDocumentViewSet):
     serializer_class = document_serializers.InvoiceSerializer
     model_class = document_models.Invoice
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['status']
 
 
 def get_master_id(self):
@@ -101,6 +105,8 @@ def get_master_id(self):
 class UserTemplateViewSet(viewsets.ModelViewSet):
     permissions = [permissions.IsAuthenticated]
     pagination_class = StandardResultsSetPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['template_type']
 
     def get_queryset(self):
         return document_models.UserTemplate.objects.filter(user=self.request.user)
@@ -164,6 +170,8 @@ def get_records_number(self):
 class PaymentViewSet(viewsets.ModelViewSet):
     permissions = [permissions.IsAuthenticated]
     pagination_class = StandardResultsSetPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['status']
 
     def get_queryset(self):
         return document_models.Payment.objects.filter(agreement__customer__user=self.request.user)
