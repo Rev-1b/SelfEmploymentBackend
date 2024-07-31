@@ -73,6 +73,10 @@ class Additional(CustomModel):
         verbose_name = 'Дополнение к договору'
         verbose_name_plural = 'Дополнения к договору'
 
+    class StatusChoices(models.TextChoices):
+        CREATED = 'CR', 'Создан'
+        CLOSED = 'CL', 'Закрыт'
+
     def __str__(self):
         return f'Дополнение {self.title} к договору {self.agreement}'
 
@@ -82,6 +86,8 @@ class Additional(CustomModel):
     title = models.CharField(max_length=150, verbose_name='Название дополнения')
     content = models.TextField(verbose_name='Текст дополнения')
     deal_amount = models.IntegerField(default=0, verbose_name='Сумма сделки')
+    status = models.CharField(max_length=2, choices=StatusChoices.choices, default=StatusChoices.CREATED,
+                              verbose_name='Статус Дополнения')
 
     objects = AdditionalManager()
 
@@ -104,7 +110,7 @@ class Act(CustomModel):
     content = models.TextField(verbose_name='Текст акта')
     agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, null=True, blank=True, related_name='acts')
     additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True, related_name='acts')
-    status = models.CharField(max_length=2, choices=StatusChoices, default=StatusChoices.CREATED,
+    status = models.CharField(max_length=2, choices=StatusChoices.choices, default=StatusChoices.CREATED,
                               verbose_name='Статус акта')
 
 
@@ -127,7 +133,7 @@ class Invoice(CustomModel):
                                   related_name='invoices')
     additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True,
                                    related_name='invoices')
-    status = models.CharField(max_length=2, choices=StatusChoices, default=StatusChoices.CREATED,
+    status = models.CharField(max_length=2, choices=StatusChoices.choices, default=StatusChoices.CREATED,
                               verbose_name='Статус счета')
 
 
@@ -162,7 +168,7 @@ class UserTemplate(CustomModel):
     user = models.ForeignKey(to=CustomUser, on_delete=models.CASCADE, related_name='templates',
                              verbose_name='Пользователь')
     title = models.CharField(max_length=150, verbose_name='Название шаблона')
-    template_type = models.CharField(max_length=2, choices=TemplateTypeChoices, verbose_name='Тип шаблона')
+    template_type = models.CharField(max_length=2, choices=TemplateTypeChoices.choices, verbose_name='Тип шаблона')
     content = models.TextField(verbose_name='Тело шаблона')
 
 
@@ -190,6 +196,10 @@ class Payment(CustomModel):
         verbose_name = "Платеж"
         verbose_name_plural = "Платежи"
 
+    class StatusChoices(models.TextChoices):
+        INITIATED = 'IN', 'Инициирован'
+        CLOSED = 'CL', 'Проведен'
+
     agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, related_name='payments',
                                   null=True, blank=True, verbose_name='Договор')
     additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, related_name='payments',
@@ -200,5 +210,7 @@ class Payment(CustomModel):
                                 null=True, blank=True, verbose_name='Счет')
     check_link = models.ForeignKey(to=CheckModel, on_delete=models.CASCADE, related_name='payment',
                                    null=True, blank=True, verbose_name='Чек')
+    status = models.CharField(max_length=2, choices=StatusChoices.choices, default=StatusChoices.INITIATED,
+                              verbose_name='Статус счета')
 
     objects = PaymentManager()
