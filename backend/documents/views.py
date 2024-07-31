@@ -1,19 +1,44 @@
 from datetime import datetime, timedelta
 
+from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, permissions, exceptions, mixins
+from rest_framework import viewsets, permissions, exceptions, mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.viewsets import ViewSet
 
 from project.pagination import StandardResultsSetPagination
 from . import models as document_models, serializers as document_serializers
 
 
-class AgreementViewSet(viewsets.ModelViewSet):
+class ListNumberSearchMixin:
+    search_fields = None
+
+    @action(detail=False)
+    def search(self: ViewSet(), request):
+        if self.search_fields is None:
+            return Response({'detail': 'search_fields attribute is not specified!'}, status=status.HTTP_400_BAD_REQUEST)
+
+        query = request.query_params.get('q', None)
+        if query is None:
+            return Response([], status=status.HTTP_200_OK)
+
+        queries = [Q(**{f"{field}__istartswith": query}) for field in self.search_fields]
+        query_obj = Q()
+        for q in queries:
+            query_obj |= q
+
+        results = self.get_queryset().filter(query_obj).order_by('-updated_at')
+        serializer = self.get_serializer(results, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AgreementViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['customer__customer_type', 'status']
+    search_fields = ['number']
 
     def get_queryset(self):
         user_agreements = document_models.Agreement.objects.filter(customer__user=self.request.user).order_by(
@@ -26,6 +51,8 @@ class AgreementViewSet(viewsets.ModelViewSet):
             serializer_class = document_serializers.AgreementMainPageSerializer
         elif self.action == 'retrieve':
             serializer_class = document_serializers.AgreementDetailSerializer
+        elif self.action == 'search':
+            serializer_class = document_serializers.AgreementListSerializer
         else:
             serializer_class = document_serializers.AgreementCUDSerializer
 
@@ -33,11 +60,12 @@ class AgreementViewSet(viewsets.ModelViewSet):
         return serializer_class(*args, **kwargs)
 
 
-class AdditionalViewSet(viewsets.ModelViewSet):
+class AdditionalViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['status']
+    search_fields = ['number', 'title']
 
     def get_queryset(self):
         agreement_id, _ = get_master_id(self).values()
@@ -56,7 +84,7 @@ class AdditionalViewSet(viewsets.ModelViewSet):
         return serializer_class(*args, **kwargs)
 
 
-class CommonDocumentViewSet(viewsets.ModelViewSet):
+class CommonDocumentViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardResultsSetPagination
     model_class = None
@@ -77,11 +105,13 @@ class ActViewSet(CommonDocumentViewSet):
     model_class = document_models.Act
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['status']
+    search_fields = ['number', 'title']
 
 
 class CheckViewSet(CommonDocumentViewSet):
     serializer_class = document_serializers.CheckSerializer
     model_class = document_models.CheckModel
+    search_fields = ['number']
 
 
 class InvoiceViewSet(CommonDocumentViewSet):
@@ -89,6 +119,7 @@ class InvoiceViewSet(CommonDocumentViewSet):
     model_class = document_models.Invoice
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['status']
+    search_fields = ['number']
 
 
 def get_master_id(self):
@@ -107,6 +138,7 @@ class UserTemplateViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['template_type']
+    search_fields = ['title']
 
     def get_queryset(self):
         return document_models.UserTemplate.objects.filter(user=self.request.user)
