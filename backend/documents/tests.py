@@ -302,7 +302,8 @@ class UserTemplateViewSetTests(APITestCase, CRUDLTestMixin):
         self.check_list(self, self.template_list_url, 1)
 
     def test_template_type_filtered_list(self):
-        self.check_list(self, self.template_list_url + f'?template_type={UserTemplate.TemplateTypeChoices.AGREEMENT}', 1)
+        self.check_list(self, self.template_list_url + f'?template_type={UserTemplate.TemplateTypeChoices.AGREEMENT}',
+                        1)
 
     def test_invalid_template_type_filtered_list(self):
         self.check_bad_filtered_list(self, self.template_list_url + '?template_type=IdaE')
