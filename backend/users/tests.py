@@ -126,7 +126,7 @@ class UserRegistrationTestCase(APITestCase):
         self.assertEqual(response.data, {"new_password": 'Пароль успешно сменен'})
 
     def test_user_details(self):
-        url = reverse('user-profile')
+        url = reverse('user-me')
         data = {
             'first_name': 'John',
             'last_name': 'Doe',
@@ -137,7 +137,7 @@ class UserRegistrationTestCase(APITestCase):
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        new_url = reverse('user-profile')
+        new_url = reverse('user-me')
         new_response = self.client.get(new_url, format='json')
         passport_data = new_response.data.pop('passport')
 

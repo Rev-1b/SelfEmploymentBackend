@@ -68,6 +68,10 @@ class AdditionalViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
     search_fields = ['number', 'title']
 
     def get_queryset(self):
+        # Swagger
+        if getattr(self, 'swagger_fake_view', False):
+            return document_models.Additional.objects.none()
+
         agreement_id, _ = get_master_id(self).values()
         agreement_additional = document_models.Additional.objects.filter(agreement=agreement_id).order_by('-updated_at')
         return agreement_additional.with_sums() if self.action in ['retrieve', 'list'] else agreement_additional
@@ -93,6 +97,10 @@ class CommonDocumentViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
         model = self.model_class
         if model is None:
             raise Exception('Не указан класс модели')
+
+        # Swagger
+        if getattr(self, 'swagger_fake_view', False):
+            return model.objects.none()
 
         agreement_id, additional_id = get_master_id(self).values()
         if agreement_id is not None:
@@ -153,6 +161,7 @@ class UserTemplateViewSet(viewsets.ModelViewSet):
 class DocumentHistoryViewSet(mixins.ListModelMixin,
                              viewsets.GenericViewSet):
     permissions = [permissions.IsAuthenticated]
+    serializer_class = document_serializers.DocumentHistorySerializer
 
     def list(self, request, *args, **kwargs):
         records = get_records_number(self)
@@ -186,7 +195,7 @@ class DocumentHistoryViewSet(mixins.ListModelMixin,
         all_records = [rec for records in record_registry.values() for rec in records]
         sorted_records = sorted(all_records, key=lambda x: x['updated_at'], reverse=True)
 
-        serializer = document_serializers.DocumentHistorySerializer(sorted_records, many=True)
+        serializer = self.get_serializer(sorted_records, many=True)
         return Response({"latest_records": serializer.data})
 
 
