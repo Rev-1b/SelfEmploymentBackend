@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, permissions, exceptions, mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -68,6 +70,10 @@ class AdditionalViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
     search_fields = ['number', 'title']
 
     def get_queryset(self):
+        # Swagger
+        if getattr(self, 'swagger_fake_view', False):
+            return document_models.Additional.objects.none()
+
         agreement_id, _ = get_master_id(self).values()
         agreement_additional = document_models.Additional.objects.filter(agreement=agreement_id).order_by('-updated_at')
         return agreement_additional.with_sums() if self.action in ['retrieve', 'list'] else agreement_additional
@@ -83,6 +89,13 @@ class AdditionalViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
         kwargs.setdefault('context', self.get_serializer_context())
         return serializer_class(*args, **kwargs)
 
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter('agreement_id', openapi.IN_QUERY, description="ID of linked agreement",
+                          type=openapi.TYPE_STRING, required=True)
+    ])
+    def list(self, request, *args, **kwargs):
+        super(AdditionalViewSet, self).list(request, *args, **kwargs)
+
 
 class CommonDocumentViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
     permission_classes = [permissions.IsAuthenticated]
@@ -94,10 +107,25 @@ class CommonDocumentViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
         if model is None:
             raise Exception('Не указан класс модели')
 
+        # Swagger
+        if getattr(self, 'swagger_fake_view', False):
+            return model.objects.none()
+
         agreement_id, additional_id = get_master_id(self).values()
         if agreement_id is not None:
             return model.objects.filter(agreement__customer__user=self.request.user, agreement=agreement_id)
         return model.objects.filter(additional__agreement__customer__user=self.request.user, additional=additional_id)
+
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter('agreement_id', openapi.IN_QUERY,
+                          description="ID of linked agreement, you wil need one of those", type=openapi.TYPE_STRING,
+                          required=False),
+        openapi.Parameter('additional_id', openapi.IN_QUERY,
+                          description="ID of linked additional, you wil need one of those", type=openapi.TYPE_STRING,
+                          required=False)
+    ])
+    def list(self, request, *args, **kwargs):
+        super().list(request, *args, **kwargs)
 
 
 class ActViewSet(CommonDocumentViewSet):
@@ -153,6 +181,7 @@ class UserTemplateViewSet(viewsets.ModelViewSet):
 class DocumentHistoryViewSet(mixins.ListModelMixin,
                              viewsets.GenericViewSet):
     permissions = [permissions.IsAuthenticated]
+    serializer_class = document_serializers.DocumentHistorySerializer
 
     def list(self, request, *args, **kwargs):
         records = get_records_number(self)
@@ -186,7 +215,7 @@ class DocumentHistoryViewSet(mixins.ListModelMixin,
         all_records = [rec for records in record_registry.values() for rec in records]
         sorted_records = sorted(all_records, key=lambda x: x['updated_at'], reverse=True)
 
-        serializer = document_serializers.DocumentHistorySerializer(sorted_records, many=True)
+        serializer = self.get_serializer(sorted_records, many=True)
         return Response({"latest_records": serializer.data})
 
 

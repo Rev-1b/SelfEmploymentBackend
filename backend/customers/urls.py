@@ -5,8 +5,8 @@ from customers.views import CustomerViewSet, CustomerContactsViewSet, CustomerRe
 
 router = routers.DefaultRouter()
 router.register('', CustomerViewSet, 'customers')
-router.register('contacts/', CustomerContactsViewSet, 'customer-contacts')
-router.register('requisites/', CustomerRequisitesViewSet, 'customer-requisites')
+router.register('contacts', CustomerContactsViewSet, 'customer-contacts')
+router.register('requisites', CustomerRequisitesViewSet, 'customer-requisites')
 
 urlpatterns = [
     path('', include(router.urls)),

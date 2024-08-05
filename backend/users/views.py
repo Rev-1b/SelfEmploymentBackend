@@ -1,7 +1,8 @@
 from django.urls import reverse
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, permissions, status, exceptions
 from rest_framework.decorators import action
-from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -43,12 +44,12 @@ class UserViewSet(viewsets.GenericViewSet):
         return serializer_class(*args, **kwargs)
 
     @action(detail=False, methods=['get', 'patch'])
-    def profile(self, request):
+    def me(self, request):
         if request.method == 'GET':
             serializer = self.get_serializer(request.user)
             return Response(serializer.data)
         elif request.method == 'PATCH':
-            serializer = self.get_serializer(instance=request.user, data=request.data, partial=True)
+            serializer = self.get_serializer(request.user, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
@@ -68,6 +69,9 @@ class UserViewSet(viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=['get'])
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter('confirmation_token', openapi.IN_QUERY, description="Auto Generated Token", type=openapi.TYPE_STRING, required=True)
+    ])
     def activation(self, request):
         user = self.get_user_from_token(request)
         if not user.exists():
@@ -136,6 +140,9 @@ class UserViewSet(viewsets.GenericViewSet):
         return Response({'email': 'Письмо отправлено'})
 
     @action(detail=False, methods=['post'])
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter('confirmation_token', openapi.IN_QUERY, description="Auto Generated Token", type=openapi.TYPE_STRING, required=True)
+    ])
     def recover_password_confirm(self, request):
         user = self.get_user_from_token(request)
         if not user.exists():
