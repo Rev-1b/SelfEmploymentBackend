@@ -49,6 +49,8 @@ class Agreement(CustomModel):
 
     objects = AgreementManager()
 
+    search_fields = ['customer__customer_name', 'number']
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 class AdditionalQuerySet(models.QuerySet):
@@ -91,6 +93,8 @@ class Additional(CustomModel):
 
     objects = AdditionalManager()
 
+    search_fields = ['agreement__customer__customer_name', 'number', 'title']
+
 
 class Act(CustomModel):
     class Meta(CustomModel.Meta):
@@ -112,6 +116,8 @@ class Act(CustomModel):
     additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True, related_name='acts')
     status = models.CharField(max_length=2, choices=StatusChoices.choices, default=StatusChoices.CREATED,
                               verbose_name='Статус акта')
+
+    search_fields = ['agreement__customer__customer_name', 'additional_agreement__customer__customer_name''number', 'title']
 
 
 class Invoice(CustomModel):
@@ -136,6 +142,8 @@ class Invoice(CustomModel):
     status = models.CharField(max_length=2, choices=StatusChoices.choices, default=StatusChoices.CREATED,
                               verbose_name='Статус счета')
 
+    search_fields = ['agreement__customer__customer_name', 'additional_agreement__customer__customer_name''number', 'title']
+
 
 class CheckModel(CustomModel):
     class Meta(CustomModel.Meta):
@@ -151,6 +159,8 @@ class CheckModel(CustomModel):
     agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, null=True, blank=True, related_name='checks')
     additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True,
                                    related_name='checks')
+
+    search_fields = ['agreement__customer__customer_name', 'additional_agreement__customer__customer_name''number', 'title']
 
 
 class UserTemplate(CustomModel):
@@ -214,3 +224,6 @@ class Payment(CustomModel):
                               verbose_name='Статус счета')
 
     objects = PaymentManager()
+
+    def get_search_fields(self):
+        return ['agreement__customer__customer_name']
