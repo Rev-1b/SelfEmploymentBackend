@@ -11,6 +11,7 @@ from rest_framework.viewsets import ViewSet
 
 from project.pagination import StandardResultsSetPagination
 from . import models as document_models, serializers as document_serializers
+from customers import models as customer_models
 
 
 class ListNumberSearchMixin:
@@ -270,6 +271,7 @@ class ProjectSearch(mixins.ListModelMixin,
             (document_models.Invoice, document_serializers.InvoiceSearchSerializer),
             (document_models.CheckModel, document_serializers.CheckSearchSerializer),
             (document_models.Payment, document_serializers.PaymentSearchSerializer),
+            (customer_models.Customer, document_serializers.CustomerSearchSerializer)
         ]
 
         result = []
@@ -285,4 +287,4 @@ class ProjectSearch(mixins.ListModelMixin,
             query_filters |= Q(**{f"{field}__icontains": query})
 
         results = model.objects.filter(query_filters)
-        return serializer(results, many=True).data
+        return serializer(results[:10], many=True, context={'request': self.request}).data

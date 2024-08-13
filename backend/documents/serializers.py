@@ -206,7 +206,7 @@ class InvoiceSearchSerializer(SearchCommonSerializer):
         fields = ['id', 'url', 'number', 'updated_at']
 
 
-class PaymentSearchSerializer(SearchCommonSerializer):
+class PaymentSearchSerializer(serializers.Serializer):
     url = serializers.HyperlinkedIdentityField(view_name='payments-detail')
 
     class Meta:

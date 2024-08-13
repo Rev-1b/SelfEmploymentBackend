@@ -117,7 +117,8 @@ class Act(CustomModel):
     status = models.CharField(max_length=2, choices=StatusChoices.choices, default=StatusChoices.CREATED,
                               verbose_name='Статус акта')
 
-    search_fields = ['agreement__customer__customer_name', 'additional_agreement__customer__customer_name''number', 'title']
+    search_fields = ['agreement__customer__customer_name', 'additional__agreement__customer__customer_name', 'number',
+                     'title']
 
 
 class Invoice(CustomModel):
@@ -142,7 +143,7 @@ class Invoice(CustomModel):
     status = models.CharField(max_length=2, choices=StatusChoices.choices, default=StatusChoices.CREATED,
                               verbose_name='Статус счета')
 
-    search_fields = ['agreement__customer__customer_name', 'additional_agreement__customer__customer_name''number', 'title']
+    search_fields = ['agreement__customer__customer_name', 'additional__agreement__customer__customer_name', 'number']
 
 
 class CheckModel(CustomModel):
@@ -160,7 +161,7 @@ class CheckModel(CustomModel):
     additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True,
                                    related_name='checks')
 
-    search_fields = ['agreement__customer__customer_name', 'additional_agreement__customer__customer_name''number', 'title']
+    search_fields = ['agreement__customer__customer_name', 'additional__agreement__customer__customer_name', 'number']
 
 
 class UserTemplate(CustomModel):
@@ -225,5 +226,4 @@ class Payment(CustomModel):
 
     objects = PaymentManager()
 
-    def get_search_fields(self):
-        return ['agreement__customer__customer_name']
+    search_fields = ['agreement__customer__customer_name']
