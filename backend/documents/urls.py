@@ -12,6 +12,7 @@ router.register('invoices', document_views.InvoiceViewSet, basename='invoices')
 router.register('templates', document_views.UserTemplateViewSet, basename='templates')
 router.register('history', document_views.DocumentHistoryViewSet, basename='history')
 router.register('payments', document_views.PaymentViewSet, basename='payments')
+router.register('search', document_views.ProjectSearch, basename='search')
 
 urlpatterns = [
     path('', include(router.urls)),

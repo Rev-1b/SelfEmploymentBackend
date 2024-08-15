@@ -44,6 +44,7 @@ class Customer(CustomModel):
         verbose_name='Основной государственный регистрационный номер индивидуального предпринимателя', null=True,
         blank=True)
 
+    search_fields = ['customer_name']
 
 class CustomerPassport(CustomModel):
     class Meta(CustomModel.Meta):
