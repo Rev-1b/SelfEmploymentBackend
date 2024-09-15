@@ -16,7 +16,7 @@ services:
       - ./backend:/backend
     command: >
       sh -c "python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
+             gunicorn project.wsgi:application --bind 0.0.0.0:8000"
     depends_on:
       - database
 
@@ -64,5 +64,7 @@ services:
     build: ./nginx
     ports:
       - 80:80
+    volumes:
+      .backend/static:/static
     depends_on:
       - backend
