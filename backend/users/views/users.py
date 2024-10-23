@@ -4,18 +4,12 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, permissions, status, exceptions
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework_simplejwt.views import TokenObtainPairView
 
-from project.pagination import StandardResultsSetPagination
-from users.models import CustomUser, UserRequisites
-from users.serializers import CustomTokenObtainPairSerializer, UserDetailSerializer, UserCreateSerializer, \
-    UserRequisitesSerializer, OldToNewPasswordSerializer, EmailSerializer, NewPasswordSerializer
+from users.cryptography import decrypt_data
+from users.models import CustomUser
+from users.serializers import UserCreateSerializer, EmailSerializer, NewPasswordSerializer, OldToNewPasswordSerializer, \
+    UserDetailSerializer
 from users.tasks import send_activation_email, send_password_reset_email
-from .cryptography import decrypt_data
-
-
-class EmailTokenObtainPairView(TokenObtainPairView):
-    serializer_class = CustomTokenObtainPairSerializer
 
 
 class UserViewSet(viewsets.GenericViewSet):
@@ -167,17 +161,4 @@ class UserViewSet(viewsets.GenericViewSet):
         return self.get_queryset().filter(id=user_id)
 
 
-class UserRequisitesViewSet(viewsets.ModelViewSet):
-    serializer_class = UserRequisitesSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    pagination_class = StandardResultsSetPagination
-
-    def get_queryset(self):
-        return UserRequisites.objects.filter(user=self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        self.get_queryset().create(user=request.user, **serializer.validated_data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+__all__ = ['UserViewSet']

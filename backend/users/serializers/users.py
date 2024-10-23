@@ -2,12 +2,8 @@ from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from django.core.validators import validate_email
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import CustomUser, Passport, UserRequisites
 
-
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    username_field = CustomUser.EMAIL_FIELD
+from users.models import CustomUser, Passport
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -23,7 +19,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
         return user
 
 
-# profile serializers
 class PassportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Passport
@@ -60,15 +55,6 @@ class UserDetailSerializer(serializers.ModelSerializer):
         return instance
 
 
-class UserRequisitesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserRequisites
-        fields = ['id', 'bank_name', 'bic', 'bank_account', 'user_account', 'card_number']
-        extra_kwargs = {
-            'id': {'read_only': True}
-        }
-
-
 class NewPasswordSerializer(serializers.Serializer):
     new_password = serializers.CharField(style={"input_type": "password"})
 
@@ -99,3 +85,13 @@ class EmailSerializer(serializers.Serializer):
             raise serializers.ValidationError({'email': list(e.messages)})
 
         return value
+
+
+__all__ = [
+    'UserDetailSerializer',
+    'UserCreateSerializer',
+    'PassportSerializer',
+    'EmailSerializer',
+    'NewPasswordSerializer',
+    'OldToNewPasswordSerializer',
+]

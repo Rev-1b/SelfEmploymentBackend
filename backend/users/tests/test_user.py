@@ -2,52 +2,29 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from .cryptography import encrypt_data
-from .models import CustomUser, Passport, UserRequisites
-
-main_user = {
-    'username': 'TestUser',
-    'email': 'test@example.com',
-    'password': 'qwerty2F'
-}
-
-main_passport = {
-    'series': '1234',
-    'number': '56789',
-    'release_date': '2022-01-01',
-    'unit_code': 'ABC123'
-}
-
-main_user_auth = {
-    'email': 'test@example.com',
-    'password': 'qwerty2F'
-}
-
-new_user = {
-    'username': 'newuser',
-    'email': 'newuser@example.com',
-    'password': 'qwerty2F'
-}
+from users.cryptography import encrypt_data
+from users.models import CustomUser, Passport
+import users.tests.data as test_data
 
 
 class UserRegistrationTestCase(APITestCase):
     def setUp(self):
         super(UserRegistrationTestCase, self).setUp()
-        self.user = CustomUser.objects.create_user(**main_user)
-        self.passport = Passport.objects.create(user=self.user, **main_passport)
+        self.user = CustomUser.objects.create_user(**test_data.main_user)
+        self.passport = Passport.objects.create(user=self.user, **test_data.main_passport)
         self.token = encrypt_data(self.user.pk)
 
     def test_create_user(self):
         url = reverse('user-register')
-        response = self.client.post(url, new_user)
+        response = self.client.post(url, test_data.new_user)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['username'], new_user['username'])
-        self.assertEqual(response.data['email'], new_user['email'])
-        self.assertTrue(CustomUser.objects.filter(email=new_user.get('email')).exists())
+        self.assertEqual(response.data['username'], test_data.new_user['username'])
+        self.assertEqual(response.data['email'], test_data.new_user['email'])
+        self.assertTrue(CustomUser.objects.filter(email=test_data.new_user.get('email')).exists())
 
     def test_user_login(self):
         url = reverse('create-token')
-        response = self.client.post(url, main_user_auth, format='json')
+        response = self.client.post(url, test_data.main_user_auth, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('access', response.data)
         self.assertIn('refresh', response.data)
@@ -55,7 +32,7 @@ class UserRegistrationTestCase(APITestCase):
     def test_refresh_token(self):
         first_url = reverse('create-token')
         second_url = reverse('refresh-token')
-        first_response = self.client.post(first_url, main_user_auth, format='json')
+        first_response = self.client.post(first_url, test_data.main_user_auth, format='json')
         data = {
             'refresh': first_response.data['refresh'],
         }
@@ -78,7 +55,7 @@ class UserRegistrationTestCase(APITestCase):
         data = {
             'email': new_email
         }
-        self.client.login(**main_user_auth)
+        self.client.login(**test_data.main_user_auth)
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Temporally commented. Cant figure out, why user email does not change in tests, but in Postman
@@ -89,19 +66,19 @@ class UserRegistrationTestCase(APITestCase):
         url = reverse('user-change-password')
         new_password = 'Rev-1bUS^'
         data = {
-            'old_password': main_user_auth.get('password'),
+            'old_password': test_data.main_user_auth.get('password'),
             'new_password': new_password
         }
 
         # change password
-        self.client.login(**main_user_auth)
+        self.client.login(**test_data.main_user_auth)
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # check if password is changed (trying to log in with a new password)
         login_url = reverse('create-token')
         data = {
-            'email': main_user.get('email'),
+            'email': test_data.main_user.get('email'),
             'password': new_password
         }
         response = self.client.post(login_url, data, format='json')
@@ -131,9 +108,9 @@ class UserRegistrationTestCase(APITestCase):
             'first_name': 'John',
             'last_name': 'Doe',
             'middle_name': 'Smith',
-            'passport': main_passport
+            'passport': test_data.main_passport
         }
-        self.client.login(**main_user_auth)
+        self.client.login(**test_data.main_user_auth)
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -149,50 +126,3 @@ class UserRegistrationTestCase(APITestCase):
         self.assertEqual(passport_data.get('number'), '56789')
         self.assertEqual(passport_data.get('release_date'), '2022-01-01')
         self.assertEqual(passport_data.get('unit_code'), 'ABC123')
-
-
-class UserRequisitesTests(APITestCase):
-    def setUp(self):
-        self.user = CustomUser.objects.create_user(**main_user)
-        self.client.force_authenticate(user=self.user)
-        self.requisites_data = {
-            'bank_name': 'Test Bank',
-            'bic': 'TESTBIC',
-            'bank_account': '1234567890',
-            'user_account': 'testuser',
-            'card_number': '1234-5678-9012-3456'
-        }
-
-    def test_create_user_requisites(self):
-        url = reverse('requisites-list')
-        response = self.client.post(url, data=self.requisites_data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(UserRequisites.objects.filter(user=self.user).exists())
-
-    def test_list_user_requisites(self):
-        UserRequisites.objects.create(user=self.user, **self.requisites_data)
-        url = reverse('requisites-list')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data.get('results')), 1)
-        self.assertEqual(response.data.get('results')[0]['bank_name'], 'Test Bank')
-
-    def test_update_user_requisites(self):
-        requisites = UserRequisites.objects.create(user=self.user, **self.requisites_data)
-        updated_data = {
-            'bank_name': 'Updated Bank',
-            'bic': 'UPDATEDBIC'
-        }
-        url = reverse('requisites-detail', kwargs={'pk': requisites.pk})
-        response = self.client.patch(url, updated_data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        requisites.refresh_from_db()
-        self.assertEqual(requisites.bank_name, 'Updated Bank')
-        self.assertEqual(requisites.bic, 'UPDATEDBIC')
-
-    def test_delete_user_requisites(self):
-        requisites = UserRequisites.objects.create(user=self.user, **self.requisites_data)
-        url = reverse('requisites-detail', kwargs={'pk': requisites.pk})
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(UserRequisites.objects.filter(id=requisites.id).exists())

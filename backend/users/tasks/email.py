@@ -1,6 +1,6 @@
 import requests
+from users.cryptography import encrypt_data
 
-from .cryptography import encrypt_data
 AUTH_TOKEN = '4504a59d63fdb8f7c5a6b7a408210cdf'
 
 
@@ -63,3 +63,5 @@ def send_password_reset_email(base_url, user):
     print(response.status_code)
     print(response.json())
 
+
+__all__ = ['send_activation_email', 'send_password_reset_email']
