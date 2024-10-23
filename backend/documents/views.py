@@ -9,6 +9,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
+import customers.models.customer
 from project.pagination import StandardResultsSetPagination
 from . import models as document_models, serializers as document_serializers
 from customers import models as customer_models
@@ -271,7 +272,7 @@ class ProjectSearch(mixins.ListModelMixin,
             (document_models.Invoice, document_serializers.InvoiceSearchSerializer),
             (document_models.CheckModel, document_serializers.CheckSearchSerializer),
             (document_models.Payment, document_serializers.PaymentSearchSerializer),
-            (customer_models.Customer, document_serializers.CustomerSearchSerializer)
+            (customers.models.customer.Customer, document_serializers.CustomerSearchSerializer)
         ]
 
         result = []

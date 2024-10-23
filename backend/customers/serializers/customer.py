@@ -2,13 +2,8 @@ from copy import copy
 
 from rest_framework import serializers, exceptions
 
-from .models import Customer, CustomerRequisites, CustomerContacts, CustomerPassport
-
-
-class CustomerPassportSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomerPassport
-        fields = ['series', 'number', 'release_date', 'unit_code']
+from customers.models import Customer, CustomerPassport
+from customers.serializers.passport import CustomerPassportSerializer
 
 
 class CustomerListSerializer(serializers.ModelSerializer):
@@ -17,23 +12,13 @@ class CustomerListSerializer(serializers.ModelSerializer):
         fields = ['id', 'additional_id', 'customer_type', 'customer_name', 'updated_at']
 
 
-class CustomerRequisitesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomerRequisites
-        fields = ['id', 'customer', 'bank_name', 'bic', 'bank_account', 'customer_account_number', 'updated_at']
-
-
-class CustomerContactsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomerContacts
-        fields = ['id', 'customer', 'contact_name', 'contact_type', 'contact_info', 'updated_at']
-
-
 class CustomerDetailSerializer(serializers.ModelSerializer):
     passport = CustomerPassportSerializer(required=False)
 
-    FIELDS_TO_UPDATE = ['additional_id', 'customer_name', 'post_address', 'inn', 'full_company_name', 'orgn', 'kpp',
-                        'legal_address', 'okpo', 'okved', 'place_of_residence', 'ogrnip']
+    FIELDS_TO_UPDATE = [
+        'additional_id', 'customer_name', 'post_address', 'inn', 'full_company_name', 'orgn', 'kpp',
+        'legal_address', 'okpo', 'okved', 'place_of_residence', 'ogrnip'
+    ]
 
     class Meta:
         model = Customer
@@ -109,3 +94,6 @@ class CustomerDetailSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         return {key: value for key, value in data.items() if value is not None}
+
+
+__all__ = ['CustomerListSerializer', 'CustomerDetailSerializer']
