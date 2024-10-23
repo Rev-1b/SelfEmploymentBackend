@@ -73,6 +73,9 @@ class CustomerContactsViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
 
 def get_customer_id(self):
     customer_id = self.request.query_params.get('customer_id', None)

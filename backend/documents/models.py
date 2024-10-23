@@ -1,7 +1,7 @@
 from django.db import models
 
 from customers.models import Customer, CustomUser
-from users.models import CustomModel
+from users.models import BaseModel
 
 
 class AgreementQuerySet(models.QuerySet):
@@ -22,8 +22,8 @@ class AgreementManager(models.Manager):
         return self.get_queryset().with_sums()
 
 
-class Agreement(CustomModel):
-    class Meta(CustomModel.Meta):
+class Agreement(BaseModel):
+    class Meta(BaseModel.Meta):
         verbose_name = 'Договор'
         verbose_name_plural = 'Договоры'
 
@@ -70,8 +70,8 @@ class AdditionalManager(models.Manager):
         return self.get_queryset().with_sums()
 
 
-class Additional(CustomModel):
-    class Meta(CustomModel.Meta):
+class Additional(BaseModel):
+    class Meta(BaseModel.Meta):
         verbose_name = 'Дополнение к договору'
         verbose_name_plural = 'Дополнения к договору'
 
@@ -96,8 +96,8 @@ class Additional(CustomModel):
     search_fields = ['agreement__customer__customer_name', 'number', 'title']
 
 
-class Act(CustomModel):
-    class Meta(CustomModel.Meta):
+class Act(BaseModel):
+    class Meta(BaseModel.Meta):
         verbose_name = 'Акт'
         verbose_name_plural = 'Акты'
 
@@ -121,8 +121,8 @@ class Act(CustomModel):
                      'title']
 
 
-class Invoice(CustomModel):
-    class Meta(CustomModel.Meta):
+class Invoice(BaseModel):
+    class Meta(BaseModel.Meta):
         verbose_name = 'Счет'
         verbose_name_plural = 'Счета'
 
@@ -146,8 +146,8 @@ class Invoice(CustomModel):
     search_fields = ['agreement__customer__customer_name', 'additional__agreement__customer__customer_name', 'number']
 
 
-class CheckModel(CustomModel):
-    class Meta(CustomModel.Meta):
+class CheckModel(BaseModel):
+    class Meta(BaseModel.Meta):
         verbose_name = 'Чек'
         verbose_name_plural = 'Чеки'
 
@@ -164,8 +164,8 @@ class CheckModel(CustomModel):
     search_fields = ['agreement__customer__customer_name', 'additional__agreement__customer__customer_name', 'number']
 
 
-class UserTemplate(CustomModel):
-    class Meta(CustomModel.Meta):
+class UserTemplate(BaseModel):
+    class Meta(BaseModel.Meta):
         verbose_name = "Шаблон пользователя"
         verbose_name_plural = "Шаблоны пользователя"
 
@@ -202,8 +202,8 @@ class PaymentManager(models.Manager):
         return self.get_queryset().filter(check_link__isnull=True)
 
 
-class Payment(CustomModel):
-    class Meta(CustomModel.Meta):
+class Payment(BaseModel):
+    class Meta(BaseModel.Meta):
         verbose_name = "Платеж"
         verbose_name_plural = "Платежи"
 

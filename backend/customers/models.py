@@ -1,10 +1,10 @@
 from django.db import models
 
-from users.models import CustomUser, CustomModel, Passport
+from users.models import CustomUser, BaseModel, Passport
 
 
-class Customer(CustomModel):
-    class Meta(CustomModel.Meta):
+class Customer(BaseModel):
+    class Meta(BaseModel.Meta):
         ordering = ['additional_id']
         verbose_name = 'Заказчик'
         verbose_name_plural = 'Заказчики'
@@ -46,8 +46,8 @@ class Customer(CustomModel):
 
     search_fields = ['customer_name']
 
-class CustomerPassport(CustomModel):
-    class Meta(CustomModel.Meta):
+class CustomerPassport(BaseModel):
+    class Meta(BaseModel.Meta):
         verbose_name = 'Паспорт заказчика'
         verbose_name_plural = 'Паспорта заказчиков'
         # unique_together = ['series', 'number']
@@ -64,8 +64,8 @@ class CustomerPassport(CustomModel):
     unit_code = models.CharField(max_length=7, verbose_name='Код подразделения')
 
 
-class CustomerRequisites(CustomModel):
-    class Meta(CustomModel.Meta):
+class CustomerRequisites(BaseModel):
+    class Meta(BaseModel.Meta):
         verbose_name = 'Реквизит заказчика'
         verbose_name_plural = 'Реквизиты заказчика'
 
@@ -79,8 +79,8 @@ class CustomerRequisites(CustomModel):
     customer_account_number = models.CharField(max_length=150, verbose_name='Номер расчетного счета заказчика')
 
 
-class CustomerContacts(CustomModel):
-    class Meta(CustomModel.Meta):
+class CustomerContacts(BaseModel):
+    class Meta(BaseModel.Meta):
         verbose_name = 'Контакт заказчика'
         verbose_name_plural = 'Контакты заказчика'
 

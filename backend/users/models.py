@@ -1,12 +1,15 @@
+import uuid
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
-class CustomModel(models.Model):
+class BaseModel(models.Model):
     class Meta:
         abstract = True
         ordering = ['-updated_at']
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
 
@@ -29,8 +32,8 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS = ['username']
 
 
-class Passport(CustomModel):
-    class Meta(CustomModel.Meta):
+class Passport(BaseModel):
+    class Meta(BaseModel.Meta):
         verbose_name = 'Паспорт пользователя'
         verbose_name_plural = 'Паспорта пользователей'
         # unique_together = ['series', 'number']
@@ -47,8 +50,8 @@ class Passport(CustomModel):
     unit_code = models.CharField(max_length=7, verbose_name='Код подразделения')
 
 
-class AdvertiseInfo(CustomModel):
-    class Meta(CustomModel.Meta):
+class AdvertiseInfo(BaseModel):
+    class Meta(BaseModel.Meta):
         verbose_name = 'Пакет рекламной информации'
         verbose_name_plural = 'Пакеты рекламной информации'
 
@@ -62,8 +65,8 @@ class AdvertiseInfo(CustomModel):
     partner_id = models.IntegerField()
 
 
-class UserRequisites(CustomModel):
-    class Meta(CustomModel.Meta):
+class UserRequisites(BaseModel):
+    class Meta(BaseModel.Meta):
         verbose_name = 'Реквизит пользователя'
         verbose_name_plural = 'Реквизиты пользователя'
 
