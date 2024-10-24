@@ -1,27 +1,6 @@
 services:
-  #  backend:
-  #    build:
-  #      context: ./backend
-  #    container_name: drf-container
-  #    ports:
-  #      - 8000:8000
-  #    env_file:
-  #      - ./backend/.env
-  #    environment:
-  #      - DB_HOST=database
-  #      - DB_NAME=employment
-  #      - DB_USER=observer_user
-  #      - DB_PASSWORD=qwerty2F
-  #    volumes:
-  #      - ./backend:/backend
-  #    command: >
-  #      sh -c "python manage.py migrate &&
-  #             python manage.py runserver 0.0.0.0:8000"
-  #    depends_on:
-  #      - database
-
   database:
-    image: postgres
+    image: postgres:13
     restart: always
     ports:
       - 5432:5432
@@ -31,32 +10,7 @@ services:
       POSTGRES_PASSWORD: qwerty2F
 
     volumes:
-      - D:\postgres_data\employment_db:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
 
-#  redis:
-#    image: redis
-#    hostname: redis
-#    restart: always
-#
-#  worker:
-#    build:
-#      context: .
-#    hostname: worker
-#    ports:
-#      - 587:587
-#    env_file:
-#      - .env
-#    environment:
-#      - DB_HOST=db
-#      - DB_NAME=frontier
-#      - DB_USER=frontier_user
-#      - DB_PASSWORD=qwerty2F
-#    command: celery -A Frontier worker --loglevel=info
-#    volumes:
-#      - ./frontier:/frontier
-#    links:
-#      - redis
-#    depends_on:
-#      - web-app
-#      - redis
-
+volumes:
+  pgdata:

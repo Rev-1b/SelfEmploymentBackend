@@ -65,6 +65,6 @@ services:
     ports:
       - 80:80
     volumes:
-      .backend/static:/static
+      - .backend/static:/static
     depends_on:
       - backend
