@@ -5,7 +5,6 @@ from rest_framework import viewsets, permissions
 
 from customers.models import CustomerRequisites
 from customers.serializers import CustomerRequisitesSerializer
-from customers.views.common import get_customer_id
 from pagination import StandardResultsSetPagination
 
 
@@ -23,8 +22,7 @@ class CustomerRequisitesViewSet(viewsets.ModelViewSet):
 
         queryset = CustomerRequisites.objects.filter(customer__user=self.request.user)
         if self.action != 'create':
-            customer = get_customer_id(self)
-            return queryset.filter(customer=customer)
+            return queryset.filter(customer=self.kwargs.get('customer_pk'))
         return queryset
 
     @swagger_auto_schema(manual_parameters=[

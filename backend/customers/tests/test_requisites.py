@@ -37,9 +37,11 @@ class CustomerRequisitesViewSetTest(APITestCase):
         )
 
         # URL для тестов
-        self.requisite_list_url = reverse('customer-requisites-list') + f'?customer_id={self.customer.id}'
-        self.requisite_detail_url = reverse('customer-requisites-detail',
-                                            args=[self.requisite.id]) + f'?customer_id={self.customer.id}'
+        self.requisite_list_url = reverse('customer-requisites-list', kwargs={'customer_pk': self.customer.pk})
+        self.requisite_detail_url = reverse(
+            'customer-requisites-detail',
+            kwargs={'customer_pk': self.customer.pk, 'pk': self.requisite.pk}
+        )
 
     def test_get_requisites_list(self):
         # Тест получения списка реквизитов
@@ -51,9 +53,7 @@ class CustomerRequisitesViewSetTest(APITestCase):
         self.assertEqual(response.data.get('results'), serializer.data)
 
     def test_get_requisites_filtered_list(self):
-        # Не пользуюсь self.url потому что нужно дополнительно использовать data в client.get()
-        response = self.client.get(reverse('customer-requisites-list'),
-                                   data={'bank_name': 'Sberbank', 'customer_id': self.customer.id})
+        response = self.client.get(self.requisite_list_url, data={'bank_name': 'Sberbank'})
         requisites = CustomerRequisites.objects.filter(customer__user=self.user, bank_name='Sberbank')
         serializer = CustomerRequisitesSerializer(requisites, many=True)
 
@@ -61,9 +61,7 @@ class CustomerRequisitesViewSetTest(APITestCase):
         self.assertEqual(response.data.get('results'), serializer.data)
 
     def test_bad_filter(self):
-        # Не пользуюсь self.url потому что нужно дополнительно использовать data в client.get()
-        response = self.client.get(reverse('customer-requisites-list'),
-                                   data={'bank_name': 'Sberbankswdfsd', 'customer_id': self.customer.id})
+        response = self.client.get(self.requisite_list_url, data={'bank_name': 'Sberbanksdfsdfs'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('results'), [])
 
