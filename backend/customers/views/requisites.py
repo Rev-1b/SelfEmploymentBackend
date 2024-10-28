@@ -25,9 +25,6 @@ class CustomerRequisitesViewSet(viewsets.ModelViewSet):
             return queryset.filter(customer=self.kwargs.get('customer_pk'))
         return queryset
 
-    @swagger_auto_schema(manual_parameters=[
-        openapi.Parameter('customer_id', openapi.IN_QUERY, description="ID of the customer", type=openapi.TYPE_STRING, required=True)
-    ])
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 

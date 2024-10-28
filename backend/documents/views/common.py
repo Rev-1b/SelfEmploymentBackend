@@ -79,7 +79,7 @@ class CommonDocumentViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
                           required=False)
     ])
     def list(self, request, *args, **kwargs):
-        super().list(request, *args, **kwargs)
+        return super().list(request, *args, **kwargs)
 
 
 __all__ = ['CommonDocumentViewSet', 'ListNumberSearchMixin', 'get_records_number', 'get_master_id']

@@ -40,7 +40,7 @@ class AdditionalViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
                           type=openapi.TYPE_STRING, required=True)
     ])
     def list(self, request, *args, **kwargs):
-        super(AdditionalViewSet, self).list(request, *args, **kwargs)
+        return super(AdditionalViewSet, self).list(request, *args, **kwargs)
 
 
 __all__ = ['AdditionalViewSet']
