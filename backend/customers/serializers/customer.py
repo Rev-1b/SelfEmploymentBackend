@@ -52,15 +52,15 @@ class CustomerDetailSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs: dict):
         table = {
-            'CM': ['additional_id', 'customer_type', 'customer_name', 'passport'],
-            'LC': ['additional_id', 'customer_type', 'customer_name', 'post_address', 'inn', 'full_company_name',
-                   'orgn', 'kpp', 'legal_address', 'okpo', 'okved'],
+            'COMMON': ['additional_id', 'customer_type', 'customer_name', 'passport'],
+            'LLC': ['additional_id', 'customer_type', 'customer_name', 'post_address', 'inn', 'full_company_name',
+                    'orgn', 'kpp', 'legal_address', 'okpo', 'okved'],
             'IE': ['additional_id', 'customer_type', 'customer_name', 'post_address', 'inn', 'place_of_residence',
                    'ogrnip'],
         }
 
         customer_type = attrs.get("customer_type", None)
-        if customer_type is None or customer_type not in ('CM', 'IE', 'LC'):
+        if customer_type is None or customer_type not in ('COMMON', 'IE', 'LLC'):
             raise exceptions.ValidationError(
                 {'customer_type': "Customer type is not specified or is specified incorrectly"})
 

@@ -33,8 +33,8 @@ class Payment(BaseModel):
         verbose_name_plural = "Платежи"
 
     class StatusChoices(models.TextChoices):
-        INITIATED = 'IN', 'Инициирован'
-        CLOSED = 'CL', 'Проведен'
+        INITIATED = 'INITIATED', 'Инициирован'
+        CLOSED = 'CLOSED', 'Проведен'
 
     agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, related_name='payments',
                                   null=True, blank=True, verbose_name='Договор')
@@ -46,7 +46,7 @@ class Payment(BaseModel):
                                 null=True, blank=True, verbose_name='Счет')
     check_link = models.ForeignKey(to=CheckModel, on_delete=models.CASCADE, related_name='payment',
                                    null=True, blank=True, verbose_name='Чек')
-    status = models.CharField(max_length=2, choices=StatusChoices.choices, default=StatusChoices.INITIATED,
+    status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.INITIATED,
                               verbose_name='Статус счета')
 
     objects = PaymentManager()

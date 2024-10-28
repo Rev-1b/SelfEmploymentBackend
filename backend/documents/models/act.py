@@ -15,15 +15,15 @@ class Act(BaseModel):
             f'Акт {self.title} к дополнению {self.additional}'
 
     class StatusChoices(models.TextChoices):
-        CREATED = 'CR', 'Создан'
-        CLOSED = 'CL', 'Закрыт'
+        CREATED = 'CREATED', 'Создан'
+        CLOSED = 'CLOSED', 'Закрыт'
 
     number = models.CharField(max_length=160, verbose_name='Номер Акта')
     title = models.CharField(max_length=150, verbose_name='Название акта')
     content = models.TextField(verbose_name='Текст акта')
     agreement = models.ForeignKey(to=Agreement, on_delete=models.CASCADE, null=True, blank=True, related_name='acts')
     additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True, related_name='acts')
-    status = models.CharField(max_length=2, choices=StatusChoices.choices, default=StatusChoices.CREATED,
+    status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.CREATED,
                               verbose_name='Статус акта')
 
     search_fields = ['agreement__customer__customer_name', 'additional__agreement__customer__customer_name', 'number',

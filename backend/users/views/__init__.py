@@ -1,3 +1,3 @@
-from backend.users.views.jwt import *
-from backend.users.views.users import *
-from backend.users.views.requisites import *
+from users.views.jwt import *
+from users.views.users import *
+from users.views.requisites import *

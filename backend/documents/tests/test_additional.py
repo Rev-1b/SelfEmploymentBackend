@@ -13,7 +13,7 @@ class AdditionalViewSetTests(DocumentSetUP):
             title="Additional title",
             content="Additional content",
             deal_amount=500,
-            status='CR'
+            status=Additional.StatusChoices.CREATED
         )
 
         self.additional_list_url = reverse('additional-list') + f'?agreement_id={self.agreement.id}'

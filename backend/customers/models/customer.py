@@ -13,15 +13,15 @@ class Customer(BaseModel):
         return self.customer_name
 
     class CustomerTypes(models.TextChoices):
-        COMMON = 'CM', 'Физическое лицо'
-        LLC = 'LC', 'ООО'
+        COMMON = 'COMMON', 'Физическое лицо'
+        LLC = 'LLC', 'ООО'
         IE = 'IE', 'Индивидуальный предприниматель'
 
     additional_id = models.IntegerField(verbose_name='Персональный идентификатор пользователя')
     user = models.ForeignKey(to=CustomUser, on_delete=models.CASCADE, related_name='customers',
                              verbose_name='Пользователь')
     customer_name = models.CharField(max_length=150, verbose_name='ФИО/Сокращенное название')
-    customer_type = models.CharField(max_length=2, choices=CustomerTypes)
+    customer_type = models.CharField(max_length=20, choices=CustomerTypes)
 
     # Same fields for LLC and IE
     post_address = models.CharField(max_length=150, verbose_name='Почтовый адрес', null=True, blank=True)

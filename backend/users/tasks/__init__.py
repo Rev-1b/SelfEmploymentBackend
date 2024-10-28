@@ -1,1 +1,1 @@
-from backend.users.tasks.email import *
+from users.tasks.email import *

@@ -19,7 +19,7 @@ class CustomerRequisitesViewSetTest(APITestCase):
             additional_id=123,
             user=self.user,
             customer_name="Test Customer",
-            customer_type="CM"
+            customer_type=Customer.CustomerTypes.COMMON
         )
         self.requisite = CustomerRequisites.objects.create(
             customer=self.customer,

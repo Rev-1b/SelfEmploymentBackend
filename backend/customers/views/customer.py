@@ -4,7 +4,7 @@ from rest_framework import viewsets, permissions
 from customers.models import Customer
 from customers.serializers import CustomerListSerializer, CustomerDetailSerializer
 from documents.views import ListNumberSearchMixin
-from pagination import StandardResultsSetPagination
+from project.pagination import StandardResultsSetPagination
 
 
 class CustomerViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):

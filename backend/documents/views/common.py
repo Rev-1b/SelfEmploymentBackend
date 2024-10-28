@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from pagination import StandardResultsSetPagination
+from project.pagination import StandardResultsSetPagination
 
 
 class ListNumberSearchMixin:

@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 
-from pagination import StandardResultsSetPagination
+from project.pagination import StandardResultsSetPagination
 from users.models import UserRequisites
 from users.serializers import UserRequisitesSerializer
 

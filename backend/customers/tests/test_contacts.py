@@ -19,18 +19,18 @@ class CustomerContactsViewSetTest(APITestCase):
             additional_id=123,
             user=self.user,
             customer_name="Test Customer",
-            customer_type="CM"
+            customer_type=Customer.CustomerTypes.COMMON
         )
         self.contact = CustomerContacts.objects.create(
             customer=self.customer,
             contact_name="John Doe",
-            contact_type="PH",
+            contact_type=CustomerContacts.ContactTypes.PHONE,
             contact_info="+123456789"
         )
         CustomerContacts.objects.create(
             customer=self.customer,
             contact_name="John Doe",
-            contact_type="EL",
+            contact_type=CustomerContacts.ContactTypes.EMAIL,
             contact_info="test@gmail.com"
         )
 
@@ -52,9 +52,9 @@ class CustomerContactsViewSetTest(APITestCase):
 
     def test_get_contacts_filtered_list(self):
         # Не пользуюсь self.url потому что нужно дополнительно использовать data в client.get()
-        response = self.client.get(self.contact_list_url, data={'contact_type': 'PH'})
+        response = self.client.get(self.contact_list_url, data={'contact_type': CustomerContacts.ContactTypes.PHONE})
 
-        contacts = CustomerContacts.objects.filter(customer__user=self.user, contact_type='PH')
+        contacts = CustomerContacts.objects.filter(customer__user=self.user, contact_type=CustomerContacts.ContactTypes.PHONE)
         serializer = CustomerContactsSerializer(contacts, many=True)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -77,7 +77,7 @@ class CustomerContactsViewSetTest(APITestCase):
         # Тест создания контакта
         data = {
             "contact_name": "Jane Doe",
-            "contact_type": "EL",
+            "contact_type": CustomerContacts.ContactTypes.EMAIL,
             "contact_info": "jane.doe@example.com",
             "customer": self.customer.id  # ID клиента
         }
@@ -109,7 +109,7 @@ class CustomerContactsViewSetTest(APITestCase):
         # Тест создания контакта с неверными данными
         data = {
             "contact_name": "",  # Пустое имя контакта
-            "contact_type": "EL",
+            "contact_type": CustomerContacts.ContactTypes.EMAIL,
             "contact_info": "jane.doe@example.com",
             "customer": self.customer.id
         }

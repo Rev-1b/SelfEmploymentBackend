@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from documents import models as document_models, serializers as document_serializers
-from pagination import StandardResultsSetPagination
+from project.pagination import StandardResultsSetPagination
 
 
 class PaymentViewSet(viewsets.ModelViewSet):

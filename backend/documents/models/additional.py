@@ -27,8 +27,8 @@ class Additional(BaseModel):
         verbose_name_plural = 'Дополнения к договору'
 
     class StatusChoices(models.TextChoices):
-        CREATED = 'CR', 'Создан'
-        CLOSED = 'CL', 'Закрыт'
+        CREATED = 'CREATED', 'Создан'
+        CLOSED = 'CLOSED', 'Закрыт'
 
     def __str__(self):
         return f'Дополнение {self.title} к договору {self.agreement}'
@@ -39,7 +39,7 @@ class Additional(BaseModel):
     title = models.CharField(max_length=150, verbose_name='Название дополнения')
     content = models.TextField(verbose_name='Текст дополнения')
     deal_amount = models.IntegerField(default=0, verbose_name='Сумма сделки')
-    status = models.CharField(max_length=2, choices=StatusChoices.choices, default=StatusChoices.CREATED,
+    status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.CREATED,
                               verbose_name='Статус Дополнения')
 
     objects = AdditionalManager()

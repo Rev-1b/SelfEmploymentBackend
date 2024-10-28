@@ -19,7 +19,7 @@ class CustomerViewSetTest(APITestCase):
             additional_id=123,
             user=self.user,
             customer_name="Test Customer",
-            customer_type="CM"
+            customer_type=Customer.CustomerTypes.COMMON
         )
         self.passport = CustomerPassport.objects.create(
             customer=self.customer,
@@ -44,8 +44,8 @@ class CustomerViewSetTest(APITestCase):
         self.assertEqual(response.data.get('results'), serializer.data)
 
     def test_get_customer_filtered_list(self):
-        response = self.client.get(self.customer_list_url, data={'customer_type': 'CM'})
-        customers = Customer.objects.filter(user=self.user, customer_type='CM')
+        response = self.client.get(self.customer_list_url, data={'customer_type': 'COMMON'})
+        customers = Customer.objects.filter(user=self.user, customer_type=Customer.CustomerTypes.COMMON)
         serializer = CustomerListSerializer(customers, many=True)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -64,7 +64,7 @@ class CustomerViewSetTest(APITestCase):
         data = {
             "additional_id": 124,
             "customer_name": "New Customer",
-            "customer_type": "CM",
+            "customer_type": Customer.CustomerTypes.COMMON,
             "passport": {
                 "series": "5678",
                 "number": "123456",
@@ -83,7 +83,7 @@ class CustomerViewSetTest(APITestCase):
         # Тест обновления клиента
         data = {
             "customer_name": "Updated Customer",
-            "customer_type": "CM"
+            "customer_type": Customer.CustomerTypes.COMMON
         }
         response = self.client.patch(self.customer_detail_url, data, format='json')
         self.customer.refresh_from_db()

@@ -5,7 +5,7 @@ from rest_framework import viewsets, permissions
 
 from documents import models as document_models, serializers as document_serializers
 from documents.views.common import ListNumberSearchMixin, get_master_id
-from pagination import StandardResultsSetPagination
+from project.pagination import StandardResultsSetPagination
 
 
 class AdditionalViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):

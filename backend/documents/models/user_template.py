@@ -9,14 +9,14 @@ class UserTemplate(BaseModel):
         verbose_name_plural = "Шаблоны пользователя"
 
     class TemplateTypeChoices(models.TextChoices):
-        AGREEMENT = 'AG', 'Договор'
-        ADDITIONAL = 'AD', 'Дополнение к договору'
-        ACT = 'AC', 'Акт'
-        CHECK = 'CH', "Чек"
-        INVOICES = 'IN', 'Счет'
+        AGREEMENT = 'AGREEMENT', 'Договор'
+        ADDITIONAL = 'ADDITIONAL', 'Дополнение к договору'
+        ACT = 'ACT', 'Акт'
+        CHECK = 'CHECK', "Чек"
+        INVOICES = 'INVOICES', 'Счет'
 
     user = models.ForeignKey(to=CustomUser, on_delete=models.CASCADE, related_name='templates',
                              verbose_name='Пользователь')
     title = models.CharField(max_length=150, verbose_name='Название шаблона')
-    template_type = models.CharField(max_length=2, choices=TemplateTypeChoices.choices, verbose_name='Тип шаблона')
+    template_type = models.CharField(max_length=20, choices=TemplateTypeChoices.choices, verbose_name='Тип шаблона')
     content = models.TextField(verbose_name='Тело шаблона')
