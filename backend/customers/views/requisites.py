@@ -15,9 +15,10 @@ class CustomerRequisitesViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         # Swagger
-        if getattr(self, 'swagger_fake_view', False):
-            return CustomerRequisites.objects.none()
+        # if getattr(self, 'swagger_fake_view', False):
+        #     return CustomerRequisites.objects.none()
 
+        # Можно убрать проверку на пользователя, так как заказчик уже уникальный
         queryset = CustomerRequisites.objects.filter(customer__user=self.request.user)
         if self.action != 'create':
             return queryset.filter(customer=self.kwargs.get('customer_pk'))

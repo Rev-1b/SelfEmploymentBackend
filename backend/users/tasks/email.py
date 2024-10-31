@@ -1,9 +1,14 @@
+import os
+from time import sleep
+
 import requests
 from users.cryptography import encrypt_data
+from celery import shared_task
 
-AUTH_TOKEN = '4504a59d63fdb8f7c5a6b7a408210cdf'
+AUTH_TOKEN = os.getenv('MAILPOST_AUTH_TOKEN')
 
 
+@shared_task()
 def send_activation_email(base_url, user):
     post_url = 'https://api.mailopost.ru/v1/email/lists/570409/recipients'
 
@@ -34,6 +39,7 @@ def send_activation_email(base_url, user):
     print(response.json())
 
 
+@shared_task()
 def send_password_reset_email(base_url, user):
     post_url = 'https://api.mailopost.ru/v1/email/lists/570421/recipients'
 
