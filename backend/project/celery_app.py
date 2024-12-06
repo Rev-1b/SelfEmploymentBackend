@@ -1,13 +1,13 @@
 import os
-
-from celery import Celery
-
-# Maybe problem spot
-from django.conf import settings
+import django
 
 from time import sleep
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings1')
+django.setup()
+
+from django.conf import settings
+from celery import Celery
 
 app = Celery('project')
 app.config_from_object('django.conf:settings', namespace='CELERY')
