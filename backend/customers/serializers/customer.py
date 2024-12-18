@@ -33,7 +33,8 @@ class CustomerDetailSerializer(serializers.ModelSerializer):
         user = self.context.get('request').user
 
         customer = Customer.objects.create(user=user, **validated_data)
-        CustomerPassport.objects.create(customer=customer, **passport_data)
+        if passport_data is not None:
+            CustomerPassport.objects.create(customer=customer, **passport_data)
 
         return customer
 

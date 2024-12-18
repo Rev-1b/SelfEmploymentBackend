@@ -41,12 +41,12 @@ class UserViewSet(viewsets.GenericViewSet):
     def me(self, request):
         if request.method == 'GET':
             serializer = self.get_serializer(request.user)
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         elif request.method == 'PATCH':
             serializer = self.get_serializer(request.user, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
     # ------------------------------------------------------------------------------------------------------------------
     @action(detail=False, methods=['post'])
@@ -72,7 +72,7 @@ class UserViewSet(viewsets.GenericViewSet):
             return Response({'error': 'Пользователь не найден'}, status=status.HTTP_400_BAD_REQUEST)
 
         user.update(is_email_verified=True)
-        return Response({'email': 'Email Успешно Подтвержден!'})
+        return Response({'email': 'Email Успешно Подтвержден!'}, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['post'])
     def change_email(self, request):
@@ -93,8 +93,7 @@ class UserViewSet(viewsets.GenericViewSet):
         absolute_url = request.build_absolute_uri(url_path)
         send_activation_email(absolute_url, user)
 
-        return Response({'user': user.email},
-                        status=status.HTTP_200_OK)
+        return Response({'user': user.email}, status=status.HTTP_200_OK)
 
     # ------------------------------------------------------------------------------------------------------------------
     @action(detail=False, methods=['post'])
@@ -106,11 +105,9 @@ class UserViewSet(viewsets.GenericViewSet):
         old_password = serializer.data.get('old_password')
         new_password = serializer.data.get('new_password')
 
-        # check old password
         if not user.check_password(old_password):
             return Response({'error': 'Старый пароль введен неверно'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Изменяем пароль
         user.set_password(new_password)
         user.save()
 
@@ -131,7 +128,7 @@ class UserViewSet(viewsets.GenericViewSet):
         absolute_url = request.build_absolute_uri(url_path)
         send_password_reset_email(absolute_url, user.first())
 
-        return Response({'email': 'Письмо отправлено'})
+        return Response({'email': 'Письмо отправлено'}, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['post'])
     @swagger_auto_schema(manual_parameters=[
@@ -146,7 +143,7 @@ class UserViewSet(viewsets.GenericViewSet):
         serializer.is_valid(raise_exception=True)
         user.first().set_password(serializer.data.get('new_password'))
 
-        return Response({"new_password": 'Пароль успешно сменен'})
+        return Response({"new_password": 'Пароль успешно сменен'}, status=status.HTTP_200_OK)
 
     def get_user_from_token(self, request):
         token = request.query_params.get('confirmation_token')
