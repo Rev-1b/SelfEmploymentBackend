@@ -3,18 +3,16 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
 from customers.models import Customer, CustomerPassport
-from customers.serializers import CustomerListSerializer, CustomerDetailSerializer
+from customers.serializers import CustomerInfoSerializer, CustomerDetailSerializer
 from users.models import CustomUser
 
 
 class CustomerViewSetTest(APITestCase):
     def setUp(self):
-        # Создаем пользователя и логинимся
         self.user = CustomUser.objects.create_user(username='testuser', password='password')
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
 
-        # Создаем тестовые данные для Customer и CustomerPassport
         self.customer = Customer.objects.create(
             additional_id=123,
             user=self.user,
@@ -30,15 +28,13 @@ class CustomerViewSetTest(APITestCase):
             unit_code="123-456"
         )
 
-        # URL для тестов
         self.customer_list_url = reverse('customers-list')
         self.customer_detail_url = reverse('customers-detail', args=[self.customer.id])
 
     def test_get_customer_list(self):
-        # Тест получения списка клиентов
         response = self.client.get(self.customer_list_url)
         customers = Customer.objects.filter(user=self.user)
-        serializer = CustomerListSerializer(customers, many=True)
+        serializer = CustomerInfoSerializer(customers, many=True)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('results'), serializer.data)
@@ -46,13 +42,12 @@ class CustomerViewSetTest(APITestCase):
     def test_get_customer_filtered_list(self):
         response = self.client.get(self.customer_list_url, data={'customer_type': 'COMMON'})
         customers = Customer.objects.filter(user=self.user, customer_type=Customer.CustomerTypes.COMMON)
-        serializer = CustomerListSerializer(customers, many=True)
+        serializer = CustomerInfoSerializer(customers, many=True)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('results'), serializer.data)
 
     def test_get_customer_detail(self):
-        # Тест получения деталей клиента
         response = self.client.get(self.customer_detail_url)
         serializer = CustomerDetailSerializer(self.customer)
 
@@ -60,7 +55,6 @@ class CustomerViewSetTest(APITestCase):
         self.assertEqual(response.data, serializer.data)
 
     def test_create_customer(self):
-        # Тест создания клиента
         data = {
             "additional_id": 124,
             "customer_name": "New Customer",
@@ -80,7 +74,6 @@ class CustomerViewSetTest(APITestCase):
         self.assertEqual(Customer.objects.get(id=response.data['id']).customer_name, "New Customer")
 
     def test_update_customer(self):
-        # Тест обновления клиента
         data = {
             "customer_name": "Updated Customer",
             "customer_type": Customer.CustomerTypes.COMMON
@@ -99,11 +92,10 @@ class CustomerViewSetTest(APITestCase):
         self.assertFalse(Customer.objects.filter(id=self.customer.id).exists())
 
     def test_invalid_customer_creation(self):
-        # Тест создания клиента с неверными данными
         data = {
             "additional_id": 125,
             "customer_name": "Invalid Customer",
-            "customer_type": "INVALID"  # Некорректный тип клиента
+            "customer_type": "INVALID"
         }
         response = self.client.post(self.customer_list_url, data, format='json')
 
@@ -111,8 +103,19 @@ class CustomerViewSetTest(APITestCase):
         self.assertIn("customer_type", response.data)
 
     def test_unauthorized_access(self):
-        # Тест попытки доступа без авторизации
         self.client.logout()
         response = self.client.get(self.customer_list_url)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_search_customer(self):
+        response = self.client.get(self.customer_list_url + '?q=Tes')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data.get('results')), 1)
+
+    def test_bad_search_customer(self):
+        response = self.client.get(self.customer_list_url + 'search/?q=ABOBA')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data.get('results')), 0)

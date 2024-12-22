@@ -25,7 +25,7 @@ class AgreementViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
         elif self.action == 'retrieve':
             serializer_class = document_serializers.AgreementDetailSerializer
         elif self.action == 'search':
-            serializer_class = document_serializers.AgreementListSerializer
+            serializer_class = document_serializers.AgreementInfoSerializer
         else:
             serializer_class = document_serializers.AgreementCUDSerializer
 

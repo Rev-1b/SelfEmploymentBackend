@@ -29,6 +29,8 @@ class AdditionalViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
             serializer_class = document_serializers.AdditionalMainPageSerializer
         elif self.action == 'retrieve':
             serializer_class = document_serializers.AdditionalRetrieveSerializer
+        elif self.action == 'search':
+            serializer_class = document_serializers.AdditionalInfoSerializer
         else:
             serializer_class = document_serializers.AdditionalCUDSerializer
 

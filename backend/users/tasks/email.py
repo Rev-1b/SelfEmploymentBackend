@@ -1,5 +1,4 @@
 import os
-from time import sleep
 
 import requests
 from users.cryptography import encrypt_data
@@ -34,9 +33,10 @@ def send_activation_email(base_url, user):
         'Content-Type': 'application/json',
     }
 
-    response = requests.post(post_url, json=message_params, headers=headers)
-    print(response.status_code)
-    print(response.json())
+    # todo: Uncomment in prod
+    # response = requests.post(post_url, json=message_params, headers=headers)
+    # print(response.status_code)
+    # print(response.json())
 
 
 @shared_task()
@@ -64,10 +64,10 @@ def send_password_reset_email(base_url, user):
         'Authorization': f'Bearer {AUTH_TOKEN}',
         'Content-Type': 'application/json',
     }
-
-    response = requests.post(post_url, json=message_params, headers=headers)
-    print(response.status_code)
-    print(response.json())
+    # todo: Uncomment in prod
+    # response = requests.post(post_url, json=message_params, headers=headers)
+    # print(response.status_code)
+    # print(response.json())
 
 
 __all__ = ['send_activation_email', 'send_password_reset_email']

@@ -12,4 +12,10 @@ class InvoiceSerializer(serializers.ModelSerializer):
         }
 
 
-__all__ = ['InvoiceSerializer']
+class InvoiceInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Invoice
+        fields = ['id', 'number']
+
+
+__all__ = ['InvoiceSerializer', 'InvoiceInfoSerializer']

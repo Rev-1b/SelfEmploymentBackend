@@ -1,50 +1,13 @@
 from rest_framework import serializers
 
-from customers.models import Customer
-from documents.models import Payment, Agreement, Act, Invoice, CheckModel, Additional
-
-
-class CustomerInfoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Customer
-        fields = ['id', 'customer_name', 'customer_type']
-
-
-class AgreementInfoSerializer(serializers.ModelSerializer):
-    customer = CustomerInfoSerializer()
-
-    class Meta:
-        model = Agreement
-        fields = ['id', 'number', 'start_date', 'customer']
-
-
-class AdditionalInfoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Additional
-        fields = ['id', 'number']
-
-
-class ActInfoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Act
-        fields = ['id', 'number']
-
-
-class InvoiceInfoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Invoice
-        fields = ['id', 'number']
-
-
-class CheckInfoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CheckModel
-        fields = ['id', 'number']
+from documents.models import Payment
+from documents.serializers import ActInfoSerializer, AdditionalInfoSerializer, InvoiceInfoSerializer, \
+    CheckInfoSerializer, AgreementCustomerInfoSerializer
 
 
 class ListPaymentSerializer(serializers.ModelSerializer):
     amount = serializers.ReadOnlyField()
-    agreement_info = AgreementInfoSerializer(source='agreement')
+    agreement_info = AgreementCustomerInfoSerializer(source='agreement')
     act_info = ActInfoSerializer(source='act')
 
     class Meta:
@@ -60,7 +23,7 @@ class CUDPaymentSerializer(serializers.ModelSerializer):
 
 class ReadPaymentSerializer(serializers.ModelSerializer):
     amount = serializers.ReadOnlyField()
-    agreement_info = AgreementInfoSerializer(source='agreement')
+    agreement_info = AgreementCustomerInfoSerializer(source='agreement')
     additional_info = AdditionalInfoSerializer(source='additional')
     act_info = ActInfoSerializer(source='act')
     invoice_info = InvoiceInfoSerializer(source='invoice')
@@ -74,7 +37,7 @@ class ReadPaymentSerializer(serializers.ModelSerializer):
 
 
 class StatisticSerializer(serializers.ModelSerializer):
-    agreement_info = AgreementInfoSerializer(source='agreement')
+    agreement_info = AgreementCustomerInfoSerializer(source='agreement')
     amount = serializers.ReadOnlyField()
 
     class Meta:

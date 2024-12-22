@@ -16,6 +16,7 @@ class ActViewSetTests(DocumentSetUP):
         )
 
         self.act_list_url = reverse('acts-list') + f'?agreement_id={self.agreement.id}'
+        self.act_search_url = reverse('acts-search') + f'?agreement_id={self.agreement.id}'
         self.act_detail_url = reverse(
             'acts-detail', args=[self.act.id]) + f'?agreement_id={self.agreement.id}'
 
@@ -46,3 +47,9 @@ class ActViewSetTests(DocumentSetUP):
 
     def test_delete_act(self):
         self.check_delete(self, self.act_detail_url, Act, 0)
+
+    def test_search_act(self):
+        self.check_list(self, self.act_search_url + '&q=ACT', 1)
+
+    def test_bad_search_act(self):
+        self.check_list(self, self.act_search_url + '&q=DDD', 0)

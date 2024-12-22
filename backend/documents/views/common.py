@@ -28,7 +28,7 @@ class ListNumberSearchMixin:
 
         results = self.get_queryset().filter(query_obj).order_by('-updated_at')
         serializer = self.get_serializer(results, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({'results': serializer.data}, status=status.HTTP_200_OK)
 
 
 def get_master_id(self):

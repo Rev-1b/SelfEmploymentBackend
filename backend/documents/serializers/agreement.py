@@ -1,17 +1,12 @@
 from rest_framework import serializers
 
 from customers.models import Customer
+from customers.serializers import CustomerInfoSerializer
 from documents.models import Agreement
 
 
-class ShortCustomerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Customer
-        fields = ('id', 'customer_type', 'customer_name')
-
-
 class AgreementMainPageSerializer(serializers.ModelSerializer):
-    customer = ShortCustomerSerializer()
+    customer = CustomerInfoSerializer(read_only=True)
     related_entities_data = serializers.SerializerMethodField()
 
     class Meta:
@@ -28,7 +23,7 @@ class AgreementMainPageSerializer(serializers.ModelSerializer):
 
 
 class AgreementDetailSerializer(serializers.ModelSerializer):
-    customer = ShortCustomerSerializer()
+    customer = CustomerInfoSerializer(read_only=True)
     related_entities_data = serializers.SerializerMethodField()
 
     class Meta:
@@ -50,15 +45,24 @@ class AgreementCUDSerializer(serializers.ModelSerializer):
         fields = ['id', 'customer', 'number', 'status', 'content', 'start_date', 'end_date']
 
 
-class AgreementListSerializer(serializers.ModelSerializer):
+class AgreementInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Agreement
-        fields = ['id', 'number', 'status']
+        fields = ['id', 'number']
+
+
+class AgreementCustomerInfoSerializer(serializers.ModelSerializer):
+    customer = CustomerInfoSerializer(read_only=True)
+
+    class Meta:
+        model = Agreement
+        fields = ['id', 'number', 'status', 'customer']
 
 
 __all__ = [
     'AgreementMainPageSerializer',
     'AgreementDetailSerializer',
     'AgreementCUDSerializer',
-    'AgreementListSerializer',
+    'AgreementInfoSerializer',
+    'AgreementCustomerInfoSerializer'
 ]

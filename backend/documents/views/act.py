@@ -5,11 +5,19 @@ from documents.views.common import CommonDocumentViewSet
 
 
 class ActViewSet(CommonDocumentViewSet):
-    serializer_class = document_serializers.ActSerializer
     model_class = document_models.Act
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['status']
     search_fields = ['number', 'title']
+
+    def get_serializer(self, *args, **kwargs):
+        if self.action == 'search':
+            serializer_class = document_serializers.ActInfoSerializer
+        else:
+            serializer_class = document_serializers.ActSerializer
+
+        kwargs.setdefault('context', self.get_serializer_context())
+        return serializer_class(*args, **kwargs)
 
 
 __all__ = ['ActViewSet']

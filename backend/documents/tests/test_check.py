@@ -14,6 +14,7 @@ class CheckViewSetTests(DocumentSetUP):
         )
 
         self.check_list_url = reverse('checks-list') + f'?agreement_id={self.agreement.id}'
+        self.check_search_url = reverse('checks-search') + f'?agreement_id={self.agreement.id}'
         self.check_detail_url = reverse(
             'checks-detail', args=[self.check.id]) + f'?agreement_id={self.agreement.id}'
 
@@ -36,3 +37,10 @@ class CheckViewSetTests(DocumentSetUP):
 
     def test_delete_check(self):
         self.check_delete(self, self.check_detail_url, CheckModel, 0)
+
+    def test_search_check(self):
+        self.check_list(self, self.check_search_url + '&q=CHK', 1)
+
+    def test_bad_search_check(self):
+        self.check_list(self, self.check_search_url + '&q=DDD', 0)
+
