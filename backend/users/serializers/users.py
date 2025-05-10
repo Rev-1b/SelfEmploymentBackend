@@ -13,6 +13,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'email', 'password')
         extra_kwargs = {
             'password': {'write_only': True},
+            'email': {'error_messages': {'unique': 'Пользователь с такой электронной почтой уже существует'}},
         }
 
     def create(self, validated_data):

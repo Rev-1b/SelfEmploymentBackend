@@ -7,9 +7,9 @@ class UserRequisitesSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRequisites
         fields = ['id', 'bank_name', 'bic', 'bank_account', 'user_account', 'card_number']
-        extra_kwargs = {
-            'id': {'read_only': True}
-        }
+        # extra_kwargs = {
+        #     'id': {'read_only': True}
+        # }
 
 
 __all__ = ['UserRequisitesSerializer']

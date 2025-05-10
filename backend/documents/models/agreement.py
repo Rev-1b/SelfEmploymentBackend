@@ -38,7 +38,7 @@ class Agreement(BaseModel):
         EXPIRED = 'EXPIRED', 'Истек'
 
     customer = models.ForeignKey(to=Customer, on_delete=models.CASCADE, related_name='agreements',
-                                 verbose_name='Договоры')
+                                 verbose_name='Заказчик')
     number = models.CharField(max_length=150, verbose_name='Номер договора')
     content = models.TextField(verbose_name='Текст договора')
     status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.CREATED,

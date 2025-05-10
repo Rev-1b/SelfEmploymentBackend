@@ -21,7 +21,7 @@ class Customer(BaseModel):
     user = models.ForeignKey(to=CustomUser, on_delete=models.CASCADE, related_name='customers',
                              verbose_name='Пользователь')
     customer_name = models.CharField(max_length=150, verbose_name='ФИО/Сокращенное название')
-    customer_type = models.CharField(max_length=20, choices=CustomerTypes)
+    customer_type = models.CharField(max_length=20, choices=CustomerTypes, verbose_name='Тип заказчика')
 
     # Same fields for LLC and IE
     post_address = models.CharField(max_length=150, verbose_name='Почтовый адрес', null=True, blank=True)

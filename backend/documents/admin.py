@@ -4,7 +4,9 @@ from .models import *
 
 @admin.register(Agreement)
 class AgreementAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('id', 'number', 'status', 'deal_amount', 'customer')
+    list_filter = ('status',)
+    search_fields = ('number',)
 
 
 @admin.register(Additional)

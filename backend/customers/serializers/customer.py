@@ -7,13 +7,19 @@ from customers.serializers.passport import CustomerPassportSerializer
 
 
 class CustomerInfoSerializer(serializers.ModelSerializer):
+    # customer_type = serializers.SerializerMethodField()
     class Meta:
         model = Customer
         fields = ['id', 'additional_id', 'customer_type', 'customer_name', 'updated_at']
 
+    # todo: Uncomment if client needs localisation of CUSTOMER_TYPE field
+    # def get_customer_type(self, obj):
+    #     return obj.get_customer_type_display()
+
 
 class CustomerDetailSerializer(serializers.ModelSerializer):
     passport = CustomerPassportSerializer(required=False)
+    # customer_type = serializers.SerializerMethodField()
 
     FIELDS_TO_UPDATE = [
         'additional_id', 'customer_name', 'post_address', 'inn', 'full_company_name', 'orgn', 'kpp',
@@ -78,6 +84,10 @@ class CustomerDetailSerializer(serializers.ModelSerializer):
             raise exceptions.ValidationError(errors)
 
         return super().validate(attrs)
+
+    # todo: Uncomment if client needs localisation of CUSTOMER_TYPE field
+    # def get_customer_type(self, obj):
+    #     return obj.get_customer_type_display()
 
     @staticmethod
     def check_required_attrs(attrs, required_keys):
