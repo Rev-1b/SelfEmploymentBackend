@@ -2,7 +2,7 @@ import os
 import django
 
 from time import sleep
-
+# probably testing legacy, should be -------------------- 'project.settings'
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings1')
 django.setup()
 

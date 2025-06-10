@@ -16,6 +16,8 @@ class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=150, null=True, blank=True, verbose_name='Номер телефона')
     is_email_verified = models.BooleanField(default=False, verbose_name='Подтверждена почта')
 
+    telegram_id = models.BigIntegerField(unique=True, null=True, blank=True)
+
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
