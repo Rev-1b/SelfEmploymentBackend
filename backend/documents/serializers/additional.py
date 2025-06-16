@@ -39,4 +39,15 @@ class AdditionalCUDSerializer(serializers.ModelSerializer):
         fields = ['id', 'agreement', 'number', 'title', 'content', 'deal_amount']
 
 
-__all__ = ['AdditionalMainPageSerializer', 'AdditionalRetrieveSerializer', 'AdditionalCUDSerializer']
+class AdditionalInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Additional
+        fields = ['id', 'number']
+
+
+__all__ = [
+    'AdditionalMainPageSerializer',
+    'AdditionalRetrieveSerializer',
+    'AdditionalCUDSerializer',
+    'AdditionalInfoSerializer'
+]

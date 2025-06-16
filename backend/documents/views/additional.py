@@ -5,7 +5,7 @@ from rest_framework import viewsets, permissions
 
 from documents import models as document_models, serializers as document_serializers
 from documents.views.common import ListNumberSearchMixin, get_master_id
-from pagination import StandardResultsSetPagination
+from project.pagination import StandardResultsSetPagination
 
 
 class AdditionalViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
@@ -29,6 +29,8 @@ class AdditionalViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
             serializer_class = document_serializers.AdditionalMainPageSerializer
         elif self.action == 'retrieve':
             serializer_class = document_serializers.AdditionalRetrieveSerializer
+        elif self.action == 'search':
+            serializer_class = document_serializers.AdditionalInfoSerializer
         else:
             serializer_class = document_serializers.AdditionalCUDSerializer
 
@@ -40,7 +42,7 @@ class AdditionalViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
                           type=openapi.TYPE_STRING, required=True)
     ])
     def list(self, request, *args, **kwargs):
-        super(AdditionalViewSet, self).list(request, *args, **kwargs)
+        return super(AdditionalViewSet, self).list(request, *args, **kwargs)
 
 
 __all__ = ['AdditionalViewSet']

@@ -2,9 +2,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, permissions
 
 from customers.models import Customer
-from customers.serializers import CustomerListSerializer, CustomerDetailSerializer
+from customers.serializers import CustomerInfoSerializer, CustomerDetailSerializer
 from documents.views import ListNumberSearchMixin
-from pagination import StandardResultsSetPagination
+from project.pagination import StandardResultsSetPagination
 
 
 class CustomerViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
@@ -18,7 +18,7 @@ class CustomerViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
         return Customer.objects.filter(user=self.request.user)
 
     def get_serializer(self, *args, **kwargs):
-        serializer_class = CustomerListSerializer if self.action in ['list', 'search'] else CustomerDetailSerializer
+        serializer_class = CustomerInfoSerializer if self.action in ['list', 'search'] else CustomerDetailSerializer
         kwargs.setdefault('context', self.get_serializer_context())
         return serializer_class(*args, **kwargs)
 

@@ -12,4 +12,10 @@ class CheckSerializer(serializers.ModelSerializer):
         }
 
 
-__all__ = ['CheckSerializer']
+class CheckInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CheckModel
+        fields = ['id', 'number']
+
+
+__all__ = ['CheckSerializer', 'CheckInfoSerializer']

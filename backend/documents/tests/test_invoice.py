@@ -14,6 +14,7 @@ class InvoiceViewSetTests(DocumentSetUP):
         )
 
         self.invoice_list_url = reverse('invoices-list') + f'?agreement_id={self.agreement.id}'
+        self.invoice_search_url = reverse('invoices-search') + f'?agreement_id={self.agreement.id}'
         self.invoice_detail_url = reverse(
             'invoices-detail', args=[self.invoice.id]) + f'?agreement_id={self.agreement.id}'
 
@@ -42,3 +43,10 @@ class InvoiceViewSetTests(DocumentSetUP):
 
     def test_delete_invoice(self):
         self.check_delete(self, self.invoice_detail_url, Invoice, 0)
+
+    def test_search_invoice(self):
+        self.check_list(self, self.invoice_search_url + '&q=INV', 1)
+
+    def test_bad_search_invoice(self):
+        self.check_list(self, self.invoice_search_url + '&q=DDD', 0)
+

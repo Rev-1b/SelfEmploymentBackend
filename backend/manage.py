@@ -1,10 +1,15 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
+import dotenv
 import os
 import sys
 
 
 def main():
+    # Определяем путь к .env файлу
+    dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+    # Загружаем переменные окружения из .env
+    dotenv.load_dotenv(dotenv_path)
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
     try:

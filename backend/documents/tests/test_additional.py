@@ -13,10 +13,11 @@ class AdditionalViewSetTests(DocumentSetUP):
             title="Additional title",
             content="Additional content",
             deal_amount=500,
-            status='CR'
+            status=Additional.StatusChoices.CREATED
         )
 
         self.additional_list_url = reverse('additional-list') + f'?agreement_id={self.agreement.id}'
+        self.additional_search_url = reverse('additional-search') + f'?agreement_id={self.agreement.id}'
         self.additional_detail_url = reverse(
             'additional-detail', args=[self.additional.id]) + f'?agreement_id={self.agreement.id}'
 
@@ -47,3 +48,10 @@ class AdditionalViewSetTests(DocumentSetUP):
 
     def test_delete_additional(self):
         self.check_delete(self, self.additional_detail_url, Additional, 0)
+
+    def test_search_additional(self):
+        self.check_list(self, self.additional_search_url + '&q=AD', 1)
+
+    def test_bad_search_additional(self):
+        self.check_list(self, self.additional_search_url + '&q=DDD', 0)
+

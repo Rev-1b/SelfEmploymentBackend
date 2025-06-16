@@ -1,8 +1,10 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from django_prometheus.models import ExportModelOperationsMixin
 
-class CustomUser(AbstractUser):
+
+class CustomUser(ExportModelOperationsMixin('custom_user'), AbstractUser):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
@@ -10,10 +12,13 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
 
-    middle_name = models.CharField(max_length=150, default='', verbose_name='Отчество')
-    email = models.EmailField(max_length=255, unique=True, verbose_name='Электронный адрес')
-    phone_number = models.CharField(max_length=150, default='', verbose_name='Номер телефона')
+    middle_name = models.CharField(max_length=150, null=True, blank=True, verbose_name='Отчество')
+    email = models.EmailField(max_length=255, unique=True, verbose_name='Электронный адрес',
+                              error_messages={'unique': 'Пользователь с такой электронной почтой уже существует'})
+    phone_number = models.CharField(max_length=150, null=True, blank=True, verbose_name='Номер телефона')
     is_email_verified = models.BooleanField(default=False, verbose_name='Подтверждена почта')
+
+    telegram_id = models.BigIntegerField(unique=True, null=True, blank=True)
 
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'

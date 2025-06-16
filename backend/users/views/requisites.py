@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 
-from pagination import StandardResultsSetPagination
+from project.pagination import StandardResultsSetPagination
 from users.models import UserRequisites
 from users.serializers import UserRequisitesSerializer
 
@@ -18,7 +18,9 @@ class UserRequisitesViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        self.get_queryset().create(user=request.user, **serializer.validated_data)
+        # Создаем объект через serializer.save(), который автоматически добавит user
+        serializer.save(user=request.user)
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 

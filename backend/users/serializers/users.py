@@ -1,6 +1,7 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from django.core.validators import validate_email
+from django.db import transaction
 from rest_framework import serializers
 
 from users.models import CustomUser, Passport
@@ -12,6 +13,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'email', 'password')
         extra_kwargs = {
             'password': {'write_only': True},
+            'email': {'error_messages': {'unique': 'Пользователь с такой электронной почтой уже существует'}},
         }
 
     def create(self, validated_data):
@@ -37,21 +39,22 @@ class UserDetailSerializer(serializers.ModelSerializer):
         }
 
     def update(self, instance, validated_data):
-        # User fields change
-        instance.first_name = validated_data.get('first_name', instance.first_name)
-        instance.last_name = validated_data.get('last_name', instance.last_name)
-        instance.middle_name = validated_data.get('middle_name', instance.middle_name)
-
-        # Passport fields change
         passport_data = validated_data.pop('passport', None)
-        if passport_data is not None:
-            passport = Passport.objects.filter(user=instance)
-            if passport.exists():
-                passport.update(**passport_data)
-            else:
-                Passport.objects.create(user=instance, **passport_data)
+        with transaction.atomic():
+            for attr, value in validated_data.items():
+                setattr(instance, attr, value)
+            instance.save()
 
-        instance.save()
+            # Passport fields change
+            if passport_data is not None:
+                passport_serializer = PassportSerializer(
+                    instance=instance.passport,
+                    data=passport_data,
+                    partial=True
+                )
+                if passport_serializer.is_valid(raise_exception=True):
+                    passport_serializer.save(user=instance)
+
         return instance
 
 

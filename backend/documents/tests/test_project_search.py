@@ -14,7 +14,7 @@ class GlobalSearchTest(DocumentSetUP):
             title="Additional title",
             content="Additional content",
             deal_amount=500,
-            status='CR'
+            status=Additional.StatusChoices.CREATED
         )
 
         self.act = Act.objects.create(

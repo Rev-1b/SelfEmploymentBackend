@@ -2,6 +2,7 @@ from datetime import date
 
 from django.urls import reverse
 
+from customers.models import Customer
 from documents.models import Agreement
 from documents.tests.common import DocumentSetUP
 
@@ -10,16 +11,17 @@ class AgreementViewSetTests(DocumentSetUP):
     def setUp(self):
         super().setUp()
         self.agreement_list_url = reverse('agreements-list')
+        self.agreement_search_url = reverse('agreements-search')
         self.agreement_detail_url = reverse('agreements-detail', args=[self.agreement.id])
 
     def test_get_agreement_list(self):
         self.check_list(self, self.agreement_list_url, 1)
 
     def test_customer_type_filtered_list(self):
-        self.check_list(self, self.agreement_list_url + '?customer__customer_type=CM', 1)
+        self.check_list(self, self.agreement_list_url + f'?customer__customer_type={Customer.CustomerTypes.COMMON}', 1)
 
     def test_non_existing_customer_type_filtered_list(self):
-        self.check_list(self, self.agreement_list_url + '?customer__customer_type=IE', 0)
+        self.check_list(self, self.agreement_list_url + f'?customer__customer_type={Customer.CustomerTypes.IE}', 0)
 
     def test_invalid_customer_type_filtered_list(self):
         self.check_bad_filtered_list(self, self.agreement_list_url + '?customer__customer_type=IdaE')
@@ -51,3 +53,10 @@ class AgreementViewSetTests(DocumentSetUP):
 
     def test_delete_agreement(self):
         self.check_delete(self, self.agreement_detail_url, Agreement, 0)
+
+    def test_search_agreement(self):
+        self.check_list(self, self.agreement_search_url + '?q=AG', 1)
+
+    def test_bad_search_agreement(self):
+        self.check_list(self, self.agreement_search_url + '?q=DDD', 0)
+

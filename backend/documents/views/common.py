@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from pagination import StandardResultsSetPagination
+from project.pagination import StandardResultsSetPagination
 
 
 class ListNumberSearchMixin:
@@ -28,7 +28,7 @@ class ListNumberSearchMixin:
 
         results = self.get_queryset().filter(query_obj).order_by('-updated_at')
         serializer = self.get_serializer(results, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({'results': serializer.data}, status=status.HTTP_200_OK)
 
 
 def get_master_id(self):
@@ -79,7 +79,7 @@ class CommonDocumentViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
                           required=False)
     ])
     def list(self, request, *args, **kwargs):
-        super().list(request, *args, **kwargs)
+        return super().list(request, *args, **kwargs)
 
 
 __all__ = ['CommonDocumentViewSet', 'ListNumberSearchMixin', 'get_records_number', 'get_master_id']

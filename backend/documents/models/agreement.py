@@ -3,6 +3,8 @@ from django.db import models
 from customers.models import Customer
 from users.models import BaseModel
 
+from django_prometheus.models import ExportModelOperationsMixin
+
 
 class AgreementQuerySet(models.QuerySet):
     def with_sums(self):
@@ -22,7 +24,7 @@ class AgreementManager(models.Manager):
         return self.get_queryset().with_sums()
 
 
-class Agreement(BaseModel):
+class Agreement(ExportModelOperationsMixin('agreement'), BaseModel):
     class Meta(BaseModel.Meta):
         verbose_name = 'Договор'
         verbose_name_plural = 'Договоры'
@@ -31,17 +33,17 @@ class Agreement(BaseModel):
         return f'Договор №{self.number} с заказчиком {self.customer.customer_name}'
 
     class StatusChoices(models.TextChoices):
-        CREATED = 'CR', 'Создан'
-        SIGNED = 'SG', 'Подписан'
-        CLOSED = 'CL', 'Закрыт'
-        DISSOLVED = 'DS', 'Расторгнут'
-        EXPIRED = 'EX', 'Истек'
+        CREATED = 'CREATED', 'Создан'
+        SIGNED = 'SIGNED', 'Подписан'
+        CLOSED = 'CLOSED', 'Закрыт'
+        DISSOLVED = 'DISSOLVED', 'Расторгнут'
+        EXPIRED = 'EXPIRED', 'Истек'
 
     customer = models.ForeignKey(to=Customer, on_delete=models.CASCADE, related_name='agreements',
-                                 verbose_name='Договоры')
+                                 verbose_name='Заказчик')
     number = models.CharField(max_length=150, verbose_name='Номер договора')
     content = models.TextField(verbose_name='Текст договора')
-    status = models.CharField(max_length=2, choices=StatusChoices.choices, default=StatusChoices.CREATED,
+    status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.CREATED,
                               verbose_name='Статус договора')
     deal_amount = models.IntegerField(default=0, verbose_name='Сумма сделки')
     start_date = models.DateField(verbose_name='Дата заключения договора', null=True, blank=True)

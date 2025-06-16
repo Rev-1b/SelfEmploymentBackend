@@ -19,25 +19,27 @@ class CustomerContactsViewSetTest(APITestCase):
             additional_id=123,
             user=self.user,
             customer_name="Test Customer",
-            customer_type="CM"
+            customer_type=Customer.CustomerTypes.COMMON
         )
         self.contact = CustomerContacts.objects.create(
             customer=self.customer,
             contact_name="John Doe",
-            contact_type="PH",
+            contact_type=CustomerContacts.ContactTypes.PHONE,
             contact_info="+123456789"
         )
         CustomerContacts.objects.create(
             customer=self.customer,
             contact_name="John Doe",
-            contact_type="EL",
+            contact_type=CustomerContacts.ContactTypes.EMAIL,
             contact_info="test@gmail.com"
         )
 
         # URL для тестов
-        self.contact_list_url = reverse('customer-contacts-list') + f'?customer_id={self.customer.id}'
-        self.contact_detail_url = reverse('customer-contacts-detail',
-                                          args=[self.contact.id]) + f'?customer_id={self.customer.id}'
+        self.contact_list_url = reverse('customer-contacts-list', kwargs={'customer_pk': self.customer.id})
+        self.contact_detail_url = reverse(
+            'customer-contacts-detail',
+            kwargs={'customer_pk': self.customer.id, 'pk': self.contact.id}
+        )
 
     def test_get_contacts_list(self):
         # Тест получения списка контактов
@@ -50,18 +52,16 @@ class CustomerContactsViewSetTest(APITestCase):
 
     def test_get_contacts_filtered_list(self):
         # Не пользуюсь self.url потому что нужно дополнительно использовать data в client.get()
-        response = self.client.get(reverse('customer-contacts-list'),
-                                   data={'contact_type': 'PH', 'customer_id': self.customer.id})
+        response = self.client.get(self.contact_list_url, data={'contact_type': CustomerContacts.ContactTypes.PHONE})
 
-        contacts = CustomerContacts.objects.filter(customer__user=self.user, contact_type='PH')
+        contacts = CustomerContacts.objects.filter(customer__user=self.user, contact_type=CustomerContacts.ContactTypes.PHONE)
         serializer = CustomerContactsSerializer(contacts, many=True)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('results'), serializer.data)
 
     def test_bad_filter(self):
-        response = self.client.get(reverse('customer-contacts-list'),
-                                   data={'contact_type': 'PHdsadsf', 'customer_id': self.customer.id})
+        response = self.client.get(self.contact_list_url, data={'contact_type': 'PHfsfdssff'})
         # ожидаем 400, так как content_type указан через TextChoices
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -77,7 +77,7 @@ class CustomerContactsViewSetTest(APITestCase):
         # Тест создания контакта
         data = {
             "contact_name": "Jane Doe",
-            "contact_type": "EL",
+            "contact_type": CustomerContacts.ContactTypes.EMAIL,
             "contact_info": "jane.doe@example.com",
             "customer": self.customer.id  # ID клиента
         }
@@ -109,7 +109,7 @@ class CustomerContactsViewSetTest(APITestCase):
         # Тест создания контакта с неверными данными
         data = {
             "contact_name": "",  # Пустое имя контакта
-            "contact_type": "EL",
+            "contact_type": CustomerContacts.ContactTypes.EMAIL,
             "contact_info": "jane.doe@example.com",
             "customer": self.customer.id
         }

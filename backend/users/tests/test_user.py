@@ -126,3 +126,21 @@ class UserRegistrationTestCase(APITestCase):
         self.assertEqual(passport_data.get('number'), '56789')
         self.assertEqual(passport_data.get('release_date'), '2022-01-01')
         self.assertEqual(passport_data.get('unit_code'), 'ABC123')
+
+    def test_update_user_details(self):
+        url = reverse('user-me')
+        data = {
+            'first_name': 'John',
+            'last_name': 'Doe',
+        }
+        self.assertEqual(self.user.first_name, '')
+        self.assertEqual(self.user.last_name, '')
+
+        self.client.login(**test_data.main_user_auth)
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(response.data.get('first_name'), 'John')
+        self.assertEqual(response.data.get('last_name'), 'Doe')
+
+

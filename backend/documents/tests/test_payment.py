@@ -1,4 +1,5 @@
 from django.urls import reverse
+from rest_framework import status
 
 from documents.models import Payment
 from documents.tests.common import DocumentSetUP
@@ -18,7 +19,7 @@ class PaymentViewSetTests(DocumentSetUP):
     def test_get_payment_list(self):
         self.check_list(self, self.payment_list_url, 1)
 
-    def test_status_filtered_list(self):
+    def test_get_status_filtered_list(self):
         self.check_list(self, self.payment_list_url + f'?status={Payment.StatusChoices.INITIATED}', 1)
 
     def test_invalid_status_filtered_list(self):
@@ -32,3 +33,24 @@ class PaymentViewSetTests(DocumentSetUP):
 
     def test_delete_payment(self):
         self.check_delete(self, self.payment_detail_url, Payment, 0)
+
+
+class PaymentStatisticsViewSetTests(DocumentSetUP):
+    def setUp(self):
+        super().setUp()
+        self.payment1 = Payment.objects.create(
+            agreement=self.agreement,
+            status=Payment.StatusChoices.INITIATED
+        )
+
+        self.payment2 = Payment.objects.create(
+            agreement=self.agreement,
+            status=Payment.StatusChoices.CLOSED
+        )
+
+        self.statistic_link = reverse('payments-statistic')
+
+    def test_get_statistic_list(self):
+        response = self.client.get(self.statistic_link)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)

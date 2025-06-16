@@ -4,8 +4,10 @@ from documents.models.additional import Additional
 from documents.models.agreement import Agreement
 from users.models import BaseModel
 
+from django_prometheus.models import ExportModelOperationsMixin
 
-class Invoice(BaseModel):
+
+class Invoice(ExportModelOperationsMixin('invoice'), BaseModel):
     class Meta(BaseModel.Meta):
         verbose_name = 'Счет'
         verbose_name_plural = 'Счета'
@@ -15,8 +17,8 @@ class Invoice(BaseModel):
             f'Счет на {self.amount} к дополнению {self.additional}'
 
     class StatusChoices(models.TextChoices):
-        CREATED = 'CR', 'Создан'
-        CLOSED = 'CL', 'Закрыт'
+        CREATED = 'CREATED', 'Создан'
+        CLOSED = 'CLOSED', 'Закрыт'
 
     number = models.CharField(max_length=160, verbose_name='Номер Счета')
     amount = models.IntegerField(verbose_name='Сумма счета')
@@ -24,7 +26,7 @@ class Invoice(BaseModel):
                                   related_name='invoices')
     additional = models.ForeignKey(to=Additional, on_delete=models.CASCADE, null=True, blank=True,
                                    related_name='invoices')
-    status = models.CharField(max_length=2, choices=StatusChoices.choices, default=StatusChoices.CREATED,
+    status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.CREATED,
                               verbose_name='Статус счета')
 
     search_fields = ['agreement__customer__customer_name', 'additional__agreement__customer__customer_name', 'number']

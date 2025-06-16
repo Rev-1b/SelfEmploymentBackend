@@ -2,7 +2,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, permissions
 
 from documents import models as document_models, serializers as document_serializers
-from pagination import StandardResultsSetPagination
+from project.pagination import StandardResultsSetPagination
 
 
 class UserTemplateViewSet(viewsets.ModelViewSet):

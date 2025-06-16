@@ -11,5 +11,14 @@ class InvoiceViewSet(CommonDocumentViewSet):
     filterset_fields = ['status']
     search_fields = ['number']
 
+    def get_serializer(self, *args, **kwargs):
+        if self.action == 'search':
+            serializer_class = document_serializers.InvoiceInfoSerializer
+        else:
+            serializer_class = document_serializers.InvoiceSerializer
+
+        kwargs.setdefault('context', self.get_serializer_context())
+        return serializer_class(*args, **kwargs)
+
 
 __all__ = ['InvoiceViewSet']

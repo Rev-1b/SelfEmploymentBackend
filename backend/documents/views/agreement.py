@@ -3,7 +3,7 @@ from rest_framework import viewsets, permissions
 
 from documents import models as document_models, serializers as document_serializers
 from documents.views.common import ListNumberSearchMixin
-from pagination import StandardResultsSetPagination
+from project.pagination import StandardResultsSetPagination
 
 
 class AgreementViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
@@ -25,7 +25,7 @@ class AgreementViewSet(viewsets.ModelViewSet, ListNumberSearchMixin):
         elif self.action == 'retrieve':
             serializer_class = document_serializers.AgreementDetailSerializer
         elif self.action == 'search':
-            serializer_class = document_serializers.AgreementListSerializer
+            serializer_class = document_serializers.AgreementInfoSerializer
         else:
             serializer_class = document_serializers.AgreementCUDSerializer
 

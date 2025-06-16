@@ -3,8 +3,10 @@ from django.db import models
 from users.models import BaseModel
 from users.models import CustomUser
 
+from django_prometheus.models import ExportModelOperationsMixin
 
-class AdvertiseInfo(BaseModel):
+
+class AdvertiseInfo(ExportModelOperationsMixin('advertise_info'), BaseModel):
     class Meta(BaseModel.Meta):
         verbose_name = 'Пакет рекламной информации'
         verbose_name_plural = 'Пакеты рекламной информации'

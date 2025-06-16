@@ -12,4 +12,10 @@ class ActSerializer(serializers.ModelSerializer):
         }
 
 
-__all__ = ['ActSerializer']
+class ActInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Act
+        fields = ['id', 'number']
+
+
+__all__ = ['ActSerializer', 'ActInfoSerializer']
