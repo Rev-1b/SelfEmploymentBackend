@@ -5,7 +5,7 @@ DEBUG = False
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['http://*.176.123.169.4', 'https://*.176.123.169.4']
+CSRF_TRUSTED_ORIGINS = ['http://*.213.189.220.146', 'https://*.213.189.220.146']
 
 CORS_ORIGIN_WHITELIST = [
     'http://127.0.0.1:5173',
