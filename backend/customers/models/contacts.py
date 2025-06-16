@@ -3,8 +3,10 @@ from django.db import models
 from customers.models import Customer
 from users.models import BaseModel
 
+from django_prometheus.models import ExportModelOperationsMixin
 
-class CustomerContacts(BaseModel):
+
+class CustomerContacts(ExportModelOperationsMixin("customer_contacts"), BaseModel):
     class Meta(BaseModel.Meta):
         verbose_name = 'Контакт заказчика'
         verbose_name_plural = 'Контакты заказчика'

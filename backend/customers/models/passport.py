@@ -3,8 +3,10 @@ from django.db import models
 from customers.models.customer import Customer
 from users.models import BaseModel
 
+from django_prometheus.models import ExportModelOperationsMixin
 
-class CustomerPassport(BaseModel):
+
+class CustomerPassport(ExportModelOperationsMixin('customer_passport'), BaseModel):
     class Meta(BaseModel.Meta):
         verbose_name = 'Паспорт заказчика'
         verbose_name_plural = 'Паспорта заказчиков'

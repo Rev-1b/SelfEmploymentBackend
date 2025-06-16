@@ -3,7 +3,7 @@ from datetime import timedelta
 DEBUG = True
 SECRET_KEY = 'django-insecure-&7f_u76e*=d@1+1j8*rm-e7l04$7#4%ogae7kczfm003257_6i'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['host.docker.internal', '*']
 CSRF_TRUSTED_ORIGINS = ['http://*', 'https://*']
 
 CORS_ALLOW_ALL_ORIGINS = True

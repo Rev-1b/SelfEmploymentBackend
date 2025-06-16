@@ -1,9 +1,10 @@
 from django.db import models
 
 from users.models import BaseModel, CustomUser
+from django_prometheus.models import ExportModelOperationsMixin
 
 
-class UserTemplate(BaseModel):
+class UserTemplate(ExportModelOperationsMixin('user_template'), BaseModel):
     class Meta(BaseModel.Meta):
         verbose_name = "Шаблон пользователя"
         verbose_name_plural = "Шаблоны пользователя"

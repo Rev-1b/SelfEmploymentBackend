@@ -2,8 +2,10 @@ from django.db import models
 
 from users.models import BaseModel, CustomUser
 
+from django_prometheus.models import ExportModelOperationsMixin
 
-class Customer(BaseModel):
+
+class Customer(ExportModelOperationsMixin('customer'), BaseModel):
     class Meta(BaseModel.Meta):
         ordering = ['additional_id']
         verbose_name = 'Заказчик'

@@ -3,6 +3,8 @@ from django.db import models
 from documents.models.agreement import Agreement
 from users.models import BaseModel
 
+from django_prometheus.models import ExportModelOperationsMixin
+
 
 class AdditionalQuerySet(models.QuerySet):
     def with_sums(self):
@@ -21,7 +23,7 @@ class AdditionalManager(models.Manager):
         return self.get_queryset().with_sums()
 
 
-class Additional(BaseModel):
+class Additional(ExportModelOperationsMixin('additional'), BaseModel):
     class Meta(BaseModel.Meta):
         verbose_name = 'Дополнение к договору'
         verbose_name_plural = 'Дополнения к договору'

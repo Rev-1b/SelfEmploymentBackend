@@ -4,8 +4,10 @@ from documents.models.additional import Additional
 from documents.models.agreement import Agreement
 from users.models import BaseModel
 
+from django_prometheus.models import ExportModelOperationsMixin
 
-class Act(BaseModel):
+
+class Act(ExportModelOperationsMixin("act"), BaseModel):
     class Meta(BaseModel.Meta):
         verbose_name = 'Акт'
         verbose_name_plural = 'Акты'

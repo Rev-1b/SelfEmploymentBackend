@@ -7,6 +7,8 @@ from documents.models.check import CheckModel
 from documents.models.invoice import Invoice
 from users.models import BaseModel
 
+from django_prometheus.models import ExportModelOperationsMixin
+
 
 class PaymentManager(models.Manager):
     def get_queryset(self):
@@ -27,7 +29,7 @@ class PaymentManager(models.Manager):
         return self.get_queryset().filter(check_link__isnull=True)
 
 
-class Payment(BaseModel):
+class Payment(ExportModelOperationsMixin('payment'), BaseModel):
     class Meta(BaseModel.Meta):
         verbose_name = "Платеж"
         verbose_name_plural = "Платежи"

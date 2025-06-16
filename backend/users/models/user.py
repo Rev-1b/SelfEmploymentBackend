@@ -1,8 +1,10 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from django_prometheus.models import ExportModelOperationsMixin
 
-class CustomUser(AbstractUser):
+
+class CustomUser(ExportModelOperationsMixin('custom_user'), AbstractUser):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'

@@ -2,8 +2,10 @@ from django.db import models
 
 from users.models import BaseModel, CustomUser
 
+from django_prometheus.models import ExportModelOperationsMixin
 
-class UserRequisites(BaseModel):
+
+class UserRequisites(ExportModelOperationsMixin('user_requisites'), BaseModel):
     class Meta(BaseModel.Meta):
         verbose_name = 'Реквизит пользователя'
         verbose_name_plural = 'Реквизиты пользователя'
