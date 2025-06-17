@@ -22,7 +22,7 @@ jobs:
         run: |
           echo "Deploying to server..."
           ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} "
-            cd /path/to/your/project && \  
+            cd SelfEmploymentBackend && \  
             git fetch origin main && \
             git reset --hard origin/main && \
             docker compose -f docker-compose-prod.yaml down && \
